@@ -1,0 +1,81 @@
+﻿\documentclass{article}
+
+\include{config}
+
+\begin{document}
+
+\begin{pspicture}(40,40)
+
+% 几个点A(0,40)  B(40,40)
+%           X(20,32)
+%       C(0,30)  D(40,30)
+%           Y
+%       E(0,0)   F(40,0)
+
+% \pscircle[fillcolor=yellow](0,0){20}
+\def\PointA{0,40}
+\def\PointB{40,40}
+\def\PointC{0,33}
+\def\PointD{40,33}
+\def\PointE{0,0}
+\def\PointF{40,0}
+
+\def\PointX{20,35}
+\def\ScaleX{1.7}
+
+\def\PointY{20,7}
+\def\ScaleY{12}
+
+\def\LineArcValue{4}
+
+
+%%%%%%%%%%%%%% 测试用
+% \psset{shadowsize=10pt}
+% \psset{shadowcolor=blue}
+% \psframe[framearc=.3,fillcolor=blue,shadow=true,blur=true,fillstyle=gradient](20,20)(40,40)
+% \psset{linecolor=blue}
+% \pstextpath[c]{\psline{-}(\PointC)(\PointD)}{\sffamily Wednesday}
+
+%%%%%%%%%%%%%
+
+\newgray{calendargray}{0.92}
+
+% 129 34 34
+\newrgbcolor{calendarmiddlelinecolor}{0.5 0.1333 0.1333}
+% color="#d82d2d"
+\newrgbcolor{calendarupsidecolor}{0.8471 0.1765 0.1765}
+
+% color="#f1b6b6"
+\newrgbcolor{calendarupsidebegin}{0.9451 0.7137 0.7137}
+\psset{gradbegin=calendarupsidebegin}
+% color="#c90202"
+\newrgbcolor{calendarupsideend}{0.7882 0.0078 0.0078}
+\psset{gradend=calendarupsideend}
+
+\pscustom[linecolor=blue,linestyle=none,
+        fillstyle=gradient]{%
+\psline[linearc=\LineArcValue]{-}(\PointC)(\PointA)(\PointB)(\PointD)
+\psline{-}(\PointD)(\PointC)
+\openshadow
+}
+
+\pscustom[linestyle=none,fillcolor=calendargray]{%
+\psline[linearc=\LineArcValue]{-}(\PointD)(\PointF)(\PointE)(\PointC)
+\psline{-}(\PointD)(\PointC)
+\openshadow
+}
+
+\psline[linewidth=1,linecolor=calendarmiddlelinecolor]{-}(\PointC)(\PointD)
+
+
+% \rput[b](\PointX){\scalebox{\ScaleX}{\sffamily \color{white}\textbf{Sept.'09}}}
+\newfontfamily\largemonth[Scale=\ScaleX]{Arial}
+\rput[B](\PointX){\largemonth \color{white}\textbf{Sept.'09}}
+
+% \rput[b](\PointY){\scalebox{\ScaleY}{\sffamily \color{black}\textbf{9}}}
+\newfontfamily\largenumber[Scale=\ScaleY]{Arial}
+\rput[B](\PointY){\largenumber \color{black}\textbf{9}}
+
+\end{pspicture}
+
+\end{document}

@@ -1,0 +1,85 @@
+% LaTeX resume using res.cls
+\documentclass[12pt]{res}
+%\usepackage{helvetica} % uses helvetica postscript font (download helvetica.sty)
+%\usepackage{newcent}   % uses new century schoolbook postscript font 
+\usepackage{graphicx}
+\usepackage{CJK}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,urlcolor=blue}
+
+% \setlength{\textwidth}{5.1in} % set width of text portion
+\newcommand{\zte}{\includegraphics[height=10pt,origin=bc]{zte_logo}}
+
+\begin{document}
+
+\begin{CJK*}{GBK}{song}
+\newcommand{\kai}{\CJKfamily{kai}}
+\newcommand{\hei}{\CJKfamily{hei}}
+
+% Center the name over the entire width of resume:
+ \moveleft.5\hoffset\centerline{\Large{\kai吴晓春}}
+% Draw a horizontal line the whole width of resume:
+ \moveleft\hoffset\vbox{\hrule width\resumewidth height 1pt}\smallskip
+% address begins here
+% Again, the address lines must be centered over entire width of resume:
+ \moveleft.5\hoffset\centerline{中心研究院~一级主任工程师} 
+ \moveleft.5\hoffset\centerline{Tel:13809049032~EMail:\href{mailto:wu.xiaochun@zte.com.cn}{wu.xiaochun@zte.com.cn}}
+
+
+\begin{resume}
+ 
+\section{求职目标}  
+                \begin{description}
+                \item[{\sl职位:}] 项目管理经理；售前技术经理；客户经理；
+                \item[{\sl地点:}] 加拿大
+                \end{description}
+ 
+\section{学历} 
+                {\sl 工学硕士} \hfill 1999/4 \\
+                东南大学~测试计量技术及仪器~计算机控制
+
+
+\section{工作经历} {\sl NGN软交换海外项目开发经理} \hfill 2006/7至今 \\
+                \zte~中心研究院~NGN软件开发部
+
+                \begin{itemize}%  \itemsep -2pt % reduce space between items
+                \item 负责NGN核心产品软交换海外项目开发管理和方案设计
+                \end{itemize}
+
+                {\sl NGN多媒体项目开发经理} \hfill 2003/4-2006/7 \\
+                \zte~网络事业部~软交换软件开发部
+
+                \begin{itemize}%  \itemsep -2pt % reduce space between items
+                \item 负责NGN多媒体服务器方案设计和开发管理
+                \end{itemize}
+
+                {\sl ZXIP10接入服务器技术经理} \hfill 2002/4-2003/4 \\
+                \zte~网络事业部~数据软件开发三部
+
+                \begin{itemize}%  \itemsep -2pt % reduce space between items
+                \item 负责ZXIP10接入服务器方案设计和技术支持
+                \end{itemize}
+
+                {\sl 软件程序员} \hfill 1999/4-2002/2 \\
+                \zte~网络事业部~数据软件开发三部
+
+                \begin{itemize}%  \itemsep -2pt % reduce space between items
+                \item 负责ZXIP10接入服务器H323模块和MGCP模块的软件设计和编码
+                \end{itemize}
+
+\section{技能} 
+                \begin{description}
+                \item[{\sl技术:}] 熟悉电信网、NGN、IMS以及相关领域专业知识
+                \item[{\sl外语:}] 英语口语流利，能够作为工作语言熟练交流。有良好的读写沟通能力。\\
+                                ~~~本科通过六级，2007年雅思6分。
+                \end{description}
+
+\section{奖励}          
+                \begin{itemize}%  \itemsep -2pt % reduce space between items
+                \item 多次评为中兴通讯S级员工
+                \item 在公司申请8项专利
+                \end{itemize}
+
+\end{resume}
+\end{CJK*}
+\end{document}

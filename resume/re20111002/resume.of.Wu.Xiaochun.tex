@@ -1,0 +1,106 @@
+% LaTeX resume using res.cls
+\documentclass[margin,12pt]{res}
+
+\usepackage{config}
+
+%\usepackage{helvetica} % uses helvetica postscript font (download helvetica.sty)
+%\usepackage{newcent}   % uses new century schoolbook postscript font 
+\setlength{\textwidth}{5.1in} % set width of text portion
+
+
+
+\begin{document}
+
+% Center the name over the entire width of resume:
+ \moveleft.5\hoffset\centerline{\large\bf \textsc{Jason Wu}}
+
+% \begin{center}
+% \makebox[.5\textwidth][s]{\textsc{Wu Xiaochun}}
+% \end{center}
+
+% Draw a horizontal line the whole width of resume:
+ \moveleft\hoffset\vbox{\hrule width\resumewidth height 1pt}\smallskip
+% address begins here
+% Again, the address lines must be centered over entire width of resume:
+ \moveleft.5\hoffset\centerline{\textsf{\small 10 Parkway Forest Dr. North York, ON M2J 1L3}}
+ % \moveleft.5\hoffset\centerline{North York, ON M2J 1L3}
+ \moveleft.5\hoffset\centerline{\textsf{\small Tel: (647) 918-9825  Email: \hyperlink{mailto:wuxch2000@gmail.com}{wuxch2000@gmail.com}}}
+
+\begin{resume}
+ 
+\section{\textsc{Objective}}  A position in the field of software development with special 
+                interests in telecom or business applications programming, 
+                information processing, and Internet technology. 
+
+\section{\textsc{Skill}} 
+                C(+5 years), Java(+2 years), C++(+2 years), Database(+2 years Oracle),\\
+                Object-Oriented Analysis (OOA),  Object-Oriented Design (OOD),\\
+                Emacs with Lisp, Tex.
+
+\section{\textsc{Knowledge}} 
+\begin{itemize}
+    \item Telecom Networks and Technologies
+    \item Next Generation Network (NGN), Softswitch
+    \item IP Multimedia Subsystem (IMS) of 3GPP
+    \item SIP, H.323, H.248 (MGCP) and other related protocols
+    \item Internet Knowledge, XML, HTML and related
+    \item Project Management Knowledge
+    \item Capability Maturity Model (CMM)
+\end{itemize}
+ 
+\section{\textsc{Experience}} 
+\mytitle{Software development Manager} \mydate{July 2006 - August 2011}\\
+Network Division of ZTE Corporation, China
+
+\begin{itemize} \itemsep -2pt %reduce space between items
+    \item In charging of the whole process of software development for ZTE Softswitch device
+    \item In charging of system analysis and design
+    \item In charging of totally Telecom solution design and decision
+    \item Development Language: C, Java, C++
+    \item Environment: VxWorks, Solaris, Linux, Oracle
+
+      \mycomment{ZTE\footnote{For more details : \url{http://wwwen.zte.com.cn/en/}} is
+        one the top 5 largest Telecom equipment and network solution provider in the world
+        with more than 30 thousands employees. ZTE Softswitch is a core device of Next
+        Generation Network (NGN) which support over million users. And it is one of the
+        most successful products of ZTE, as occupies the largest market share in China.
+        Even in world Telecom market, our product is also a major device provider. }
+    \end{itemize}
+ 
+    \mytitle{System Analysis and Design Engineer} \mydate{April 2003 - July 2006}\\
+    Network Division of ZTE Corporation, China
+     \begin{itemize}  \itemsep -2pt %reduce space between items
+     \item In charging of System analysis and design for new ZTE VoIP Gateway
+     \item Director of software development of stack module of Gateway
+     \item Analysis user requirements and protocol
+     \item Development Language: C, Java
+     \item Environment: Solaris, RMX, Oracle
+
+       \mycomment{This is ZTE's first type of VoIP gateway for telecommunication market which
+         supports up to 7200 lines concurrently, integrated in grogram controlled switch. }
+
+     \end{itemize} 
+
+    \mytitle{Software Development Engineer} \mydate{April 1999 - April 2003}\\
+    Network Division of ZTE Corporation, China
+      \begin{itemize}
+       \item Analysis user requirements and protocol
+       \item Development Language: C
+       \item Environment: Windows NT, Sybase
+
+       \mycomment{In charge of H.323 stack module's development and maintenance. This module
+           is the core part of ZTE VoIP Gateway which is aimed to enterprise market. ZTE
+           VoIP Gateway supports 120 lines concurrently. }
+       \end{itemize} 
+
+\section{\textsc{Education}} 
+                \mytitle{Master of Science, Instrument Science Engineering}  \mydate{April 1999}\\
+                Southeast University, Nanjing, China \\
+                Concentration: Computer Science \\
+
+                \mytitle{Bachelor of Science, Electrical Engineering} \mydate{July 1996}\\
+                Nanchang University, Nanchang, China \\
+                Concentration: Electrical Machine \\
+ 
+\end{resume}
+\end{document}

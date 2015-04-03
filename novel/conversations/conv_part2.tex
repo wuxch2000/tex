@@ -1,0 +1,1159 @@
+\section{Obelisk}
+\begin{flushright}--Perils of writing "monolithic" code.\end{flushright}
+
+\textit{``！and parties will start going down next week. I think we'll get to go the week after,'' Jeannine finished.
+  ``They're still excavating around the top of the crystal obelisk, but no further news yet. It's hard going, and we didn't
+  plan to do this kind of exploration. This goes way beyond our research and mining mandates. Frenell still thinks it's a
+  hoax.''}
+
+\textit{I laughed. ``Frenell's a genuine space oddity and needs to get out more. It's the wrong color; it's in the wrong
+  place; it's！''}
+
+\textit{``Sure, we've known for months now that it was deep under the ice.''}
+
+\textit{``！it's the wrong shape, and if someone was playing a practical joke, they'd do better than that. Anyway, no joker
+  could ever embed it that deeply.''}
+
+\textit{``I've heard a better one,'' Jeannine interrupted. ``Aubrey believes it's real, all right, but he thinks it's a
+  conspiracy. Decades too late for 2001, but `still suspiciously similar,''' she imitated the junior officer, exaggerating
+  his characteristic sibilance.}
+
+\textit{``Aw, Aubrey sees government cover-ups everywhere. Remember when we were kids, and cover-ups about magic ricocheting
+  bullets were all the rage?'' I paused, and smiled thoughtfully. ``Speaking of monolithic, actually, did I tell you about
+  my bizarre discovery just after New Year's Day, back in the real 2001 \ldots? No? Well, it was while I was still at my
+  first job \ldots''}
+
+\wuxchcenterline
+
+It was January 2, a Tuesday, when I discovered Bob's monolithic code. Happy and with loosened belts, we were all just back
+from the holidays ！ unfortunately, delivery deadlines wouldn't wait ！ and we were slowly getting ourselves back into
+motivated mode. I was mainly happy that I'd managed to survive my job's probation period; I was now a full employee,
+although some days I still wondered whether that was entirely a good thing, given that the job often had me working in close
+proximity with the Guru. She was smart, all right, but more than a tad strange.
+
+It was getting close to lunch time when Wendy interrupted me. ``You,'' she called.
+
+I gophered up. ``Yeah? What?'' I'd been in the middle of a debugging session trying to find an error in my code and was just
+about ready for a break. Anything had to be better than stepping through the same function for the two dozenth time.
+
+Wendy appeared. ``Bab's still out this week, and I need a quick fix to the utility module he took over from you a month
+ago; I'm getting a buffer overflow trap at line 510. Can you look at it and fix it by this afternoon?''
+
+``Sure.'' She gave me the filename, we both ungophered, and I pulled it up in my editor.
+
+Half an hour later, I had to admit that I'd been wrong after all: There were indeed some things that were worse than
+stepping through my own code in the debugger. I finally gave up and walked over to Wendy's cubicle. ``Sorry,'' I said
+merrily.
+
+Wendy started; I guess she hadn't heard me come up behind her. I suppressed a smile \ldots usually it was the Guru who did
+that to both of us. ``What do you mean, sorry?'' she asked.
+
+``You wanted it fixed quickly. I'm sorry, Wendy; I'm afraid I can't do that.''
+
+``What's the problem?''
+
+``I think you know what the problem is just as well as I do.''
+
+``What are you talking about \ldots?''
+
+I sighed and stopped playing. ``I can't fix it quickly. Have you seen what Bob's done to the code since I handed it off to
+him? I swear this bears almost no resemblance; its origin and purpose are a total mystery to me. It'll take me half a day to
+understand what he's done to it.'' I reached over her and pulled up the file on her screen, went to the top which is where
+the function began, and then held down the scroll-down key. Nearly 2,000 lines later, we reached the matching close-brace at
+the end of the file. ``The function is now 1,908 lines long ！ roughly, a 1,200-line if block, followed by a 700-line else
+block. Most of the rest can be fixed with a source code beautifier, I think.''
+
+Wendy was shaking her head in disbelief, but nodded. ``I've seen him do that before, but I really thought we'd broken him of
+the random tabbing and long code lines, and especially the random vertical whitespace.''
+
+``There's at least one spot where you have to page down past a full screen of empty lines before you get to the next code
+line! And did you notice how he sometimes tabs out when entering a for or while block \footnote{Note from the authors:
+  Believe it or not, this is an actual example of code written by a programmer the authors encountered some years ago.}? The
+Guru usually won't stand for this \ldots doesn't she enforce the coding standards any more?''
+
+``Indeed we do, my child,'' sighed a voice from close behind us. We both jumped. The Guru continued sadly, ``Bob has been
+warned before. He shall be warned again, and this time be docked of pay. But \ldots'' she trailed off thoughtfully.
+
+Neither Wendy nor I wanted to speak immediately. The silence settled. Finally, I quietly prompted: ``But what?''
+
+The Guru blinked carefully. ``How long is the longest line in the file?''
+
+Wendy did a quick check. ``Several are exactly 848 characters long. That's the longest.''
+
+``And what is the shortest?''
+
+This took Wendy a little longer. ``The shortest nonblank line is 212 characters. There are a few that length.''
+
+The Guru seemed to do some quick mental arithmetic, and sighed again. ``I see. Perhaps he was making a statement.''
+
+I thought for a moment, then: ``Oh. I get it: One to four to nine. That's the ratio of line lengths to total function
+size.''
+
+Wendy groaned.
+
+The Guru pushed her hair back behind her ear and adjusted her glasses. ``Avoid monolithic code,'' she said. ``Bob is a
+structured programmer, but even he should know well the merits of functional decomposition. Prefer 'one class, one
+responsibility,' and 'one function, one responsibility.' This function is obviously decomposable into at least two parts,
+and yet even those parts would be too complex and should be decomposed further. Wendy, instruct this young one: What are the
+benefits of good code decomposition?''
+
+``Clarity,'' Wendy said, ticking off each point on a finger. ``Reusability. Encapsulation. Maintainability \ldots''
+
+And it was at that moment, at just that unfortunate moment, that we heard the front door opening, the whistling wind
+outside, and the front door closing. And Bob walked in.
+
+``Hey dudes,'' Bob said, taking off his mittens and knocking snow off his boots all over the carpet. He scratched himself
+absently. ``Whassup?''
+
+``I thought you were off this week,'' Wendy grumbled.
+
+``Yeah, sure, babe, I just had to swing by to get some files that I'd downloaded here \ldots surfing the net \ldots er, ah,
+well, that's not important. Hey,'' he squinted at Wendy's monitor, the centerpiece to our little gathering. ``That's my
+code.''
+
+``That was my code. It used to be good code. Before you turned it into a joke,'' I said hotly, gathering steam. Bob had more
+years of experience than I did, but my probation period was over, and I was angry; and I guess I might still have been a
+little hung over, as I'd had a pretty lively last several nights. I felt like risking it.
+
+Bob shrugged. ``Hey, look. I can see you're really upset about this.''
+
+``Upset? Bob,'' I retorted, ``you've made a travesty of my code!''
+
+``It can only be attributable to human error,'' the Guru agreed quietly.
+
+``Hey,'' Bob said defensively, ``I honestly think you ought to calm down. Take a stress pill and think things over.''
+
+``Bob,'' said the Guru, ``begone.''
+
+``Hey, I didn't ask to be！'' Then Bob caught himself, and calmed down. ``Hey, look. Okay. I know I've made some very poor
+decisions recently, but I can give you my complete assurance that my work will be back to normal \ldots''
+
+``Bob, this conversation can serve no purpose anymore. Goodbye. Take your vacation. We will discuss it privately on Monday.''
+
+Bob grumbled, but seemed to think better of it and left. So did the Guru, after smiling. Once both were out of earshot,
+Wendy and I dissolved into a fit of the giggles. When we recovered, Wendy ran the file through a source code beautifier as a
+start, and I spent the rest of the day rewriting Bob's code. Along the way, I discovered that some of the resulting smaller
+functions could be reused nearby, now that their functionality was better isolated instead of being buried inside a
+monolithic block. The smaller chunks were also simpler to grasp, and soon I found Wendy's problem and solved it. I added a
+unit test for Wendy's problem, reran all the unit tests to be sure everything still passed, and checked the module back in.
+
+\wuxchcenterline
+
+\textit{``You sure picked one hoot of a first job,'' Jeannine shook her head.}
+
+\textit{Before I could answer, the rec lounge door opened and Brzenkowski walked in. He started walking over to the far side
+  of the lounge without looking up, which was unusual for him.}
+
+\textit{``Hey,'' I called, ``you don't say hi any more?''}
+
+\textit{Brzenkowski looked up. ``Hmm? Oh, sorry. Say, have you heard the news yet?''}
+
+\textit{Jeannine frowned. ``What news? From the excavators?''}
+
+\textit{``Yes. It appears that the obelisk,'' Brzenkowski said quietly, ``isn't just an obelisk. It seems to be the top of a
+  building.''}
+
+\pagebreak
+\section{Access Restrictions}
+
+\begin{flushright}
+Stirring the debate about public data vs. accessor methods: the latter are safer, just as fast when inlined, and can
+  have nicer syntax if operator overloading is appropriate.
+\end{flushright}
+
+\textit{Boom.}
+
+\textit{The distant thundering quickly passed. It was faint, felt more than heard. The excavation teams were at work again.}
+
+\textit{"I wish..." Jeannine started, then trailed off.}
+
+\textit{"I know." I buried my face in my work. After a long time, I added: "I wish I could send mail home too. But the comms should be working again soon."}
+
+\textit{"They do work," Jeannine said.}
+
+\textit{Boom. Another distant explosion.}
+
+\textit{"Yeah, but while the dome's systems are damaged, it makes sense to reserve them for only emergency traffic. We just aren't being given access, for now. That's reasonable." My heart wasn't in the words.}
+
+\textit{There was silence again, for a time. Finally, Jeannine whispered: "Yeah. Well, that's what they say, now isn't it?"}
+
+\textit{"That's right. It's just temporary access restrictions. I don't like it, either, but surely you don't think they're...." It was my turn to trail off.}
+
+\textit{Boom.}
+
+\wuxchcenterline
+
+That was all the sticky note on my monitor said. Well, that and a filename. I recognized the file ！ it was a utility class I
+had added to the project a while back. The note was written in the Guru's distinctive handwriting, but I had no clue what it
+meant. The Guru wasn't in yet, so I couldn't ask her.
+
+Just then, Wendy, the programmer in the cubicle next to mine, came in and flopped down in her chair. I gophered up, hoping
+she'd be able to make sense of it. She looked haggard, resting her head on her hands. ``You look like you had a rough
+weekend,'' I ventured.
+
+She nodded without looking up. ``When I got home Friday, the carbon monoxide detectors were beeping away ！ turns out the
+furnace was clogged up. We had to spend the weekend at a friend's house, until it was fixed. I couldn't sleep a wink ！ I
+kept wondering what would've happened if we hadn't installed the detectors \footnote{Note from the authors: this situation
+  actually happened to me (Jim) recently. I urge all readers to install carbon monoxide and smoke detectors and ensure they
+  are well-maintained. I know it's the best investment I've ever made! Contact your local fire prevention office for
+  information and assistance.}.''
+
+``Wow, that was a close call,'' I commiserated, making a mental note to double-check my detectors. ``Is everyone OK?'' Wendy
+nodded. I decided she needed a distraction, so I mentioned the note to her and asked her what it might mean.
+
+``Wait a minute,'' she said. ``The Guru left that note on your monitor?'' I nodded. ``My friend,'' she said, ``it sounds
+like you may have just pulled a Bob.''
+
+I was aghast, speechless, at such strong language. ``You're joking!'' I blanched. Bob was the worst programmer ever, and I
+had made it my personal mission to thwart him and his poor programming style every opportunity I got.
+
+Wendy shook her head, dead serious. ``Nope. He's usually the only one who gets those cryptic notes, and if you got one, then
+you must've been a very bad boy. Let's have a look at that source file.'' She turned to her computer, logged in, and called
+up the file in question.
+
+I dragged over a chair. ``Everything in here looks good to me,'' I said, peering over her shoulder.
+
+Wendy jumped slightly ！ she must have been more stressed than I realized. ``It seems OK on a quick glance,'' Wendy agreed.
+``Maybe a diff against the previous revision will give us some clues.'' I watched as she used our revision control system to
+show the difference between the two versions of the file. I was impressed ！ I was still trying to master the basic
+checkin/checkout syntax, and here she called up a diff between two revisions in no time at all. I was still trying to sort
+out the commands Wendy had used when she spoke up.
+
+``Well, here's something, but it's really minor,'' she said, pointing to the screen. ``You've changed some of the class data
+members.''
+
+I peered closer at the screen. ``Yes, I reworked the implementation slightly. I changed the three separate doubles,
+representing the object's location, into an array of three doubles. It made some member functions much more efficient. But
+the members are all private, see?''
+
+\begin{footnotesize}
+\begin{lstlisting}
+class Point
+{
+private:
+    double location[3]; // x, y, z coordinates.
+
+public:
+    void setLocation(double x, double y, double z) { 
+        location[0]=x; 
+        location[1]=y;
+        location[2]=z;
+   }
+
+    void getLocation(double &x, double& y, double &z) {
+        x=location[0]; 
+        y=location[1];
+        z=location[2];
+    }
+};
+\end{lstlisting}
+\end{footnotesize}
+
+Then I noticed a blank line at the top of the file that the diff viewer indicated had changed. ``Now, why would the viewer
+highlight that line?'' I wondered out loud. ``Probably just white-space changes,'' Wendy surmised. ``Here, let me set the
+viewer to ignore white space.'' A few keystrokes later, and\ldots the line was still highlighted. I placed the cursor on the
+line, hit the ``End'' key ！ and froze in horror at the sight in front of me. Indented way off to the right, out of normal
+view, was this statement:
+
+\begin{footnotesize}
+\begin{lstlisting}
+                              #define private public
+\end{lstlisting}
+\end{footnotesize}
+
+Wendy and I looked at each other. ``Bob!'' we chorused. Bob, as it turned out, was already walking toward us. The Guru
+wasn't the only one who could show up at the most appropriate moment. ``Hey, Junior,'' he said, ``I just came by to see if
+you've fixed the problem yet.'' I closed my eyes and counted to ten. Slowly. Then I counted back down to zero. I held up the
+sticky note: ``Do you mean this problem?'' I asked sweetly. ``Heh. Yeah, that's the one. Her Weirdness left it on my
+monitor. When you changed the x, y, and z members to that array, it broke a raft and a half of my code, so I passed it on to
+you. Fix it, and quit messing things up from now on, will ya.'' ``Bob, what's the idea of this \#define statement?'' I
+pointed to the offending line. ``Oh, that,'' Bob chuckled. ``Pretty cool, eh? My code needed direct access to the
+coordinates. Efficiency, y'know. At first, I just had the \#define statement in my own code, but I was using it a lot, so it
+was easier to add it to your header. I'm doing a lot of number crunching, and I can't afford the overhead of the accessor
+functions you provided. But then you got rid of the individual doubles, for that array. And my code went 'Boom!''' ``Boom,
+indeed.'' As if on cue, we heard the Guru's voice. We all jumped a little. She used a finger to pointedly move her glasses
+back up the bridge of her nose. ``And that, you purveyor of programming perversions,'' she rebuked, ``is why I left the
+sticky note on your monitor. You violated the class's encapsulation by attempting to subvert the access privileges. You
+violated the One Definition Rule by changing private to public in your code. You must fix your code to use the accessor
+functions.'' ``I already said, I can't afford the overhead of the accessors, dearie,'' bristled Bob. ``I have to-''
+``Silence!'' the Guru interrupted. ``The accessors are inline and should cause no overhead.'' Bob started to protest again,
+but the Guru headed him off. ``However, in order to avoid the root of all evil \footnote{``Premature optimization is the
+  root of all evil'' ！ Donald Knuth. Depending whom you believe, he said it in one or more of: ``Structured Programming with
+  go to Statements'' (Computing Surveys, Vol. 6, No. 4, December, 1974, page 268), Literate Programming, or Computer
+  Programming As an Art (1974).}, we will create a test harness to demonstrate the actual costs of the accessor functions.
+Meanwhile, clean up that unseemly code. Then read and meditate on 1 Meyers 20 \footnote{Scott Meyers, Effective C++, 2nd
+  edition, Item 20: ``Avoid data members in the public interface'' (Addison-Wesley, 1997).}.'' Bob grumbled as he left for
+his cubicle. The Guru simply stood silently until he was gone and then led me back to my own cubicle. ``My apprentice,'' she
+said, her voice soft again, ``please write a test harness that will time the cost of direct access, against inline accessors
+and non-inline accessors. Be sure that the non-inline accessors are in a separate translation unit. While you are at it, an
+inline operator [] would be useful.'' I thought about that for a moment. ``You mean like this?'' I began writing on my
+whiteboard:
+
+\begin{footnotesize}
+\begin{lstlisting}
+class Point
+{
+public:
+    inline double operator[] (int index)  const {
+        return location[index];
+     }
+};
+\end{lstlisting}
+\end{footnotesize}
+
+``Very good, my apprentice. You have remembered the blessings of const-correctness. But now, write it so that it can serve
+not only as an accessor, but as a mutator as well. What other benefits can you derive from this function?'' I thought about
+it for a moment. ``You can do bounds checking on the index.'' I revised the scribbling on the whiteboard:
+
+\begin{footnotesize}
+\begin{lstlisting}
+class Point
+{
+public:
+    inline double &operator[] (int index) {
+        assert(index >=0 && index <= 2);
+        return location[index];
+     }
+};
+\end{lstlisting}
+\end{footnotesize}
+
+``Hey, cool!'' This, I liked. ``The bounds checking has no performance penalty in release mode.''
+
+The Guru nodded. ``And,'' she added, ``with a good optimizing compiler, the compiler should be able to generate code that is
+as efficient as accessing the members directly, with the added blessings and safety of encapsulation.''
+
+``So,'' I mused, ``there really is never any reason to have a public data member, is there?''
+
+The Guru paused a moment before answering. ``In most cases, no. However, if the class is merely a convenient aggregation of
+data, with no object being modeled ！ that is to say, a C-style struct of data with no additional behavior ！ then it would be
+reasonable to have all data members public \footnote{C++ FAQ Lite, Marshall Cline,
+  http://www.parashift.com/c++-faq-lite/classes-and-objects.htm\#[7.8].}.
+
+``You can expose private members through accessor and mutator functions ！ but only if it is really necessary. An excessive
+amount of Get and Set member functions ！ including ones that are disguised as operator [] ！ indicates that you are not
+thinking of the blessings of encapsulation. If your tests indicate that the accessors are providing a substantial run-time
+penalty, then you can improve the speed by making the accessors inline. Of course, the savings and penalties will vary from
+compiler to compiler ！ hence the need for the test harness.''
+
+``I'll get right on it, boss,'' I replied cheerfully. She smiled, folded her hands and silently walked away. I sat down to
+write the test harness. The results, at least on the compiler I was then using, were quite interesting \footnote{The source
+  code and full details of this test are available on the CUJ website.}:
+
+\begin{table}[htbp]
+\caption{Approximate run-time in milliseconds}
+\centering
+\begin{tabular}{lcc}
+\toprule
+Implementation	& Optimizations off & Optimizations on \\
+\midrule
+1: direct access & 1061 & 251 \\
+2: inline accessor function & 1673 & 240 \\
+3: out-of-line accessor function & 1662 & 1432 \\
+\bottomrule
+\end{tabular}
+\end{table}
+\wuxchcenterline{}
+
+\textit{Boom.}
+
+\textit{``I don't like it,'' Jeannine repeated. ``They say the dome is damaged because of an accidental internal explosion,
+  so we don't have access to go there, but work goes on in there, and people with higher clearances have been allowed in and
+  they never come out again. They say the long-range comms systems are damaged and are restricted for emergencies only, but
+  the only real effect I can see is that we can't communicate with anybody outside near-Jupiter space.''}
+
+\textit{``So?''}
+
+\textit{``I don't like it.''}
+
+
+\textit{Boom.}
+
+\textit{We said no more for some time, and eventually the distant thundering stopped, but the resulting silence was worse
+  than the faint noise had been. A few minutes later, Jeannine frowned, got up, and left.}
+
+\pagebreak
+\section{Redirections}
+\begin{flushright}
+How to go about redirecting output to cout/cerr using streambufs.
+\end{flushright}
+
+\textit{I wasn't too concerned until the third day passed without seeing Jeannine. After some hesitation and mental
+  handwringing, I went to see Frenell about it. She was the obvious choice; both Jeannine and I reported to her just then.}
+
+\textit{Her stateroom door slid open on the second knock. ``Oh, it's you,'' she said. ``What's on?''}
+
+\textit{``Just looking for Jeannine. Haven't seen her for a few days,'' I explained.}
+
+\textit{Frenell regarded me briefly, then said: ``Oh, yes. She's been temporarily reassigned.''}
+
+\textit{``She has? Where?''}
+
+\textit{``Over to the dome. They've been requesting some extra manpower there and at the excavation site. While she's there
+  she has to stay there; access is restricted because the locks and tunnels aren't in great shape, and it's a pain to get
+  people to suit up to get in and out just to shuttle back here.''}
+
+\textit{``Are a lot of people being reassigned? It's been feeling a bit empty out here lately.'' All I knew was that repairs
+  were apparently still going on in the main dome, since the explosion a few weeks before. Those of us on the surface kept
+  to the outlying buildings and continued with our local work while we were out of contact with the inner system; long-range
+  communications, which went through the dome's systems, were still crippled and under repair.}
+
+\textit{``A few,'' she said, and leaned on the side of the doorway. ``Why? Want me to put in your name if there's an opening
+  for someone with your skills?''}
+
+\textit{``Sure,'' I said without thinking and then wondered at my own quick reaction. Was I that concerned about Jeannine?
+  Or was I just anxious to see her again? Either way, my feelings surprised me.}
+
+\textit{If Jeannine had been redirected to the dome, I figured I might as well go too if the chance came up. Briefly, I
+  recalled a day, many years ago, when I had learned to deal with another kind of redirection. Oddly enough, it also had a
+  bit to do with restricted access problems.}
+
+\wuxchcenterline
+
+It was just as Wendy was passing my cubicle that I screamed: ``Aaagh! I hate access violations!''
+
+The frustration was too much, and I finally let it boil over into what I hoped was a primal roar. The effect was somewhat
+diminished in that my voice was still maturing, and it came out more like a mouse's roar.
+
+It was enough to make Wendy stop and look in on me. ``Sure and what's the matter, me young friend?'' she said with a fake
+Irish accent. With St. Patrick's Day fast approaching, she was playing up her Irish heritage to the\ldots lilt.
+
+``Wendy, do me a favor,'' I sighed, ``don't you act weird, too. One basket case around here is enough.''
+
+``Hey, you okay?'' she said quietly, kindly. ``What brought this on, buddy?''
+
+``Just right now it's this code, but I guess it's also a bit to do with the Guru,'' I admitted. ``At first, I was scared
+witless by her. I was sure she was an escapee from the local asylum. Then I kind of got to like her calling me 'my
+apprentice.' Yeah, it's a bit strange, but essentially harmless. But when I told my friends, they thought it was really
+condescending, and once I got to thinking about it, I realized they were right.''
+
+Wendy smiled. ``Ah,'' she said, ``I see. Look, you just haven't seen her from the right perspective yet. You really should
+try to get to know her outside work.'' I tried to imagine her home: shelves filled with dusty computer books and magazines;
+incense burning on altars dedicated to various computer scientists\ldots. My face must have betrayed my thoughts ！ Wendy
+burst out laughing. ``She does the Guru shtick mainly to annoy Bob and scare interns. I go along with it because it bugs the
+Hades out of him.''
+
+``Oh.'' I remained unconvinced. The act was just a little too convincing for my liking. But I didn't want to argue, so I
+sighed and composed myself, and came back to the point: ``I've been wrestling with this problem for a few hours. Simple
+task, really ！ just reassign \textbf{cout} and \textbf{cerr} so that their output goes to a file, instead.''
+
+``Sorry, run that by me again?''
+
+``I'm integrating a library developed by another group. The library was written with a command-line interface in mind, so
+all the debugging and diagnostic messages get sent to \textbf{cout} and \textbf{cerr}. What's worse, I think Bob was on that
+team, because there's no rhyme or reason to when messages go to \textbf{cout} and when they go to \textbf{cerr}. In fact,
+some messages are split between the two streams! So I have to capture and integrate both streams into a single log.
+
+``Anyway, as I said, I'm integrating this library into our GUI application. Unfortunately, the GUI just tosses any output to
+\textbf{cout} and \textbf{cerr} into the bit bucket. So, what I'm trying to do is redirect the output into a file, instead.
+Simple job. So simple I can't figure out how to do it. I've boiled the problem down to this small program.'' I dragged the
+guest chair over to the monitor for Wendy to sit down.
+
+\begin{footnotesize}
+\begin{lstlisting}
+#include <iostream>
+#include <fstream>
+int main()
+{
+    std::ofstream logFile("out.txt");
+    std::cout = logFile;
+    std::cerr = logFile;
+    std::cout << "This goes to cout\n";
+    std::cerr << "This goes to cerr\n";
+}
+\end{lstlisting}
+\end{footnotesize}
+
+``It compiles and runs OK on one compiler, but it gives me an access violation when I use another compiler.''
+
+Wendy studied the screen for a moment. ``Hmmm\ldots I'm not sure you're allowed to reassign streams like that.''
+
+``Indeed, child, it is an unnatural act clearly forbidden by the Holy Standard.''
+
+We jumped. But only slightly. Act or no act, I had to admit that the Guru was uncannily good at appearing at exactly the
+right moment. ``So, what I'm trying to do is impossible?'' I sighed.
+
+``No,'' the Guru smiled. ``It is quite simple, actually. My apprentice, which compiler did you use in your studies at
+university?''
+
+``Well, it was actually an older compiler and didn't have very many standard features.''
+
+The Guru nodded sagely. ``I see. Your compiler would be using what the prophets Langer and Kreft refer to as 'classic
+IOStreams' \footnote{Angelika Langer and Klaus Kreft. Standard C++ IOStreams and Locales: Advanced Programmer's Guide and
+  Reference (Addison-Wesley, 2000).}. You must become familiar with standard IOStreams ！ in particular the stream buffer
+classes. No longer is the stream buffer a lowly implementation detail; it is a blessed class in its own right. The designer
+of the IOStreams classes, Jerry Schwarz, foresaw that the stream buffer class would be an extremely useful feature. Yet its
+value and power are often overlooked.''
+
+``OK. So what do I do?''
+
+The Guru picked up the dry-erase marker and quickly wrote out some code on my white board:
+
+\begin{footnotesize}
+\begin{lstlisting}
+#include <iostream>
+#include <fstream>
+int main()
+{
+    std::ofstream logFile("out.txt");
+    std::streambuf *outbuf = std::cout.rdbuf(logFile.rdbuf());
+    std::streambuf *errbuf = std::cerr.rdbuf(logFile.rdbuf());
+
+    // do the actual work of the program;
+    // GUI code and event loop would go here
+    std::cout << "This would normally go to cout but goes to the log file\n";
+    std::cerr << "This would normally go to cerr but goes to the log file \n";
+    logFile << "This goes to the log file\n";
+    // end of program body
+
+    // restore the buffers
+    std::cout.rdbuf(outbuf);
+    std::cerr.rdbuf(errbuf);
+}
+\end{lstlisting}
+\end{footnotesize}
+
+``The \textbf{rdbuf} function returns a pointer to the stream buffer managed by the base class, \textbf{basic\_ios}. The
+overloaded version allows you to replace the stream buffer, and the return value is the original stream buffer. The solution
+is simple ！ you replace the stream buffers for \textbf{cout} and \textbf{cerr} with the stream buffer of your log file. At
+the end of your program, you restore the original stream buffers. As you can see, you can still use \textbf{logFile} as a
+regular output file.''
+
+``Cool!'' I was beginning to see the power of the stream buffers. ``Hey, if I only wanted to redirect one stream, say
+\textbf{cerr}, could I just simply swap the two buffers and not have to worry about restoring them, like this:''
+
+\begin{footnotesize}
+\begin{lstlisting}
+int main()
+{
+    std::ofstream logFile("out.txt");
+    std::streambuf *saveBuf=cerr.rdbuf(logFile.rdbuf());
+    logFile.rdbuf(saveBuf);
+    // remainder of program...
+}
+\end{lstlisting}
+\end{footnotesize}
+
+``Alas, it is not that simple,'' the Guru sighed. ``Your code will not compile. The \textbf{basic\_ios::rdbuf} functions are
+not virtual. \textbf{ofstream} provides only one \textbf{rdbuf} function, which takes no parameters and returns a pointer to
+the file stream buffer embedded in the \textbf{ofstream} object. This means that \textbf{std::ofstream::rdbuf(void)} hides
+\textbf{std::ostream::rdbuf(std::streambuf *)}.
+
+``You could manipulate your log file through a pointer to \textbf{std::ostream}, like this:''
+
+\begin{footnotesize}
+\begin{lstlisting}
+int main()
+{
+    std::ofstream logFile("err.log");
+    std::ostream * baseManipulator = &logFile;
+    baseManipulator->rdbuf(std::cerr.rdbuf(baseManipulator->rdbuf()));
+}
+\end{lstlisting}
+\end{footnotesize}
+
+"This code will compile, but will not necessarily work properly. The Holy Standard does not specify how \textbf{ofstream} is
+to be implemented. It is possible that compiler implementers will implement \textbf{ofstream}'s functionality such that it
+ignores the base ostream::rdbuf function and instead works directly on the file stream buffer. The Standard does require
+\textbf{ofstream::close} to call \textbf{ofstream::rdbuf} to determine which buffer to close. Since this function always
+returns a pointer to the \textbf{filebuf} embedded in the \textbf{ofstream} object, \textbf{ofstream} will always close its
+embedded \textbf{filebuf} object, leaving \textbf{cerr} without a valid buffer. Thus, you still need to restore
+\textbf{cerr}'s stream buffer, by inserting this line before \textbf{main()} exits:
+
+\begin{footnotesize}
+\begin{lstlisting}
+std::cerr.rdbuf(baseManipulator->rdbuf());
+\end{lstlisting}
+\end{footnotesize}
+
+``If you ever want to redirect \textbf{cin}'s input, you must take similar precautions, as \textbf{ifstream} behaves
+analogously.''
+
+The Guru turned to leave, then paused. ``I am inviting some people to my home this Saturday. Nothing special, just a social
+evening. You and Wendy, and your respective significant others, are welcome to attend.''
+
+I opened my mouth to gracefully decline. ``Gaaah!''
+
+``He means he'll be glad to come,'' Wendy smiled sweetly. My shin was in too much pain from where she had kicked me, so all
+I could do was nod helplessly through gathering tears. The Guru smiled and glided away.
+
+I waited until both the Guru and the pain were gone, then growled at Wendy: ``I'll get you for this.''
+
+\wuxchcenterline{}
+
+\textit{``Okay,'' I told Frenell, ``just let me know if you do put my name in.''}
+
+\textit{``Sure will.''}
+
+\textit{I was about to go, but asked: ``Say, I wonder if Ling didn't get reassigned too, along with Jeannine I mean. They
+  were watch partners.''}
+
+\textit{``No,'' Frenell said. ``We need her here.''}
+
+\textit{``Thanks. See you tomorrow.''}
+
+\textit{During my next watch, I checked some of the duty rosters that I had access to view. The names made a long and varied
+  list - Jupiter et al. was UN space, so this was a UN mission, with personnel from many zones, predominantly from the
+  American Union and the Asian Federation due to their heavy science budgets. None of the names was overtly marked as
+  reassigned, but I could tell which names were no longer on regular rotation in the duty roster; those had to be the ones
+  working elsewhere.}
+
+\textit{I paged through idly. It was a quiet watch.}
+
+\textit{In time, I noticed an odd pattern: No Asians were being reassigned to the excavation site or to the dome.}
+
+\pagebreak
+\section{Manipulations}
+\begin{flushright}
+How to write a simple IOStream manipulator to quote and unquote strings.
+\end{flushright}
+
+\textit{That day began much like all other days.}
+
+\textit{I got up early to catch up on some technical reading, ate in the mess hall, and was five minutes early for my watch.
+  The watch itself was routine and uneventful until nearly the end. Then, about ten minutes ahead of time, Brzenkowski
+  wandered in for the next watch.}
+
+\textit{I suppose that was really the first odd thing, because Brzenkowski was never early for anything. I didn't think
+  anything of it at the time, though. He looked at a few things and then walked over and said: ``Hey. Frenell wants a minute
+  of your time. You should drop by her stateroom on the way down.''}
+
+\textit{``Oh? What's on?''}
+
+\textit{``Dunno,'' Brzenkowski shrugged. Then he smiled a little and clapped me on the back. ``You might as well get out of
+  here,'' he added. ``I relieve you.''}
+
+\textit{``Your watch,'' I agreed, signed off, and headed out and down.}
+
+\textit{When I got to Frenell's stateroom, the door was already open. She waved me inside, and the door slid shut behind us.
+  There was another man sitting in her visitor's chair. I didn't remember seeing his face before.}
+
+\textit{``Hi, hi,'' he said in a friendly voice, standing to take my hand.}
+
+\textit{``This is Major Gilb,'' Frenell introduced us, and we sat.}
+
+\textit{``In understand you're available to help us out in the dome?'' Gilb asked directly.}
+
+\textit{I glanced at Frenell. ``Sure. If my skills fit.''}
+
+\textit{``Oh, I think they will,'' Gilb assured me. ``You worked with Jeannine Carruthers, didn't you? Yes, she works in my
+  department now, and she speaks highly of you. Yes, quite highly. Now, I know you're doing more day-to-day work at the
+  moment,'' he continued, ``but this would be a bit more in the research area. Interested? Yes?''}
+
+\textit{``Sure. That would be nice. I've asked for some more research-oriented work anyway.''}
+
+\textit{``Good. Good, I think that will fit the bill nicely. Yes, nicely. You understand of course that you'll need to stay
+  for a time, at least until we get things well enough repaired to resume regular travel between these buildings and the
+  dome? Don't want to use the transit tunnel more than we need to.''}
+
+\textit{He began to ask me many things. I don't remember everything he said. My mind drifted, and among other things, I was
+  thinking that it would be good to see Jeannine again. Funny, I thought, it's not like I'm a young buck with a new
+  girlfriend. Not like it had been, on my first job, many years ago\ldots}
+
+\wuxchcenterline{}
+
+``There has to be a better way,'' I muttered.
+
+``Hey, pardner, how's it going?'' Wendy's cheerful voice floated over the cubicle wall. I stretched and decided it was a
+good time to take a break from my code, so I gophered up.
+
+``Pretty good,'' I replied. ``You back already? I thought you were going to be out for two weeks?''
+
+That earned me a sideways glance. ``Where've you been, on Jupiter? I was on training for two weeks and then took another
+week holiday!''
+
+``Time flies when you're having fun,'' I allowed a devilish smile to sneak its way onto my mouth.
+
+``Hmmph,'' she hmmphed. ``You've been hanging out with Anna! See? I told you going to the Guru's party would be fun. Not
+that I expected you to go out with her daughter.''
+
+``Hey, I didn't know she was the Guru's daughter for a few weeks,'' I protested. ``I thought she was just another party
+guest.''
+
+``You can tell me all about it over lunch.'' She tucked her rain boots under her desk and slipped on a pair of shoes. ``So,
+how's it been going around here? You were looking a little intense when I came in.''
+
+``Yeah, pull up a chair and I'll fill you in on the gory details. You might have some fresh ideas.'' I dropped back into my
+seat as Wendy came into my cubicle.
+
+``I implemented some of the communications functionality on our new system. It's a pretty simple protocol. Basically the
+server just responds with a series of comma-delimited, quoted strings. The strings can contain quotation marks, so I wrote a
+simple function that takes a string, wraps it with quotation marks, and escapes any embedded quotation marks, like this,'' I
+demonstrated on the whiteboard:
+
+\begin{table}[htbp]
+\caption{}
+\centering
+\begin{tabular}{cc}
+\toprule
+Input & Output \\
+\midrule
+field 1 & "field 1" \\
+field "with quotes" & "field \ " with quotes \"" \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+``I wrote two functions, one to add the quotes, and another to strip them:''
+
+\begin{footnotesize}
+\begin{lstlisting}
+std::string quote(const std::string &);
+void f(std::ostream &o)
+{
+    o << quote("whatever");
+}
+
+std::string unQuote(std::string &);
+void g(std::istream &i)
+{
+   std::string input;
+   i >> input;
+   std::string original=unQuote(input);
+
+   // use string 'original' ...
+}
+\end{lstlisting}
+\end{footnotesize}
+
+``OK, that sounds straightforward,'' Wendy replied. ``Your typical text file parser stuff.''
+
+``Right, that was pretty easy. But if the original string is large, then I end up making a copy of the entire string. Our
+server software has to be pretty tight, running on those boxes we're making. Also, some of the other project members
+complained that it was a little awkward to use, and they wanted to be able to use it with stream insertion and extraction,
+like this,'' I squeezed some more code onto my whiteboard:
+
+\begin{footnotesize}
+\begin{lstlisting}
+std::string message;
+// aStream is an istream subclass
+aStream >> message;
+\end{lstlisting}
+\end{footnotesize}
+
+``Somehow I have to take the text stream in \textbf{aStream} and extract one field into \textbf{message}. I've been playing
+with the stream buffers to see if that would work, but it's looking pretty ugly.''
+
+``Manipulators.'' Wendy and I jumped yet again at the Guru's soft voice.
+
+``Beg pardon?'' I asked.
+
+``Write your own \textbf{IOStream} manipulators, as Langer and Kreft described in C++ Report a while back \footnote{Klaus
+  Kreft and Angelika Langer. "Effective Standard C++ Library", C++ Report, April 2000.}.''
+
+``Uh, don't you mean the prophets Langer and Kreft?'' I asked.
+
+``Bob's in a meeting, and I don't have the energy for the Guru thing right now,'' she shrugged. Even though she wasn't in
+her Guru act, I still couldn't help but think of her as 'The Guru'. And she still managed to sneak up at the right moment! I
+was beginning to wonder if she had hidden a spycam somewhere.
+
+``Ah,'' I said, wondering how come my replies always seemed so lame. ``So how do you write an \textbf{IOStream}
+manipulator?''
+
+``There are two approaches, depending whether you're implementing a manipulator with arguments or without. You need to
+implement one with arguments, so that's all I'm going to describe for you. If you want to know how to implement a
+manipulator without arguments, you'll have to read the back issue.
+
+``Implementing an \textbf{IOStream} manipulator that takes arguments is actually pretty easy. You simply create a class that
+takes the appropriate arguments in its constructor, and provide an insertion or extraction operator that calls member
+functions on the manipulator. For example, suppose you want to write an \textbf{ostream} manipulator that manipulates an
+integer, you'd do this.'' The Guru erased my chicken scratches and wrote neatly in her fine, spidery script:
+
+\begin{footnotesize}
+\begin{lstlisting}
+class myManipulator
+{
+    int manipValue;
+public:
+    explicit myManipulator(int i) : manipValue(i) {} // Note it's 'explicit'!
+    friend ostream & operator <<(ostream &os, const myManipulator &mm);
+};
+\end{lstlisting}
+\end{footnotesize}
+
+``Using the manipulator is quite simple, as simple as using \textbf{std::setfill} or \textbf{std::width}:''
+
+\begin{footnotesize}
+\begin{lstlisting}
+std::cout << myManipulator(42);
+\end{lstlisting}
+\end{footnotesize}
+
+The compiler will create a temporary, unnamed object of type \textbf{myManipulator}, and initialize it with the value 42.
+The compiler then invokes the overloaded insertion operator. The insertion operator performs the necessary manipulations on
+the stream, say something like this:"
+
+\begin{footnotesize}
+\begin{lstlisting}
+ostream & operator <<(ostream &os, const myManipulator &mm)
+{
+    if (mm.manipValue == 42) {
+        os << "Life, the universe, and everything";
+    } else {
+        os << "What was the question, again?";
+    }
+    return os;
+}
+\end{lstlisting}
+\end{footnotesize}
+
+I thought about it for a moment. ``So\ldots `` I began cautiously, ``my ostream manipulator would perform the character
+escaping and unescaping?''
+
+``You could do that, or you could implement it as two separate classes, escape and unescape \footnote{A complete, working
+  example of the narrator's manipulators is available on the CUJ website at hyslop.zip.}.'' She paused suddenly, and a
+subtle change came over her. Just then, Bob walked past, on his way to the coffee station. ``Remember, my child,'' the Guru
+continued, ``to read and meditate on the writings of the prophets Kreft and Langer.''
+
+``Yes, my master, I will show you my writings this afternoon'' I replied. Bob stopped in his tracks, dropping his latt\'e
+cup on the carpeted floor. He picked up his cup and, without looking back, continued on. After he was out of sight, Wendy,
+the Guru, and I exchanged a three-way high five. Well, we tried to, that is.
+
+\wuxchcenterline{}
+
+\textit{Major Gilb didn't have much to cover, at least not immediately. Soon he wound down and said: ``Yes. Yes, you'll be
+  fine. Welcome to the team.''}
+
+\textit{We shook hands, and I grinned. ``Thanks. When will I be reassigned?''}
+
+\textit{``What? Oh, you already are. Don't worry about packing. Your things are already in the dome. They were moved while
+  you were on watch; it's all right.''}
+
+\textit{Before I could quite recover from that, I was taken along and presently found myself in a car that had been waiting
+  in the transit station. While Gilb was still making cheerful small talk, its door closed, and we accelerated into the
+  tunnel in the direction of the dome.}
+
+\pagebreak{}
+
+\section{Roots}
+\begin{flushright}
+Why can't a Derived** be assigned to a Base**? A peek beneath the covers of the C++ object model.
+\end{flushright}
+
+\textit{The obelisk was larger than it had seemed over video.}
+
+\textit{I stood at the lip of a man-made escarpment, at the edge of the excavation into a surface of slightly
+  brownish-tinted ice. The side of the obelisk facing me appeared to be pure crystal, with a kind of sheen on the surface;
+  it rose upward to its tapered peak about a dozen meters above my head, as though a pointer to where, still further above,
+  the light gray inner surface of the dome covered us and enclosed the entire area.}
+
+\textit{There was the distant hum of heating units, but despite my clothes I felt cold. Our breath lingered quietly in the
+  air before us. The temperature was bearable, but still kept well below freezing; it would not be good for the ice to
+  melt.}
+
+\textit{Below me, widening slightly as it went, the obelisk plunged another two dozen meters to where it connected to the
+  top, only partly excavated and visible, of a wider structure which I knew to be the roof of a building still nearly
+  completely embedded in the ice. With only the roof visible below me, the building's size was impossible to judge visually,
+  but I knew from soundings that it went deep indeed, probably to the surface under the ice.}
+
+\textit{``The entrance is down on the far side,'' my escort said. ``Buster?'' My thoughts returned to the present, and I
+  nodded, giving her a brief smile. We made our way down to the floor of the excavated area and walked around parked
+  machinery and people at work in twos and threes.}
+
+\textit{The entrance at the base of the obelisk was the only thing that was man-made. Its rough edges where until recently a
+  wall had been were clearly not part of the ancient building's original design.}
+
+\textit{The entrance way was somewhat dark, but temporary lighting had been installed not far beyond. I must have hesitated,
+  because my escort's hand found and squeezed my arm reassuringly. ``Well,'' I smiled back to Jeannine, ``I did always want
+  to get to the base of things.''}
+
+\textit{``Yes. Ah, here's our controller.''}
+
+\wuxchcenterline{}
+
+``I'll see you at lunch, then,'' I said to Anna, my new girlfriend, and hung up the phone. We had been going out long enough
+that I was comfortable with the fact that she was the Guru's daughter -- something I hadn't known when we'd started dating.
+
+``Hey, Junior!'' Bob's voice interrupted my pleasant musings. ``I thought I told you not to break the build.''
+
+Turning, I said in my best patient voice: ``Bob, as you'll recall, the last time I 'broke the build' it was because of
+some\ldots shall we say, less than ideal code in your module.'' Yep, sipping away at his latte as usual.
+
+``Yeah, well it's your problem this time, Junior.'' Slurp. ``My code keeps crashing because of the changes you made.''
+
+I sighed, not wanting to argue with him. ``OK, Bob, just tell me where the problem is, and I'll look into it.''
+
+``That's more like it,'' Bob smiled unpleasantly. ``Just remember who's got more experience around here, kid. Don't think
+that sucking up to Her Weirdness is gonna help, either -- her authority around me is quite limited.'' He wrote down the name
+of the file that was causing him problems and left. I resigned myself to the inevitable and checked out the module.
+
+An hour later, I was still struggling with it. ``Oh, man, this is too weird for me,'' I complained to no one in particular.
+It did appear to be a problem with my code ！ Bob's code worked fine for the original class, but not with the revisions I had
+made.
+
+The class hierarchy was fairly simple at this point:
+
+\begin{footnotesize}
+\begin{lstlisting}
+class parent
+{
+public:
+  virtual void f();
+// etc...
+};
+
+class child : public virtual parent
+{
+public:
+  void f();
+};
+\end{lstlisting}
+\end{footnotesize}
+
+One of my modifications was to make \textbf{child} inherit virtually from \textbf{parent}, for use elsewhere in the
+hierarchy.
+
+I had tried my best, but it was looking like I had no choice ！ I was going to have to dig into Bob's code. ``Once more unto
+the breach, dear friends,'' I muttered as I set a breakpoint and prepared to step into the function. After half an hour in
+the crucible of debugging, I had burned away the excess and had found the root of the problem:
+
+\begin{footnotesize}
+\begin{lstlisting}
+void parentPtrPtr(parent **b)
+{
+  (*b)->f();
+}
+
+void childPtrPtr(child **d)
+{
+  parentPtrPtr(reinterpret_cast<parent **>(d));
+}
+\end{lstlisting}
+\end{footnotesize}
+
+I had my suspicions about the last function. I had learned to be wary of casting, especially reinterpret\_cast. I removed
+the reinterpret\_cast, and sure enough the compiler balked at that line, complaining that parent ** and child ** were
+unrelated types.
+
+``Your suspicions are correct, my apprentice.'' For once, the Guru's soft voice behind me did not startle me. Well, not
+much. ``A pointer-to-pointer-to-child,'' she continued, ``cannot be implicitly converted to a pointer-to-pointer-to-base.''
+
+I kicked back and stretched. ``I thought so. Looks like Bob was doing whatever it took to shut the compiler up. I don't
+understand why it worked for the original class, though, and crashes now. Heck, I don't even understand why the compiler
+can't do the implicit conversion.''
+
+``The crash you are experiencing is the very reason for the prohibition,'' the Guru brushed a lock of silvering hair behind
+her ear. ``Your derived class inherits virtually from the base class.'' My deer-in-the-headlights stare quickly let her know
+that I didn't understand. ``Consider a case of simple inheritance,'' she said, picked up a marker, and began writing on my
+whiteboard:
+
+\begin{footnotesize}
+\begin{lstlisting}
+class parent { /* whatever, including at least one virtual function */ };
+class child : public parent { /* whatever */ };
+\end{lstlisting}
+\end{footnotesize}
+
+``In a typical implementation of virtual functions,'' she continued, ``the compiler will lay out the class in memory with
+the pointer to the virtual function table (the vptr) first, followed by the parent class data, followed by the child class
+data:''
+
+\begin{table}[htbp]
+\caption{}
+\centering
+\begin{tabular}{c}
+\toprule
+\midrule
+parent::vptr \\
+parent data \\
+child data \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+``Wait a second,'' I interrupted. ``Aren't you always telling me that the virtual function table is not required by the
+Standard, and therefore it's an implementation detail?''
+
+``That is true, my child. The Holy Standard does not require virtual function tables ！ indeed, it does not even mention
+them. However, one of the goals of the blessed members of the standards committee was to codify practices of existing
+compilers. Allowing an implicit conversion from \textbf{child **} to \textbf{parent **} would cause problems on many
+existing compilers ！ in particular, the ones that behave as I am about to describe. If I might be allowed to continue, that
+is.'' She fixed me with a stern glare. I subsided.
+
+``This layout means that the address pointed to by \textbf{this} can be the same for both the base class and the derived
+class. With our hypothetical compiler, \textbf{this} always points to the \textbf{vptr}. Member functions of the derived
+class can determine the address of member data by simply taking \textbf{this} and adding an offset that consists of the size
+of the base class data and the size of the \textbf{vptr}. 
+
+``The situation becomes more complicated, however, when you add virtual inheritance into the mix. Consider:''
+
+\begin{footnotesize}
+\begin{lstlisting}
+class parent { /* whatever */ };
+class child1 : public virtual parent { /* whatever */ };
+class child2 : public virtual parent { /* whatever */ };
+class multi : public child1, public child2 { /* whatever */ };
+\end{lstlisting}
+\end{footnotesize}
+
+``Clearly, the compiler cannot lay out the intermediate classes \textbf{child1} and \textbf{child2} in the same manner as it
+did class \textbf{child}, above, with the \textbf{parent} class data immediately followed by the \textbf{child} class data,
+because the virtual inheritance specifies that only one copy of the base class data should appear. The solution ！ or rather,
+a solution ！ is to put a \textbf{vptr} at the beginning of each subobject, like this:''
+
+\begin{table}[htbp]
+\caption{}
+\centering
+\begin{tabular}{c}
+\toprule
+\midrule
+parent::vptr \\
+parent data \\
+child1::vptr \\
+child1 data \\
+child2::vptr \\
+child2 data \\
+multi::vptr \\
+multi data \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+``Then, as the compiler invokes various member functions, it can dynamically adjust the implicit this parameter so that
+member functions can access the member data properly.''
+
+``Oh, I get you,'' I said. ``When you have a multi object, a pointer to it will have slightly different values depending on
+whether it's pointing to a parent subobject or a child1 subobject. Say, that also explains why the intermediate class has to
+use the virtual keyword ！ I always thought it was a mistake, and that multi should be the class to use virtual. So, anyway,
+back to the problem at hand. This means that\ldots um\ldots No, I don't get you. How does this apply to
+pointers-to-pointers?''
+
+``Let us,'' she intoned, ``assign arbitrary memory addresses to these values and assume that each class contains exactly one
+integer, that the size of an integer and the size of a pointer are each four bytes, and that there are no padding or
+alignment issues. Let us also add some code to instantiate a multi class:''
+
+\begin{footnotesize}
+\begin{lstlisting}
+void f()
+{
+  multi m;
+  multi *pm = &m;
+  multi **ppm = &pm;
+//...
+\end{lstlisting}
+\end{footnotesize}
+
+\begin{table}[htbp]
+\caption{}
+\centering
+\begin{tabular}{clc}
+\toprule
+Address & Description & Value\\
+\midrule
+0x1000 & parent::vptr & ? \\
+0x1004 & parent data & ? \\
+0x1008 & child1::vptr & ? \\
+0x100c & child1 data & ? \\
+0x1010 & child2::vptr & ? \\
+0x1014 & child2 data & ? \\
+0x1018 & multi vptr & ? \\
+0x101c & multi data & ? \\
+0x1020 & pm & 0x1000 \\
+0x1024 & ppm & 0x1020 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+``The compiler uses the address of the first byte of the \textbf{multi} object as the \textbf{multi} pointer, that is,
+\textbf{0x1000}. Now, suppose you add another couple of variables to this function:''
+
+\begin{footnotesize}
+\begin{lstlisting}
+//...
+  child1 * pc1 = &m;
+  child1 ** ppc1 = &pc1;
+//...
+\end{lstlisting}
+\end{footnotesize}
+
+``The compiler simply takes the address of \textbf{m}, adjusts it to the correct subobject ！ in this case, the start of the
+\textbf{child1} subobject -- and assigns it to \textbf{pc1}. \textbf{ppc1} simply contains the address of \textbf{pc1}:''
+
+\begin{table}[htbp]
+\caption{}
+\centering
+\begin{tabular}{clc}
+\toprule
+Address & Description & Value\\
+\midrule
+0x1028 & pc1 & 0x1008 \\
+0x102c & ppc1 & 0x1028 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+``But suppose, now, you want to assign \textbf{ppm} to \textbf{ppc1}:''
+
+\begin{footnotesize}
+\begin{lstlisting}
+//...
+  ppc1=ppm; // How to handle this?
+//...
+\end{lstlisting}
+\end{footnotesize}
+
+``Suppose the compiler allowed you to assign the value contained in \textbf{ppm} directly to \textbf{ppc1}. \textbf{ppc1}
+would then be set to the value \textbf{0x1020} -- which is the address of pm, which in turn points to the base address of
+multi, \textbf{0x1000}. When you dereference \textbf{ppc1}, you would expect to get a \textbf{pointer-to-child1}. However,
+you would actually get a \textbf{pointer-to-parent} (or \textbf{multi}, as they share the same base address in our
+hypothetical compiler).''
+
+``I get it,'' I exclaimed. ``But wait -- how come it worked before?''
+
+``With non-virtual inheritance, this particular compiler assigned the same base address to the \textbf{child} and
+\textbf{parent} subobjects. In essence, the bit-patterns of the two addresses happened to be identical, so the
+\textbf{reinterpret\_cast} happened to do the right thing.''
+
+``Great,'' I replied. ``I understand the theory. Now how do I fix the problem?''
+
+``Remember these words: 'Every problem can be solved with an extra layer of indirection.' In this case, my child, we have
+too many layers of indirection.''
+
+``Too many layers,'' I pondered. Then, the penny dropped. ``Remove a layer of indirection!'' I scribbled some code on the
+whiteboard:
+
+\begin{footnotesize}
+\begin{lstlisting}
+void
+childPtrPtr(child **d)
+{
+  parent *pp = *d;
+  parentPtrPtr(&pp);
+}
+\end{lstlisting}
+\end{footnotesize}
+
+``Very good, my child. The adjustment to the this parameter occurs when you assign from the child* to the parent*. The
+parentPtrPtr function now receives a true pointer-to-pointer-to-parent.''
+
+``And just in time, too,'' I said, as I spied Anna approaching. ``Here comes my lunch date.'' The Guru made a graceful exit.
+Just then, Bob wandered up, on his way to get a fresh latte. He greeted Anna.
+
+``Hey, sugar, what brings you in? Are we having lunch today?''
+
+``Maybe next time, Dad. I'm going to lunch with my boyfriend,'' Anna pointed at me.
+
+I stared at Bob, aghast. He stared back. Both of us turned to Anna, blurting ``He's your what?!''
+
+\wuxchcenterline{}
+
+\textit{``He's our what?'' I blinked.}
+
+\textit{``Our controller,'' Jeannine waved at a sergeant who was coming out to join us. ``We'll have to report through
+  him.''}
+
+\textit{``Hello, Doctor Carruthers,'' the sergeant said to Jeannine. ``This is --?'' Jeannine nodded and introduced me.
+  ``Your suits are here inside,''the sergeant said, leading us in. ``The protocol is that you'll always have to wear them
+  down there with helmets closed, even in pressurized rooms.''}
+
+\textit{Inside the obelisk, the lighted area turned out to be a medium-sized room with suits on the walls, and in the center
+  a large hole ringed with a mesh fence. ``Put your hand there to sign in,'' the sergeant instructed; ``then let's get those
+  suits on and checked.'' As we did so, a platform ascended from inside the hole and stopped level with the floor; we
+  entered through a gate in the fence, paused, and then the elevator started to descend.}
+
+\pagebreak{}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "conversations"
+%%% End: 

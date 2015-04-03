@@ -1,0 +1,850 @@
+﻿\documentclass  [11pt,onecolumn,a4paper]{article}
+\title{NGN C Test}
+\author{}
+\date{}
+
+\usepackage[a4paper]{geometry}
+\geometry{left=3em}
+% \geometry{columnsep=15em}
+\geometry{right=3em}
+
+\include{config}
+
+\begin{document}
+\begin{center}
+\begin{minipage}{0.8\linewidth}
+\blk{部门}\blk{科室}\blk{姓名}\blk{工号}
+\end{minipage}
+\end{center}
+
+\begin{flushright}
+{\small{\textit{考试时长：3小时，总分：100分}}}
+\end{flushright}
+
+\normalsize{\sffamily{试题背景说明：}}
+
+\begin{enumerate}
+    \item 基本数据类型定义：
+\begin{lstlisting}
+typedef  char   *               LPSTR;
+typedef  unsigned  char   **    LPLPSTR;
+typedef  signed    char         CHAR;
+typedef  unsigned  char         BOOL8;
+typedef  unsigned  char         BYTE;
+typedef  unsigned  short        WORD;
+typedef  unsigned  long         DWORD;
+typedef  unsigned  short        WORD;
+typedef  unsigned  long         DWORD;
+\end{lstlisting}
+    \item 数据接口调用函数原型说明：
+\begin{lstlisting}
+void dbCall( WORD wEvent, LPSTR pReq, LPSTR ptAck );
+\end{lstlisting}
+其中：\lstinline{wEvent}表示事件号,\lstinline{pReq}表示入参结构体指针，\lstinline{ptAck}表示出参结构
+体指针。
+
+入参结构体的定义一般如下：
+\begin{lstlisting}
+typedef struct 
+{
+    BYTE      bMsgType;  /*消息类型：同步调用或异步调用，调用者必须填写该参数*/
+    ......
+}D_XXX_REQ, * LPD_XXXX_REQ;
+typedef struct
+{
+    WORD     wRetCode;     /*接口调用结果－返回成功或者失败码，接口必须返回该参数的，供调用者使用。 */
+    ......
+}D_XXX_ACK,* LPD_XXX_ACK;
+\end{lstlisting}
+\end{enumerate}
+
+\section{改错题（共80分，每道题目至少1处错误或者隐患）}
+\subsection{请找出下面代码中的隐患或者错误，说明故障原因并改正。（5分）}
+\begin{lstlisting}[escapeinside=`']
+typedef  CHAR  *  PCHAR;  
+#define  MAX_TABLE_NUN  512;
+BYTE  _CreateTable( LPSTR dbName, DWORD dbModule, DWORD dbCapacity, ... )
+{
+    PCHAR       param;
+    va_list        ap;
+    `BYTE        dmNum = 0;     循环变量DWORD 2分'
+    if (dbName == NULL)
+    {
+        return 0;
+    }
+    va_start( ap, dbCapacity );
+    while ( TRUE && dmNum < MAX_TABLE_NUN )
+    {
+        param = va_arg( ap, PCHAR );
+        if ( !param[0] ) `------ if ( param == NULL||  !param[0] ) 3分'
+        {
+            break;
+        }
+        dmNum ++;
+    }
+    va_end( ap ); 
+    return  1;
+}
+\end{lstlisting}
+\subsection{请找出下面代码中的隐患或者错误，说明故障原因并改正。（5分）}
+\begin{lstlisting}[escapeinside=`']
+WORD PlanCtx_PlayTone_Body( BYTE ucAwakeReason, T_PlayToneBody *ptPlayToneBody, BYTE *pbCurStep,  BYTE *pbCache)
+{
+    WORD wResult             = PLAN_EXCEPTION;
+    BYTE   bNeedSuspend  = FALSE;
+    BYTE   ucSuspendStep = PLAN_STEP_1;
+
+    if((ptPlayToneBody == NULL) || (pbCurStep == NULL)` || (pbCache == NULL )) ------ 合法性检查缺少对pbCache的检查 1分'
+    {
+        return wResult;
+    }
+    wResult = PLAN_EXCEPTION;    
+    while(!bNeedSuspend)
+    {
+        switch(*pbCurStep)
+        {
+            case PLAN_STEP_1:  /* step 1 */
+            {
+                if(PLANSERV_OK != PlayToneStep1(ucAwakeReason, ptPlayToneBody, &wResult))
+                {
+                    wResult      = PLAN_EXCEPTION;
+                    bNeedSuspend = TRUE;
+                }
+                else if( bNeedSuspend )
+                {
+                    *pbCurStep   = PLAN_STEP_2;
+                    wResult      = PLAN_SUSPEND;
+                    bNeedSuspend = TRUE;
+                }
+                else
+                {
+                    *pbCurStep = PLAN_STEP_2;
+                }
+                break;
+            }    
+            case PLAN_STEP_2:  /* step 2 */
+            {
+                if(PLANSERV_OK != PlayToneStep2(ucAwakeReason, ptPlayToneBody,&ucSuspendStep, &wResult))
+                {
+                   `wResult = PLAN\_EXCEPTION;  ------ 死循环  4分，return;'
+                }
+                else if (bNeedSuspend)
+                {
+                    *pbCurStep   = ucSuspendStep;
+                    wResult      = PLAN_SUSPEND;
+                    bNeedSuspend = TRUE;                
+                }
+                else
+                {
+                    *pbCurStep = PLAN_STEP_3;
+                }
+                break;
+            }    
+            case PLAN_STEP_3:  /* step 3 */
+            {
+                if(PLANSERV_OK != PlayToneStep3(ucAwakeReason, ptPlayToneBody,&wResult))
+                {
+                    return PLAN_EXCEPTION;
+                }
+                else
+                {
+                    return PLAN_FINISH_OK;
+                }
+                break;
+            }    
+            default:
+            {
+                return PLAN_EXCEPTION;
+                break;
+            }
+        }    
+    }
+    return wResult;
+}
+\end{lstlisting}
+\subsection{请找出下面代码中的隐患或者错误，说明故障原因并改正。（8分）}
+\begin{lstlisting}[escapeinside=`']
+#define HAVE_SEND_DEASSIGNCALL     (WORD)0x00040000 
+`------ \#define HAVE\_SEND\_DEASSIGNCALL     (DWORD)0x00040000  2分'
+extern DWORD brs_recvmsg (INT32 iSockfd, CHAR *pcMsg, INT32 iFlags);
+
+DWORD BRS_RecvMsg_wrap(SOCK_MSG * ptSocketIoMsg, WORD * pwDataLen)
+{
+    BRS_RECV_MSG  tBrsSocRecvMsg;   
+
+    if((ptSocketIoMsg == NULL) || (pwDataLen == NULL))
+    {
+        return 0;
+    } 
+    memset(tBrsSocRecvMsg,0,sizeof(tBrsSocRecvMsg));
+    *pwDataLen = brs_recvmsg(ptSocketIoMsg->s, (char *)&tBrsSocRecvMsg, 0);
+    `*pwDataLen = brs\_recvmsg(ptSocketIoMsg-$>$s, (char *)\&tBrsSocRecvMsg, 0);  类型不匹配，pwDtaLen类型修改为DWORD * 3分'
+    if ( 0 != (*pwDataLen & 0x80000000) )
+    {
+         /*将对应的标记位清0*/
+        ptSocketIoMsg->dwScmFlag =  ptSocketIoMsg->dwScmFlag & !HAVE_SEND_DEASSIGNCALL;  
+        `ptSocketIoMsg-$>$dwScmFlag =  ptSocketIoMsg-$>$dwScmFlag \& ~HAVE\_SEND\_DEASSIGNCALL;  1分'
+        printf("\nIpfun:Receive Data from brs_recvmsg error: %ld in gIpFunReadSocketData! In %s(%s)",*pwDataLen, __FILE_,__LINE__);
+        `printf("\verb|\n|Ipfun:Receive Data from brs\_recvmsg error: \%ld in gIpFunReadSocketData! In \%s(\%lu)",*pwDataLen, \_\_FILE\_,\_\_LINE\_\_); 1分'
+        return 1;
+    }
+    return 0;
+}
+\end{lstlisting}
+\subsection{请找出下面代码中的隐患或者错误，说明故障原因并改正。（8分）}
+\begin{lstlisting}
+#define  URI_LTH    128
+typedef  BYTE       SZ_PUI[URI_LTH];
+/* 定义数据表的关键字合成函数 */
+#define R_PUI_PKEY(DB, PKEY, PUI)  \
+     _db_merge_index_key((DB), hidx_r_pui, PKEY, sizeof(PUI), (PUI))  `------ 3分   ，括号1分，sizeof(PUI) 2分'
+#define  R_EMERGENCY_PKEY(DB,PKEY,EMGURI)  \         `------ 3分  ，括号1分，sizeof(URI_LTH) 2分'
+     _db_merge_index_key((DB),hidx_r_emergency,PKEY,\
+                                 sizeof(URI_LTH),(BYTE *)&(EMGURI))
+DBBOOL _dbGetPuiTupleInfo(SZ_PUI   tPui  , _db_t_tuple_handle *ptPuiHandle)
+{
+    TUPLEKEY  tTupleKey;
+    _DB_RET   ret;
+    _db_t_tuple_handle tImplsetHandle;
+    if( NULL ==ptPuiHandle)
+    {
+        return FALSE;
+    }
+
+    `------ 缺少对tPui的合法性检查  2分'
+
+    /* 定位表R_PUI */
+    R_PUI_PKEY(hdb_cscf_proc, tTupleKey, tPui);/*合成关键字*/
+    /*根据关键字定位记录*/    
+    ret = _db_locate_tuple(hdb_cscf_proc, hidx_r_pui, ptPuiHandle,tTupleKey);
+    if( _DB_FOUND != ret )
+    {
+        return FALSE;
+    }
+    return TRUE;
+}
+DBBOOL  _func_judgeisemergency( CHAR  *pchEmgUri, BYTE *pbIsEmg )
+{
+    _DB_RET                  ret;
+    TUPLE_KEY_APP            tuplekey;
+    _db_t_tuple_handle       hEmgTuple;
+    if( NULL == pchEmgUri  || NULL == pbIsEmg)
+    {
+        return FALSE;  
+    }   
+    *pbIsEmg = 0;   
+    R_EMERGENCY_PKEY( hdb_pss_config, tuplekey, pchEmgUri ); /*合成关键字*/
+    /*根据关键字定位记录*/
+    ret = _db_locate_tuple( hdb_pss_config, hidx_r_emergency, 
+                                          &hEmgTuple, tuplekey); 
+    if (_DB_FOUND == ret)
+    {
+        *pbIsEmg = 1;
+        return TRUE;
+    }
+    return FALSE;  
+}
+\end{lstlisting}
+\subsection{请找出下面代码中的隐患或者错误，说明故障原因并改正。（7分）}
+\begin{lstlisting}[escapeinside=`']
+typedef struct
+{
+    ......
+} P_RECV_INFO_T,* P_RECV_INFO_PT;
+
+WORD P_GetIdleRecvBuf(P_RECV_INFO_PT  ptIdleBuf)
+{
+    DWORD dwI = 0;
+    time_t tNowTime;
+    time(&tNowTime); /* 获取当前时钟 */
+    ptIdleBuf = NULL;
+    for(dwI = 0; dwI < UDT_MAX_RECV_BUF_NUM; dwI++)
+    {
+        /* 当前缓冲区为空闲 或者 已经超时 */
+        if( (UDT_BUFFER_IDLE == g_DBS_UDT_Global.tRecvInf[dwI].bStatus) ||
+            ((time_t)(g_DBS_UDT_Global.tRecvInf[dwI].tRecvTime + g_DBS_UDT_Global.tRecvInf[dwI].dwValidPeriod) <= tNowTime))
+        {
+            ptIdleBuf = &(g_DBS_UDT_Global.tRecvInf[dwI]);
+            return UDT_SUCCESS;
+        }
+    }
+    return UDT_FAILURE;    
+}
+
+`指出值传递
+
+WORD D\_UDT\_GetIdleRecvBuf(D\_UDT\_RECV\_INFO\_PT  * ptIdleBuf)   4分
+
+*ptIdleBuf = \&(g\_DBS\_UDT\_Global.tRecvInf$[$dwI$]$);'
+
+WORD P_SyncDataReqProc(char *  pchBufferAddr)
+{
+    P_SYNC_MSG_PT  ptReqMsg = NULL;
+    P_RECV_INFO_PT ptBuf = NULL; 
+    WORD wRet  = UDT_SUCCESS;
+    
+    `ptReqMsg = (D\_UDT\_SYNC\_MSG\_PT)pchBufferAddr;   合法性检查1分'
+    
+    ptReqMsg = (P_SYNC_MSG_PT)pchBufferAddr;
+    if (ptReqMsg->tMsgHead.bPackageNo == 1)
+    {
+        /* 清空接收缓冲区中default pui的历史记录  */
+        P_CleanBufByDef(ptReqMsg->tMsgHead.dwDefPuiId); 
+        wRet = P_GetIdleRecvBuf(ptBuf); /* 获取空闲buf */
+        if (UDT_SUCCESS != wRet )
+        {
+            return UDT_FAILURE;
+        }
+
+`       if (UDT\_SUCCESS != wRet || ptBuf == NULL)  
+
+------  因依赖于getidelrevbuf的函数说明，有的指针空则不可能返回成功，因此ptbuf＝＝null不作为扣分项。'
+
+        ptBuf->bStatus      = UDT_BUFFER_USED;
+        ptBuf->dwUcVersion	= ptReqMsg->tMsgHead.dwUcVersion;
+        ptBuf->dwDefPuiId   = ptReqMsg->tMsgHead.dwDefPuiId;
+        ptBuf->dwMsgLenSum  = ptReqMsg->tMsgHead.dwMsgLenSum;
+        ptBuf->dwCurPos     = ptReqMsg->tMsgHead.dwLength;
+        memcpy(ptBuf->pchMsgBuf,ptReqMsg->bMsgBuf,
+               ptReqMsg->tMsgHead.dwLength);  
+`        if ptReqMsg-$>$tMsgHead.dwLength $<$= sizeof(ptBuf-$>$pchMsgBuf)  memcpy合法性保护 2分'
+    }
+    return UDT_SUCCESS;
+}
+\end{lstlisting}
+\subsection{请找出下面代码中的隐患或者错误，说明故障原因并改正。（8分）}
+\begin{lstlisting}[escapeinside=`']
+void  smM2SProc(DB_AREA_STAT * pDbList)
+{
+    T_SM_DATA_AREA *ptSmInst = NULL;
+    WORD wRet = PDF_ERROR;
+    `BYTE  i = 0;  ------ 循环变量类型定义，2分'
+
+    if (pDbList == NULL)
+    {
+        return;
+    }
+    /*遍历所有实例数据区*/	
+    ptSmInst = (T_SM_DATA_AREA *)smGetNextUsedUB(T_UB_SM_INST, NULL);	
+    while(NULL != ptSmInst)
+    {
+        if(SM_DATA_NOT_USED == ptSmInst->bUsedFlag)
+        {
+            continue;
+            `------ 死循环2分；增加  ptSmInst = (T\_SM\_DATA\_AREA *)smGetNextUsedUB(T\_UB\_SM\_INST, (BYTE *)ptSmInst);/*找下一个实例数据区*/'
+        }	 
+        if(SM_TRANS_ACTIVE == ptSmInst->tTransInfo[i].bActive &&
+           i <= MAX_UB_INST_NUM)   
+` ------ 合法性检查错误，调整顺序！，另外不能等于。 4分，合法性检查、顺序各自一半分数。
+
+if(i $<$ MAX\_UB\_INST\_NUM  \&\& SM\_TRANS\_ACTIVE == ptSmInst-$>$tTransInfo$[$i$]$.bActive ) '
+        {            
+            pDbList-> dwIndex [i] = ptSmInst->dwIndex;
+            i++; 
+            wRet = CMSResBackup(g_dwSMInstResHandle,
+                            ptSmInst->dwIndex, emCmsSyncOpRelease);
+            if(PDF_SUCCESS != wRet)
+            {
+                return;
+            }
+        }
+        /*找下一个实例数据区*/
+        ptSmInst = (T_SM_DATA_AREA *)smGetNextUsedUB(
+                                    T_UB_SM_INST, (BYTE *)ptSmInst);
+    }
+}
+\end{lstlisting}
+\subsection{请找出下面代码中的隐患或者错误，说明故障原因并改正。（5分）}
+\begin{lstlisting}[escapeinside=`']
+typedef struct
+{  
+	D_TRANSFER  tCtrlPuiInfo [MAX_NUM];
+     ......
+} P_CTRL_INFO_T;
+P_CTRL_INFO_T       g_DBS_UDT_CtrlInfo;
+
+WORD P_CTRL_SyncEndReqProc(D_TRANSFER_END_REQ_PT ptReq)
+{
+    WORD wResult        = UDT_SUCCESS;
+    DWORD dwCtrlCardIdx = 0;
+    DWORD i             = 0;
+    DWORD dwPos         = 0; 
+    D_TRANSFER_END_APPEND_PT ptTransEndAppd = NULL;
+   
+    if (ptReq == NULL )
+    {
+        return UDT_FAILURE;
+    }
+    /* 所有迁出板尚未迁移完毕，防止迁移结束后处理重复的迁移结束消息 */
+    if (g_DBS_UDT_CtrlInfo.bAllOutEnd != 1)
+    {       
+        /* 判断是否有附加消息，只有指定用户迁移有附加消息 */
+        if (ptReq->dwAppendNum != 0)
+        {
+            g_DBS_UDT_CtrlInfo.dwCtrlPuiNum  = ptReq->dwAppendNum;
+            memset(g_DBS_UDT_CtrlInfo.tCtrlPuiInfo,0,sizeof(g_DBS_UDT_CtrlInfo.tCtrlPuiInfo));
+            dwPos = sizeof (D_TRANSFER_END_REQ_T);
+            for (i = 0; i< ptReq->dwAppendNum; i++)
+            `for (i = 0; i$<$ ptReq-$>$dwAppendNum \&\& i $<$MAX\_NUM; i++)   2分'
+            {
+                ptTransEndAppd = (D_TRANSFER_END_APPEND_PT)(ptReq + dwPos); 
+                `ptTransEndAppd = (D\_TRANSFER\_END\_APPEND\_PT)((char *)ptReq + dwPos); 3分'
+                dwPos = dwPos + sizeof(D_TRANSFER_END_APPEND_T); `跟上面一句的逻辑是有矛盾的，修改下面一个也可以。'
+                g_DBS_UDT_CtrlInfo.tCtrlPuiInfo[i].dwPuiId      = ptTransEndAppd->dwPuiId;
+                g_DBS_UDT_CtrlInfo.tCtrlPuiInfo[i].bTransferTag = ptTransEndAppd->bTransferTag;
+                g_DBS_UDT_CtrlInfo.tCtrlPuiInfo[i].bCallTag     = ptTransEndAppd->bCallTag;
+            }
+        }       
+        /* 置迁移结束标志 */
+        g_DBS_UDT_CtrlInfo.tCtrlCardInfo[dwCtrlCardIdx].bEndTag = 1;   
+    }      
+    return UDT_SUCCESS;
+}
+\end{lstlisting}
+\subsection{请找出下面代码中的隐患或者错误，说明故障原因并改正。（10分）}
+\begin{lstlisting}[escapeinside=`']
+#define MAXCAP  380
+#define DB_SDP_LTH    (WORD)1024
+#define SDP_CHAR_MAX   ( WORD )255
+
+typedef struct 
+{
+    WORD	  wRetCode;
+	WORD  	  wEventnum;							 	
+    CHAR      chLocalSDP[SDP_CHAR_MAX]; 
+    ......
+} DB_GETTERMPROPERTY_ACK,*LP_ DB_GETTERMPROPERTY_ACK;
+typedef struct 
+{
+    BYTE     bMsgType;          
+    BYTE     bAction;             
+    WORD     wSDPLen;            
+    SDP_HEAD tSDPHead;   		
+    CHAR     chSDP[DB_SDP_LTH]; 
+} DB_SDPCOMPRESS_REQ,* LP_DB_SDPCOMPRESS_REQ;
+typedef struct
+{
+    WORD		wRetCode;			
+    WORD		wSDPLen;			
+    SDP_HEAD tSDPHead;			
+    CHAR		chSDP[DB_SDP_LTH];						
+} DB_SDPCOMPRESS_ACK,* LP_DB_SDPCOMPRESS_ACK;
+
+BYTE C_BCM_StrLen(BYTE* pbNumber,BYTE bMaxNumberLen)
+{
+	BYTE bNumLen = 0;
+	if (NULL == pbNumber)
+	{
+        bNumLen = 0;
+	}
+	else
+	{
+		bNumLen = strlen((CHAR *) pbNumber);
+        if (bNumLen > bMaxNumberLen)
+        {
+            bNumLen = bMaxNumberLen;
+        }
+    }
+	return  bNumLen;
+}
+void C_BCM_DbGetTermProperty(CCB *ptccb,WORD * pwMediaScriptLen, BYTE *pbMediaScript, WORD wProperId,BOOL8 bUseDefMedia)
+{
+	DB_GETTERMPROPERTY_REQ tGetTermPropertyReq;
+	DB_GETTERMPROPERTY_ACK tGetTermPropertyAck;
+	DB_SDPCOMPRESS_REQ     tSdpCompressReq;
+	DB_SDPCOMPRESS_ACK     tSdpCompressAck;
+	WORD wRes = 0;
+	char chMedia[] = {
+		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x76,0x3D,0x30,
+        0x0D,0x0A,0x63,0x3D,0x49,0x4E,0x20,0x49,0x50,0x34,0x20,
+        0x31,0x30,0x2E,0x31,0x30,0x2E,0x31,0x30,0x2E,0x31,0x30,
+        0x0D,0x0A,0x6D,0x3D,0x61,0x75,0x64,0x69,0x6F,0x20,0x31,
+        0x30,0x30,0x30,0x20,0x52,0x54,0x50,0x2F,0x41,0x56,0x50,
+        0x20,0x30,0x20,0x38,0x20,0x31,0x38,0x0D,0x0A,0x61,0x3D,
+        0x70,0x74,0x69,0x6D,0x65,0x3A,0x32,0x30,0x0D,0x0A};
+
+	if((NULL == ptccb)||(NULL == pbMediaScript)||
+       (NULL == pwMediaScriptLen))
+	{
+		return wRes;
+	}
+        `memset(pbMediaScript, 0, MAXCAPS); -----初始化2分或者在C\_BCM\_O\_CreateCallTest 中初始化!'
+	if(wProperId)/*如果为0则直接考虑取默认的*/
+	{
+              `memset(\&tGetTermPropertyReq, 0, sizeof(DB\_GETTERMPROPERTY\_REQ));  初始化1分'
+		tGetTermPropertyReq.bMsgType = MSGTYPE_SYNC;
+        	tGetTermPropertyReq.wProperId = wProperId;
+		dbCall(EV_PD_GetTermProperty, (LPSTR) & tGetTermPropertyReq,
+               (LPSTR) & tGetTermPropertyAck);
+		if(tGetTermPropertyAck.wRetCode == RC_OK)
+		{
+                    `memset(\&tSdpCompressReq, 0, sizeof(DB\_SDPCOMPRESS\_REQ)); //初始化1分'
+			tSdpCompressReq.bMsgType = MSGTYPE_CALL;
+			tSdpCompressReq.bAction = DB_SDP_COMPRESS;
+			tSdpCompressReq.wSDPLen =
+                min(strlen(tGetTermPropertyAck.chLocalSDP),
+                    MAXCAPS); /* SDP信息长度 */
+                    `tSdpCompressReq.wSDPLen = min(strlen(tGetTermPropertyAck.chLocalSDP), DB\_SDP\_LTH);   1分'
+
+			memcpy(tSdpCompressReq.chSDP ,
+                   tGetTermPropertyAck.chLocalSDP,
+                   tSdpCompressReq.wSDPLen);
+			dbCall(EV_PD_SDPCOMPRESS, (LPSTR) & tSdpCompressReq,
+                   (LPSTR) & tSdpCompressAck);
+			if(tSdpCompressAck.wRetCode == RC_OK)
+			{
+				wRes = tSdpCompressAck.wSDPLen;
+                            `if(wRes > MAXCAPS)  ---保护2分
+
+				{
+
+					wRes = MAXCAPS;
+
+				}'
+				memcpy(pbMediaScript, tSdpCompressAck.chSDP,wRes);
+			}
+			else
+			{
+                wRes = C_BCM_StrLen(tGetTermPropertyAck.chLocalSDP,
+                                    (BYTE)MAXCAPS); /* SDP信息长度 */
+`\verb|----- wRes = min(strlen(tGetTermPropertyAck.chLocalSDP), MAXCAPS); /* SDP信息长度 */ 3分|
+\verb|或者将函数|
+\verb|BYTE C_BCM_StrLen(BYTE* pbNumber,BYTE bMaxNumberLen) |
+\verb|修改为：|
+\verb|WORD C_BCM_StrLen(BYTE* pbNumber, WORD bMaxNumberLen)|'
+
+		memcpy(pbMediaScript ,
+                       tGetTermPropertyAck.chLocalSDP,
+                       wRes);
+			}
+		}
+	}
+	if((wRes == 0) && bUseDefMedia)
+	{
+		wRes = min(sizeof(chMedia), MAXCAPS);
+		memcpy(pbMediaScript, chMedia, wRes);
+	}
+	* pwMediaScriptLen = wRes;
+}
+void C_BCM_O_CreateCallTest(CCB* ptccb, WORD wProperId)
+{
+`\verb|    WORD wLctLgth ;|
+\verb|    BYTE bMediaScript[MAXCAP];|'
+    
+    C_BCM_DbGetTermProperty(ptccb,&wLctLgth, bMediaScript, wProperId,
+                            TRUE);
+    ......
+}
+\end{lstlisting}
+\pagebreak
+\subsection{请找出下面代码中的隐患或者错误，说明故障原因并改正。（8分）}
+\begin{lstlisting}[escapeinside=`']
+void ProxyCSM_ST_WORK_takeEvent(ProxyCSM* const me, short  id ,otProxy_Para pParams )
+{
+    if (me == NULL || pParams == NULL)
+    {
+        return ;
+    }
+    switch (id)
+    {
+        case UP_EV_PPLAT_DNS_RESPONSE:
+        {
+            DWORD  dwL3CallID = pParams ->tDNSResp.dwAppID; 
+            DWORD  dwIndex = 0;
+            PP_PROXY_DATA*  ptDataArea;   
+            do
+            {   
+                if( P_FindDataAreaEx( me->tDBFaced,dwL3CallID,
+                    (BYTE**)&ptDataArea ) )/*申请主数据区*/
+                {
+                    if( P_FindHash( me->tDBFaced,
+                      dwL3CallID,&dwIndex) )/*申请HASH数据区*/
+                    {
+                        FROM  tFrom;
+                        FROM  tTo;
+`\verb|if( dwIndex >= PP_PROXY_INSTANCE_NUM)  合法性检查4分|
+\verb|          {|
+\verb|              DBFaced_P_DelHash( me->tDBFaced,dwL3CallID );|
+\verb|              DBFaced_P_DelDataArea( me->tDBFaced,dwL3CallID );|
+\verb|              break;|
+\verb|          }|'
+                        if(!P_PP_DecodeFromTo( &tFrom,&tTo,
+                                               ptDataArea->abDialogState ))
+`\verb|if(!P_PP_DecodeFromTo( &tFrom,&tTo,ptDataArea->abDialogState )) ptDataArea的合法性检查 2分|'
+                        {
+                            ProxyCSM_SetDBFaceTraceByURL( me, &tFrom, &tTo );
+                        }                             
+                        /* send event to proxy */ 
+                        if( pParams ->tDNSResp.dwErrCode == 0 )
+                        {
+                            Proxy_EV_DNS_OK( &me->itsProxy[dwIndex],
+                                             &pParams ->tDNSResp);
+                        }
+                        else
+                        {
+                          Proxy_EV_DNS_FAIL(&me->itsProxy[dwIndex],
+                                            &pParams ->tDNSResp);
+                        }
+
+                        Proxy_EV_RESET_DNS_TIMER(&me->itsProxy[dwIndex]);
+                    }
+                    else
+                    {
+`\verb|             DBFaced_P_DelDataArea( me->tDBFaced,dwL3CallID );  忘记释放数据区 2分。|'
+                        return;
+                    }
+                }
+                else
+                {
+                  psyslog(LOG_WARNING,"PP ERROR: cannot find data area when receive UP_EV_PPLAT_DNS_RESPONSE\n" );
+                }
+            }while(0);                 
+            break;
+        };
+        default:
+            break;
+    }
+}
+\end{lstlisting}
+\subsection{请找出下面代码中的隐患或者错误，说明故障原因并改正。（16分）}
+\begin{lstlisting}[escapeinside=`']
+int Cmd_Show_AccessList(MSG_COMM_OAM *pRevMsg, MSG_COMM_OAM *pRtnMsg)
+{
+    OPR_DATA *pRtnOprData = (OPR_DATA *) pRtnMsg-> Data;    
+    `----合法性检查1分'
+    OPR_DATA *pRevOprData = (OPR_DATA *)pRevMsgStruct->Data;
+    `----合法性检查1分'
+    UINT8    *cycleNum;/*回显循环次数*/
+
+    DWORD   aclNo       = 0;
+    DWORD   ruleCount   = 0;
+    int loc = END_ACL_LIST;
+    WORD strLen         = 0;
+    BYTE paraNo         = 0;  
+
+    CHAR singleRule[256];
+    ACL_STANDARD_T *pAclStd = NULL;
+    DWORD filterAclNo       = 0;	
+    DWORD cookie            = 0;
+
+    memset(singleRule,0,sizeof(singleRule));
+    loc = GetFirstAclItemLoc(aclNo);
+
+    while (loc != END_ACL_LIST)
+    {
+        pAclStd = (ACL_STANDARD_T *) GetAclItem(aclNo,loc);
+        if (pAclStd->rule_id == 0xff)
+        `\verb|if (pAclStd->rule_id == 0xff)  ―――空指针检查2分|'
+            break;
+        loc = GetNextAclItemLoc(aclNo,loc);
+    }
+
+    /*每次打包最多 ACL_ONCE_SHOW_RULE_MAX 条rule ，
+     rule 最大不超过200 byte ，保证每次打包数据不超过 1300 个字符左右。*/
+
+    while ((loc != END_ACL_LIST) && (ruleCount <= ACL_ONCE_SHOW_RULE_MAX))
+    `\verb|while ((loc != END_ACL_LIST) && (ruleCount < ACL_ONCE_SHOW_RULE_MAX))――合法性检查错误1分|'
+    {
+        /*打包一条rule*/
+        Packet_AclRule(ACL_TYPE_STD,aclNo,loc,singleRule);
+        pRtnOprData->ParaNo = paraNo++;
+		pRtnOprData->Type = DATA_TYPE_STRING;
+		strLen = strlen(singleRule);
+		pRtnOprData->Len = strLen + 1;
+		strcpy(pRtnOprData->Data,singleRule);
+              `\verb|strcpy(pRtnOprData->Data,singleRule); ―――合法性保护，替换为strncpy函数。2分|'
+		memset(pRtnOprData->Data + strLen,'\0',1);
+		pRtnOprData = (OPR_DATA *) (pRtnOprData->Data + strLen + 1);
+             `\verb|pRtnOprData = (OPR_DATA *) (pRtnOprData->Data + strLen + 1);―――移动错误，应该是(char *) (pRtnOprData->Data )+ strLen + 1) 2分|'
+		
+        loc = GetNextAclItemLoc(aclNo,loc);
+        ruleCount++;
+        memset(singleRule,0,sizeof(singleRule));
+    }
+    *(UINT8 *) cycleNum = ruleCount;/*保存循环次数*/ 
+`\verb|*(UINT8 *) cycleNum = ruleCount;/*保存循环次数*/   cycleNum定义为 UINT8 *cycleNum ，其值为随机数，如果为空指针，则宕机。2分|'
+    if (loc == END_ACL_LIST)
+    {
+        /*获取显示完的acl 的下一个要显示的acl*/
+        aclIndex = GetFirstIPv6AclNo(&cookie);
+        while(aclIndex != aclNo)
+        {
+            aclIndex = GetNextIPv6AclNo(&cookie);
+        }
+`\verb|while(aclIndex != aclNo)----死循环保护 3分|'
+`\verb|aclIndex = GetNextIPv6AclNo(&cookie);|'
+		aclNo = GetNextIPv6AclNo(&cookie);
+		if(aclNo != 0)
+        {
+            aclType = GetAclType(NULL, aclNo);
+            loc = GetFirstAclItemLoc(aclNo);
+            if(aclType == IPV6_STANDARD_ACL)
+            {
+                pIPv6AclStd = (IPV6_STD_ACL_T*)GetAclItem(aclNo,loc);
+                SU32_TO_HOST((DWORD *)(pRtnMsg->LastData+sizeof(DWORD)),pIPv6AclStd->rule_id);
+                `\verb|SU32_TO_HOST((DWORD *)(pRtnMsg->LastData+sizeof(DWORD)), pIPv6AclStd->rule_id);合法性检查 1分|'
+            }
+            pRtnMsg->ReturnCode	= SUCC_CMD_NOT_FINISHED;
+            pRtnMsg->DataLen	=
+                (int)((char*)pRtnOprData - (char*)pRtnMsg)-10;
+            `\verb|pRtnMsg->DataLen    = (int)((char*)pRtnOprData - (char*)pRtnMsg); 合法性检查2分|'
+            pRtnMsg->Number	    = paraNo;
+            return SUCC_AND_NOPARA;
+        }
+    }
+}
+\end{lstlisting}
+
+\pagebreak
+
+\begin{minipage}{0.9\textwidth}
+\section{编程题（共20分）}
+\subsection{使用标准C语言实现下列功能：设pHeadA和pHeadB分别是两个带表头结点的非递减有序单链表的表头指
+  针, 试设计一个算法, 将这两个有序链表合并成一个非递增有序的单链表。要求结果链表仍使用原来两个链表的
+  存储空间, 不另外占用其它的存储空间。表中允许有重复的数据。（10分）}
+节点类型定义如下：
+\begin{lstlisting}
+typedef struct node
+{
+    int data;
+    struct node *next;
+}NODE,*PNODE;
+\end{lstlisting}
+函数原型：
+\begin{lstlisting}
+void  MergeList (PNODE pHeadA, PNODE pHeadB);
+\end{lstlisting}
+\end{minipage}
+
+答案：
+\begin{lstlisting}
+void  MergeList (PNODE pHeadA, PNODE pHeadB)
+{
+    NODE *pa, *pb, *q, *p;
+    pa = pHeadA->next ;
+    pb = pHeadB->next;
+    pHeadA→next = NULL;	//结果链表初始化
+
+    while ( pa != NULL && pb != NULL ) 
+    {  /*两链表都未结束时*/	
+        if ( pa→data <= pb→data )
+        {
+            q = pa; 
+            pa = pa→next; /*从pa链中摘下*/
+        }			
+        else
+        { 
+            q = pb; /*pb链中摘下*/
+            pb = pb→next; 
+        }			
+        q→next = pHeadA→next;  pHeadA→next = q; /*链入结果链的链头*/
+    }p = ( pa != NULL ) ? pa : pb;				/*处理未完链的剩余部分*/
+    while ( p != NULL )
+    {			
+        q = p; 
+        p = p→next; 
+        q→next = pHeadA→next;  pHeadA→next = q;
+    }
+}
+\end{lstlisting}
+
+\pagebreak
+\begin{minipage}{0.9\textwidth}
+\vspace{40ex}
+\subsection{使用标准C语言实现下列功能：有两个双向循环链表A，B，知道其头指针为：pHeadA, pHeadB，请写一
+  函数将两个链表中data值相同的结点删除，并保证双向循环链表的完整性。（10分）}
+
+\begin{minipage}{0.9\textwidth}
+\vspace{1ex}
+\small{\textit{例如:A链表中节点的data依次为：1，2，2，3，4，B链表中节点的data依次为：4，3，3，1，8。}}
+
+\small{\textit{则，函数运算后的结果：}}
+
+\small{\textit{A链表中节点的data依次为：2，2，B链表中节点的data依次为：8。}}
+\vspace{2ex}
+\end{minipage}
+
+双向循环链表结点定义为：
+\begin{lstlisting}
+typedef struct node
+{
+    int data;
+    struct node *front,*next;
+}DBLNODE ,* PDBLNODE;
+\end{lstlisting}
+函数原型：
+\begin{lstlisting}
+void  DeleteXNode (PDBLNODE pHeadA, PDBLNODE pHeadB); 
+\end{lstlisting}
+\end{minipage}
+
+答案：
+
+\begin{lstlisting}
+/* 删除一个节点 */
+void  DeleteOneNode (PDBLNODE pNode)
+{
+    if (pNode == NULL)
+    {
+        return;
+    }
+    PDBLNODE q = pNode->front ;
+    PDBLNODE r = pNode->next ; 
+    if (q != NULL)
+    {
+        q->next = r ;
+    }  
+    if （r!= NULL）
+    {
+        r->front = q;
+    }
+    free(pNode);    
+}
+/*删除一个链表中所有重复值的节点*/
+BOOL  DeleteSameValueNode (int data, PDBLNODE pHead)
+{
+    BOOL bRet = FALSE;
+    PDBLNODE q,p;
+
+    if (pHead == NULL)
+    {
+        return FALSE;
+    }
+
+    p= pHead->next;
+
+    while (p && p->next != pHead)
+    {
+        q= p->next;
+          
+        if (p->data == data)
+        {
+            DeleteOneNode(p);
+            bRet = TRUE; 
+        }
+        p=q;
+    }
+    return bRet; 
+}
+/* 主函数 */
+void  DeleteXNode (PDBLNODE pHeadA, PDBLNODE pHeadB)
+{
+    PDBLNODE q,p;
+    if (pHeadA == NULL || pHeadB == NULL)
+    {
+        return;
+    }
+    p= pHeadA->next;
+
+    while (p && p->next != pHeadA)
+    {
+        q= p->next;
+        if (DeleteSameValueNode(p->data,pHeadB))
+        {
+            DeleteOneNode(p);    
+        }     
+        p =q;
+    }
+}
+\end{lstlisting}
+\end{document}

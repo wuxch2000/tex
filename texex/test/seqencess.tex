@@ -1,0 +1,36 @@
+\documentclass{article}
+
+\usepackage{fontspec,xunicode,xltxtra}
+\setmainfont[Mapping=tex-text]{Georgia}
+\setsansfont[Mapping=tex-text]{Arial}
+\setsansfont[Mapping=tex-text]{Courier New}
+\usepackage{indentfirst}
+
+% \usepackage{xetex-pstricks}
+
+\usepackage{msc}
+
+\begin{document}
+
+\pagestyle{empty}
+\begin{msc}{Example}
+\declinst{usr}{User}{}
+\declinst{m1}{Machine 1}{control}
+\declinst{m2}{Machine 2}{drill}
+\declinst{m3}{Machine 3}{test}
+
+\mess{startm1}{usr}{m1}
+\nextlevel
+\mess{startm2}{m1}{m2}
+\nextlevel
+\mess{continue}{m2}{m3}
+\mess{log}{m1}{envleft}
+\nextlevel
+\mess{output}{m3}{usr}[2]
+\nextlevel
+\mess{free}{m1}{usr}
+\nextlevel
+
+\end{msc}
+
+\end{document}

@@ -1,0 +1,28 @@
+\documentclass[12pt,a4paper,onecolumn]{article}
+\title{TITLE}
+\author{Wu Xiaochun}
+\date{}
+\usepackage{fontspec,xunicode,xltxtra}
+\setmainfont[Mapping=tex-text]{Georgia}
+\setsansfont[Mapping=tex-text]{Arial}
+\setsansfont[Mapping=tex-text]{Courier New}
+\usepackage{indentfirst}
+
+\begin{document}
+test1.
+
+A
+\begin{minipage}[t]{0.5\textwidth}
+this is minipage line1
+
+this is minipage line2
+\end{minipage}
+B
+
+\makebox[0.5\textwidth][s]{%
+box test}
+
+AAA
+
+test2.
+\end{document}

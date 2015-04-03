@@ -1,0 +1,55 @@
+% \usepackage{color}
+% \definecolor{light-gray}{gray}{0.95}
+% \definecolor{dark-green}{rgb}{0,0.25,0}
+
+\usepackage[dvips,dvipsnames,svgnames]{xcolor}
+\definecolor{light-gray}{gray}{0.95}
+
+%生成PDF的链接
+\usepackage[dvipdfmx]{hyperref}
+\hypersetup{
+    bookmarks=true,         % show bookmarks bar?
+    pdfborder=1,
+    pdfhighlight=/P,
+    pdfauthor={wuxch},
+    unicode=true,           % non-Latin characters in Acrobat’s bookmarks
+    colorlinks,             % false: boxed links; true: colored links
+    linkcolor=blue,         % color of internal links
+    citecolor=green,        % color of links to bibliography
+    filecolor=magenta,      % color of file links
+    urlcolor=cyan           % color of external links
+}
+% 使用目录
+\usepackage{makeidx}
+% 使用图形
+\usepackage{graphicx}
+% 首段也缩进
+\usepackage{indentfirst}
+
+\usepackage{titletoc}
+
+% 页眉页脚的设定
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+% \lhead{\includegraphics[height=0.2in]{zte_logo}}
+
+% \usepackage{footmisc}
+\usepackage{pfnote}
+\usepackage{fnpos}
+
+% 嵌入的代码显示
+\usepackage{listings}
+\lstset{language=C++, breaklines, extendedchars=false}
+\lstset{basicstyle=\ttfamily,
+        frame=single,
+        keywordstyle=\color{blue},
+        commentstyle=\color{SeaGreen},
+        stringstyle=\ttfamily,
+        showstringspaces=false,
+        backgroundcolor=\color{light-gray}}
+
+\usepackage{booktabs}
+
+%%% Local Variables:
+%%% TeX-master: "conversations"
+%%% End:

@@ -1,0 +1,144 @@
+﻿
+\ProvidesPackage{config}
+
+% config file for monthly report of wuxch
+\usepackage{fontspec,xunicode,xltxtra}
+
+\setmainfont[Mapping=tex-text]{Georgia} 
+\setsansfont[Mapping=tex-text]{Arial}
+\setmonofont[Mapping=tex-text]{Courier New} 
+\usepackage{xeCJK}
+% \setCJKmainfont[ItalicFont={Adobe Kaiti Std}]{Adobe Song Std}
+\setCJKmainfont[ItalicFont={Adobe Kaiti Std}]{Adobe Heiti Std}
+\setCJKsansfont{Adobe Heiti Std}
+% \setCJKsansfont{Microsoft YaHei}
+\setCJKmonofont{Adobe Heiti Std}
+\punctstyle{banjiao}
+
+%%%%%%%%%%%%%%%%%%%%%%% theme setting %%%%%%%%%%%%%%%%%%%%%%%%%%%%5
+% \usetheme{Hannover}
+\usetheme{default}
+\useinnertheme[shadow]{rounded}
+% \useoutertheme{shadow}
+\usecolortheme{seahorse}
+
+% \useoutertheme{smoothbars}
+\setbeamertemplate{mini frames}[tick] % dafault box tick
+\useoutertheme[footline=empty,subsection=false]{miniframes}
+% \useoutertheme[subsection=false]{smoothbars}
+
+
+% \usetheme{Madrid}
+% \useoutertheme[left]{sidebar}
+% \usetheme{PaloAlto}
+
+% xcolor package has been loaded by beamer.
+% \usepackage[dvips,dvipsnames,svgnames,x11names]{xcolor}
+
+\usepackage{ifthen}
+\newboolean{debug}
+
+% 调试模式下，pdf以普通方式打开，也不用生成log，减少编译时间
+% \setboolean{debug}{true}
+\setboolean{debug}{false}
+
+\ifthenelse{\boolean{debug}}%
+{%
+\hypersetup{pdfpagemode=UseNone}
+}%
+{%
+\logo{\includegraphics[height=3ex]{zte_logo.jpg}}
+
+\hypersetup{pdfpagemode=FullScreen}
+}
+
+\usepackage{caption}
+% \definecolor{cationCol}{rgb}{0.60,0.60,0.60}
+\definecolor{cationCol}{gray}{.2}
+
+
+\setlength{\abovecaptionskip}{.5ex}
+\setlength{\belowcaptionskip}{0ex}
+
+\newcommand{\photoportrait}[2]{%
+\begin{columns}[c]
+
+\begin{column}{.3\textwidth}
+\begin{figure}
+\captionsetup{font={scriptsize,sf,color={cationCol}}}
+\captionsetup{figurename=}
+\centering
+\caption{#2}
+\end{figure}
+\end{column}
+
+\begin{column}{.7\textwidth}
+\begin{figure}
+\includegraphics[height=.9\textheight]{#1}
+\end{figure}
+\end{column}
+
+\end{columns}
+}
+
+
+\newcommand{\photolandscape}[2]{%
+\begin{figure}
+\captionsetup{font={sf,color={cationCol}}}
+\captionsetup{figurename=}
+\centering
+\includegraphics[width=1\textwidth]{#1}
+\caption{\tiny #2}
+\end{figure}
+}
+
+\newcommand{\photolandscapesmall}[2]{%
+\begin{figure}
+\captionsetup{font={sf,color={cationCol}}}
+\captionsetup{figurename=}
+\centering
+\includegraphics[width=.8\textwidth]{#1}
+\caption{\tiny #2}
+\end{figure}
+}
+
+
+% 表格
+\usepackage{booktabs}
+
+\usepackage{graphics}
+\usepackage{graphicx}
+\graphicspath{{fig/}}
+
+\newenvironment{ztebox}
+{\begin{beamercolorbox}[wd=0.9\textwidth,left,shadow=true,rounded=true]{frametitle}
+}
+{\end{beamercolorbox}
+}
+
+\definecolor{blockbgcolor}{gray}{0.95}
+
+\setbeamercolor{block body}{bg=blockbgcolor}
+\setbeamercolor{block title}{bg=blockbgcolor}
+
+\newenvironment{zteblock}
+{\begin{block}
+}
+{\end{block}
+}
+
+% 列表项
+\setbeamertemplate{itemize items}[ball]
+\setbeamertemplate{enumerate items}[ball]
+
+
+% 英文的破折号--不明显，使用自己画的线。
+\newcommand{\myrule}{\hspace{0.5em}\rule[3pt]{1.6em}{0.3mm}\hspace{0.5em}}
+
+\definecolor{tablehead}{named}{Lavender}
+\definecolor{tabletail}{named}{LightGray}
+
+\usepackage{wuxchcal}
+
+\newcommand{\ztecalendar}[2]{\wuxchcal{1.3}{#1}{0.75}{#2}{1.9}{.75}{6}{}}
+

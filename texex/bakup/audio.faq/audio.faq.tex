@@ -1,0 +1,869 @@
+﻿\documentclass[12pt]{article}
+\title{A/V Audio FAQ}
+\author{\hyperlink{http://www.doom9.org/faqs.htm}{doom9}}
+\date{}
+
+\include{config}
+
+\begin{document}
+
+\maketitle
+
+\thispagestyle{empty}
+{\footnotesize\textsf{\tableofcontents}}
+\clearpage
+\setcounter{page}{1}
+
+Welcome to the reorganization of the Audio FAQs. These FAQs address many commonly asked questions.
+Your first resource in converting should be to follow the Doom9 guides or the more specific audio
+guides. Before posting in the audio forum, make sure you've read over any relevant guides and the
+FAQ in question. There are several people that worked very hard to make these FAQs an excellent
+source of information, see the last post in this thread for their credit.
+
+The goal of these FAQs is to inform users about how to use the most common audio formats in the AV
+world and how to encode, decode, and play back their audio with the highest quality, most elegant,
+and most efficient procedures. Feel free to PM me or post to this thread regarding any corrections
+or additions.
+
+If you're new to the Doom9 forums, it is strongly recommended to read these threads about our
+community's netiquette:
+\begin{itemize}
+    \item \hyperlink{http://forum.doom9.org/showthread.php?s=&threadid=7770}{Message about Free Pies}
+    \item \hyperlink{http://forum.doom9.org/showthread.php?s=&threadid=51632}{Caps and Special Characters}
+    \item \hyperlink{http://forum.doom9.org/showthread.php?s=&threadid=49236}{Why a Good Title is Important}
+\end{itemize}
+
+As always, search before posting and remember the forum rules, breaking them will be a quick way to
+get your thread closed or deleted. Cheers and good luck with your audio.
+
+\section{General Audio Procedures FAQ}
+
+\subsection{What is the difference between lossy, lossless, and uncompressed audio formats?}
+
+Uncompressed audio is simply audio without any compression applied to it. Uncompressed audio is
+commonly used in AV conversions in PCM or WAV form.
+
+Lossless audio applies a compression to uncompressed audio without losing any information or
+degrading the quality at all. Lossless audio is not common in the AV world, but it is possible with
+formats like WMA Lossless or FLAC in Matroska.
+
+Lossy audio attempts to apply to discard as much 'irrelevant' data as possible from the original,
+with the goal being to produce a file much smaller than the original that sounds \emph{almost}
+identical. This results in a much lower bitrate and filesize then lossless or uncompressed audio.
+Lossy audio formats are extremely prevalent in AV, and include AC3, DTS, AAC, MPEG-1/2/3, Vorbis,
+and Real Audio.
+
+We also talk about lossy and lossless processes. Whenever you transcode to a lossy format (for
+example wav $>$ MP3), a loss in quality follows, therefore it is a lossy process. Transcoding from a
+lossy format to a lossy format (for example Mp3$>$AAC) is even worse, since there is loss introduced
+both from the first lossy file and the encoding of the second.
+
+\subsection{What's CBR/ABR/VBR?}
+
+CBR means that the stream's bitrate is constant and never changes.
+
+VBR means that the stream's bitrate is variable, and changes in according to the amount of
+information that needed to be encoded.
+
+ABR has a variable bitrate for each frame, but its average bitrate is a constant.
+
+Conclusion:
+
+\emph{CBR is a private-case of ABR which is a private-case of VBR.}
+
+\subsection{What's the difference between stereo, joint stereo, and dual channel?}
+
+Dual channel has 2 mono-channels, meaning each channel is encoded with half the bitrate of the
+overall bitrate.
+
+Stereo has 2 seperate channels, but the bitrate allocation between those two channels changes
+accordingly to the amount of information there is in each channel.
+
+Joint stereo has 2 channels, but takes advantage of what is common between the channels, so the
+compression gain is higher.
+
+\subsection{What are the different kinds of joint stereo?}
+
+Two of the most used joint stereo modes are IS (intensity stereo) and M/S (Mid/Side). M/S matrixing
+computes the sum and the difference of the two audio channels and stores these as two channels. This
+method is very efficient and is a lossless process, which means the two original channels can be
+extracted exactly as they were.
+
+Intensity stereo replaces the left and right channels with a single signal plus directional
+information. This method is lossy and destroys DPL information. This method is only recommended at
+low bitrates.
+
+Many encoders can use a combination of full stereo and either or both of these methods, deciding
+which to use on a per-frame basis.
+
+\subsection{How can I transcode AC3 5.1 to Pro Logic/Pro Logic II?}
+
+There are two steps to having a 2.0 channel stereo file that contains Dolby Pro Logic (II). First, a
+dolby pro logic source is needed, in this case we apply a DPL downmix on the 5.1 source. This can be
+done easily with besweet, in the '-azid()' section add a '-s surround' for Pro Logic or '-s
+surround2' for Pro Logic II.
+
+Secondly, when the audio is encoded, the joint stereo information must be preserved. In order for
+this to happen, either full stereo or M/S joint stereo must be used - Intensity stereo will destroy
+DPL information. More information on Dolby ProLogic \& Dolby Surround can be found here.This can be
+done with all the common audio formats:
+\begin{description}
+  \item[MP3] Use the lame encoder, and use joint stereo. See the MP3 FAQ \#9.
+  \item[Vorbis] Use lossless or light lossy channel coupling.
+  \item[AAC] Use M/S joint stereo, which pretty much all the AAC encoders use AFAIK.
+  \item[MP2] MP2 specs do not support M/S, so you'll have to use full stereo.
+\end{description}
+
+\subsection{Where can I find more information about audio coding formats and techniques?}
+
+\hyperlink{http://www.audiocoding.com/modules/wiki/}{http://www.audiocoding.com/modules/wiki/}
+
+\hyperlink{http://www.oreilly.de/catalog/mp3/chapter/ch02.html}{http://www.oreilly.de/catalog/mp3/chapter/ch02.html}
+
+\hyperlink{http://www.hydrogenaudio.org}{http://www.hydrogenaudio.org}
+
+\subsection{What is the best lossy audio format for me to use?}
+
+As you should know, forum rules prohibit asking what's best. In general your own ears are the best
+answer to this question. There are several excellent listening tests here that will help you to
+choose your audio format.
+
+\subsection{When converting, is it better to downsample my DVD audio to 44.1 KHz or keep it at 48 KHz?}
+
+Unless you have to meet a standard's specifications, such as 44.1 KHz for SVCD, there is usually no
+reason to downsample audio to 44.1 KHz. It is possible that downsampling will introduce rounding
+errors when finding new sample points, which will degrade the quality, but when using a high quality
+resampler such as SSRC, this quality loss will be extremely miniscule. It can also be argued that
+certain audio encoders, such as Lame, are better tuned for 44.1 KHz, but these differences are also
+very miniscule.
+
+\subsection{How can I change the samplerate of a wave file?}
+
+Download SSRC from doom9's download page, and use the following command:
+
+Code:
+\begin{lstlisting}
+ssrc --rate 44100 input.wav output.wav
+\end{lstlisting}
+
+In this case, the destination sample rate is 44.1 Khz (44100 Hz).
+
+\subsection{What is SPDIF and when is it used?}
+
+SPDIF (Sony Phillips Digital Interface) is a physical digital interface (\_not\_ analog). The
+connection can be either coax or optical (fibre) meaning in general it should provide less noise
+interference from my experience (varies depending on hardware and source). The SPDIF interface can
+pass PCM, DTS or Dolby Digital streams to your receiver/amplifier for decoding. In theory, your
+SPDIF capable sound card passes the audio packets without modification (It's theory because much
+discussion has taken place as to if Creative's sound cards alter packets).
+
+\subsection{Is it possible to backup music from a concert dvd into an audio cd?}
+
+Yes, the AC3/DTS needs to be demuxed and then converted to a PCM-WAV, Dolby Digital-Wav, or DTS-Wav.
+
+Checkout BeSure from doom9's download page. It can create DTS-CD, AC3-CD \& plain CDDA.
+
+\subsection{When transcoding 5.1 AC3 to 2-channel audio, which AC3 stream should i decode? 5.1 or 2.0?}
+
+The 2.0 stream has a better mix for 2 channels than the 5.1 to 2.0 downmix features offered by AC3
+decoding tools. Therefore, it should be best to work with the 2.0 stream. Transcoding the 5.1 stream
+and downmixing it manually will only be useful for users who have a surround system that has a Dolby
+ProLogic (II) decoder. Some 2.0 tracks aren't downmixed for Pro Logic, so you must take the origianl
+5.1 track and downmix it with a transcoder that is capable of doing it. More info on Dolby ProLogic
+\& Dolby Surround can be found here.
+
+\subsection{How can I extract an audio stream (AC3/MP3/OGG/WAV) from an AVI file?}
+
+Download VirtualDubmod and open your AVI file. Click streams $->$ stream list. Click on the audio
+stream you want to extract; then click demux to remove the stream losslessly, or click decode to
+decompress the audio to a .wav file. This will work for any audio stream in an .avi file
+(first/second etc.)
+
+\subsection{How can I split my AC3/DTS/AAC/MP3/MP2/MPA/WAV track into several seperate, shorter,
+tracks?}
+
+Use BeSplit, it was written especially for that. Note that Chapter-X-tractor can generate BeSplit's
+commandline for .ifo files.
+
+An alternative for DTS is DTS Trimmer/Concatenator.
+
+\subsection{My AVI plays with no audio. What can I do?}
+
+First of all, reread the forum rules, you will get no help with downloaded or illegally obtained
+files here.
+
+If the file was created by yourself, you'll simply need to install a DirectShow filter capable of
+rendering the the audio format. Check Doom9's download page for some common audio filters. GSpot,
+also available on the download page, can be of assistance in identifying what audio is contained
+within an AVI.
+
+\subsection{Please post a list of the most recommended winamp plugins.}
+\begin{description}
+  \item[AC3] http://sourceforge.net/projects/winampac3/
+  \item[AAC/MP4] http://www.audiocoding.com/download.php
+  \item[MPA/MP2/MP3] http://www.mars.org/home/rob/proj/mpeg/mad-plugin/
+  \item[DTS] http://sourceforge.net/projects/in-dtsc/ (under development) (for DTS playback, you
+could also use the Winamp's directshow plugin together with WinDVD's dts directshow filter).
+\end{description}
+
+\subsection{Can I decrypt/rip/create a DVD-A (DVD-Audio) disk? What format does DVD-A use?}
+
+DVD-A uses either LPCM or a lossless encoding called MLP (Meridian Lossless Packing), and supports
+up to 24 bit and 192 KHz audio. Due to the strong encryption and watermarking of DVD-Audio,
+decrypting of DVD-audio discs is difficult at best. However, there are now some primitive tools for
+working with DVD-audio discs if you are lucky enough to own certain versions of WinDVD. See this
+thread or this post for DVD-Audio ripping techniques. Finding the required software will be
+difficult as anyone hosting the files is threatened with a lawsuit.
+
+Another possibility for extracting the audio would be to attach the S/PDIF out of your DVD-A player
+to the S/PDIF in of your soundcard. Due to the strong encryption of the DVD-A format and the
+extremely high cost of MLP decoder licenses, there may never be an ideal solution for ripping DVD-A.
+
+As far as creation goes, the dvd-audio project aims to provide audio enthusiasts with a set of free
+software tools to enable the authoring of DVD-Audio disks compliant with hardware DVD-Audio players,
+plus a software player for such disks. Note that this project is still in an early stage of
+development.
+
+If you have deep pockets, minnetonka's discwelder chrome is a commercial DVD-Audio authoring
+application.
+
+\subsection{Is it possible to use Musepack (MPC) audio with video?}
+
+At this time it is not yet possible in any container format. The developers of Matroska have plans
+to include Musepack audio in Matroska, but due to the opinion of the lead developer of Musepack and
+the bitstream format of Musepack this will not happen until the SV8 bitstream (the next version of
+Musepack) is finalized. However there may be a Musepack SV7$>$'SV7.5' bitstream converter, so your
+current MPC files might be possible in Matroska in the future.
+
+\subsection{How can I convert the frame rate of my audio with freeware?}
+
+First of all, for the nth time, audio does not have a framerate. When someone talks about changing
+the framerate of audio, they are talking about time stretching the audio to match a video framerate
+that has been converted. FRC conversions can be done with several commercial tools, but that is not
+the focus of this FAQ, use google to find these.
+
+A 'framerate conversion', which we will refer to as a speed changing operation, can be done either
+with or without pitch correction. When done without pitch correction, if the speed change is large,
+you will notice that the audio sounds too high or low pitched, much like changing the speed of a
+tape or record player. Such an operation can be done with BeSweet, simply add a Code:
+\begin{lstlisting}
+-ota( -r 23976 25000 )
+\end{lstlisting}
+
+to your ota section of your besweet commandline, where in this case the original video framerate was
+23.976 and the final framerate is 25.000.
+
+A speed change with pitch correction is also known as a tempo change; the speed at which the audio
+played back changes without chanigng the pitch from the original. to do this, you can use the
+freeware tool Audacity, or use BeSweet v1.5b28 or newer with the commandline : Code:
+\begin{lstlisting}
+-soundtouch( -r 23976 25000 )
+\end{lstlisting}
+
+
+\section{Dolby Digital/AC3 FAQ}
+
+\subsection{What is AC3? Dolby Digital?}
+
+AC3, Dolby Digital, Dolby Surround AC3, A/52, and Audio Coding version 3 are all names for the same
+general purpose lossy encoded audio format developed by Dolby Laboratories. AC3 is most commonly
+used in 5.1 channel form and is the successor of Dolby Pro Logic, the difference being that AC3
+carries 6 discrete channels whereas Pro Logic had matrixed surround channels. AC3 has great
+popularity, and is used in LaserDisc and DVD formats at 384-448 kbps and also quite commonly in
+cinema, usually at 640 kbps.
+
+\subsection{How can I transcode/encode AC3? Are there any freeware encoders?}
+
+Sonic Foundry Soft Encode, one of the most popular AC3 encoders, is no longer developed, the AC3
+encoder is now available as a plugin for Sonic Foundry's Acid. Buy it here.
+
+Surcode also sells several good AC3 and DTS encoding softwares.
+
+Of the several commercial encoders available, all known commercial encoders are based on the Dolby
+software encoder. SonicFoundry SoftEncode and other older AC3 encoders use Dolby v 6.6.2, newer
+encoders such as the SonicFoundry Acid plugin use Dolby v 7.
+
+The only free encoder is part of the ffmpeg project and is generally considered to be not as high
+quality as a commercial encoder using the Dolby libraries. However, incompatibilities with AC3 specs
+should be solved now, and using BeSweet 1.5b26 or later is a good choice for free, multichannel AC3
+encoding.
+
+It's not recommended to transcode a 5.1 AC3 file below 224kbps due to quality degradation.
+
+\subsection{What about AC3 encoding under linux/*nix?}
+
+FFmpeg, a native linux application, supports AC3 encoding via libavcodec, as does mplayer, vlc, and
+other libavcodec-based apps. An AC3 transcoding example command line is: 
+
+\begin{lstlisting}
+ffmpeg -i input.ac3 -acodec ac3 -ac 6 -ab 256 output.ac3
+\end{lstlisting}
+
+\subsection{What's the difference between normalization and dynamic range compression?}
+
+Normalization applies gain to all the audio, essentially multiplying everything by a common factor
+in order to max out the use of the 16 bits you have in most wav files. Normalization preserves the
+dynamics of the original recording, meaning that the relationship between loud and soft stays the
+same, except that everything is now louder by the same factor.
+
+Dynamic range compression basically amplifies softer parts more than louder parts, to bring soft and
+loud closer together and lessen the contrast between, say, explosions and background music.
+
+\subsection{Where can I get some comprehensive information on encoding AC3?}
+
+There is an excellent guide available courtesy of SomeJoe.
+
+\subsection{How can i join AC3 files?}
+
+Let's say you want to join stream1.ac3,stream2.ac3,stream3.ac3 into stream.ac3.
+
+create a listfile. join.lst:stream1.ac3,stream2.ac3,stream3.ac3
+
+Use BeSplit :
+\begin{lstlisting}
+BeSplit -core( -input join.lst -output stream.ac3 -type ac3 -join )
+\end{lstlisting}
+
+\subsection{What can I do if I'm having trouble adding an AC3 file to a DVD project?}
+
+First try fixing it with BeSplit. If there is still a problem, it could be a VBR AC3 that your
+authoring program doesn't support so reencode it to CBR (see Q\#2 for AC3 encoders).
+
+\subsection{Which software do I need to install for AC3 playback?}
+
+Download Valex's AC3filter audio filters and install. This filter is highly recommended over any
+other AC3 capable filter, it's very feature rich and best of all it's open source. Please read over
+his excellent documentation for a full understanding of all the capabilities of the AC3filter. Valex
+frequently updates the package so you might check Doom9's news or the AC3filter page often.
+
+Secondly, you will need to use your favorite media player to playback the media container (ie. OGM,
+MKV, or AVI) which has the embedded the AC3 track.
+
+\subsection{How do I determine if the filters are registered and installed correctly?}
+
+If the filter isn't installed correctly you'll typically see an error when playing back the media
+file such as ``DirectShow can not render the file''. Open GraphEdit (can be found in Doom9's
+download section), select Graph$>$Insert Filters (Ctrl-F). A dialog should appear and you can double
+click the Direct Show category. This will display all DS filters that the system has registered and
+are available for use. Double click on a filter to see the path where the filter file resides on
+your drive (ie. C:\\Program Files\\AC3Filter\\ac3filter.ax). If the filter doesn't show up in GraphEdit
+then most likely a problem with the install occurred and you should attempt an uninstall of the
+AC3filter and then reinstall using the supplied installer.
+
+If the filter still isn't being loaded in your media player or GraphEdit then try manual
+registering. First verify where the filter physically resides by doing a search for ac3filter.ax,
+typically it will be in the path I note in the next line. Then open a DOS window prompt-$>$type
+C:\\Program Files\\AC3Filter\\. At this point we can now register the filter by typing regsvr32
+ac3filter.ax, you should see a dialog pop-up indicating the filter registered properly. As an
+alternative you could try the Moonlight Odio Dekoda from Elecard here (has much less features than
+Valex's AC3filter but better than Intervideo)- http://www.elecard.com/download/
+
+\subsection{Why don't I hear any sound or the sound is garbled during playback?}
+
+Typically this problem is due to the way your system or media player is configured. The quick fix
+might be to check if your media player is using ``DirectSound'' or ``WaveOut''. Most systems use
+``DirectSound'' by default and will work fine but if you experience problems then try using
+``WaveOut'' instead. Some users have also reported they have to use the Default Direct Sound device
+selected for proper playback (ie. Default Direct Sound Audigy). To switch DirectSound/WaveOut
+output, use the WaveOut fix package available on the Doom9 download page.
+
+\subsection{Why does the sound sometimes stop in the middle of my movie and then come back on?}
+
+Drop outs of audio over SPDIF can be caused by a poor quality power supply or you may need to
+purchase a surge protector to regulate current. Also, audio drop outs can be caused by a poor
+quality optical or coax cable. Some users have reported poor PC power supplies to be the cause as
+well. As a last thought, I have experienced drop outs if broken muxing tools such as NanDub was used
+with too tight of settings (ie. 64/64ms). More about muxing the AC3 follows below.
+
+\subsection{The AC3's volume seems low during playback, what can I do?}
+
+Check your receiver manual to see if your amp supports DRC(Dynamic Range Control) which can increase
+the volume dynamically for AC3, thus making lighter sounds play louder and compressing the overall
+range.
+
+Also, Valex's AC3filter will allow you to manually adjust the master gain, DRC and has a built-in
+equalizer as well. If your passing the sound over SPDIF then the majority of the filters settings
+will have no effect in order to pass the AC3 stream to your amp properly. Remember, the AC3 packets
+can not be altered or your amp would not detect the stream properly. Valex's filter of course
+complies with this requirement.
+
+\subsection{Does the muxing software and settings affect AC3 playback?}
+
+If you plan to pass the sound through SPDIF and use AVI then the answer here is clearly yes. Thanks
+to the great AVI muxing software (AVImux GUI) from alexnoe, perfectly smooth playback with AVI/AC3
+can be achieved easily. AVImux GUI is highly recommended to mux AC3 into the AVI container. Until
+now we were pretty much limited to using NanDub for AVI muxing but recently it was discovered that
+the muxing code in NanDub is serious flawed. Therefore, it's no longer advised to use NanDub for any
+type of muxing. Now that we have AVImux GUI, in general we no longer have to worry about the
+interleave values and just use the default 500/75 provided. Please read the forum threads and the
+AVImux documentation for more details. You can find the latest builds on alexnoe's home page here or
+grab it from Doom9's download section. If you're using CD media to play back from and the CD drive
+is being accessed excessively causing playback problems then you might want to try an AVI file using
+AVImux. AVImux will cut down on the CD drive access considerably thanks to the nice ``rec-list''
+feature implemented. VirtualDubMod is also an excellent choice for AC3 in AVI muxing.
+
+
+Additionally, using a modern container format such as OGM or Matroska will cut down on muxing
+problems, these formats generally have no problems muxing AC3. For matroska muxing try MKVmerge or
+for OGM muxing OggMux\_Nic.
+
+\subsection{What effects might I see if the AC3 files have been muxed improperly?}
+
+The most common problem seen if broken muxing software (NanDub) was used is to have jerky pan \&
+scan scenes during playback or audio stutters. Another common problem might be excessive CD drive
+activity as mentioned above. Watch a movie closely when the camera pans from left to right or vice
+versa, it should be very smooth. An easy way to compare is to watch your ripped AVI without any
+audio muxed and then watch the same clip after you have muxed the AC3, you should not see any
+difference in regards to smooth playback (ie. Pan \& Scan scenes). One last common symptom of a
+poorly muxed file is to hear the audio stuttering or dropping out during play, especially during
+high action scenes.
+
+\subsection{Why doesn't WinAmp playback AC3 files properly?}
+
+WinAmp doesn't support AC3 files natively. Valex has once again come to our rescue and provided an
+excellent plugin though. The AC3 plugin can be found here.
+
+\subsection{How can I playback a Dolby Digital wav (ddwav) on my PC?}
+
+VideoLan's VLC player version 0.7.1 and up supports playback of DDWavs and Dolby Digital-CDs.
+
+Alternatively, you could first extract the 5.1AC3 stream from the DD-WAV using BeSplit and then play
+it in any player that is capable of playing ac3. An example command line is:
+
+\begin{lstlisting}
+BeSplit -core( -input live.wav -output e:\track01.ac3 -type ddwav -fix )
+\end{lstlisting}
+
+\subsection{What troubleshooting can I do to fix S/PDIF playback?}
+
+If you're still having problems troubleshooting, you can render the file in GraphEdit to get an idea
+on which filters might be needed. In GE, select the File Menu-$>$render media file$>$load GraphEdit,
+add a File Source (Async) DirectShow filter, select your AVI file and to render it (right click on
+Output / Render Pin) to see what happens. That's how you'll know if DirectShow isn't able to
+properly render the file.
+
+It's been reported that Cineplayer's audio filter provides better SPDIF playback compared to say
+Intervideo. Cineplayer's filter is also reported to work with SoundBlaster Live 5.1 cards with
+little effort. Valex's AC3 filter is still preferable due to it's ease of use and many features.
+Disable or uninstall the Morgan Stream Switcher filter. This filter can cause playback problems
+(e.g. stutter/skipping). The filter name is mmswitch.ax. Try the following command in the directory
+where the file is located- regsvr32 /u mmswitch.ax
+
+
+If you're running Windows 2000, make sure you have at least Service Pack 2 and the latest sound card
+drivers are installed. SP2 solves some SPDIF out issues.
+
+DirectX 8.1 and up is highly recommended. WinXP should have 8.1 already installed.
+
+\subsection{Any tips for Soundblaster sound cards?}
+
+The original Live Value(CT4780) cards requires a ``stereo'' 3.5mm mini plug and the newer models
+require a ``mono'' cable. If your sound card has an optical/Toslink or coax port, this will provide
+the most optimal quality, this compared to the multi channel analog ports. It's possible that the
+coax can get interference known as EMI, although this is very rare.
+
+On the SoundBlaster Live card software, make sure ``Bypass SPDIF'' option is \_not\_ checked.
+
+Windows 9x/ME: In the SB mixer, check ``digital out only''. Also, uncheck ``decoded AC3'' and
+uncheck ``bass redirection''. Start your favorite media player and select SPDIF out in the audio
+configuration.
+
+Windows 2000: At least install service pack 2 or later. Install SoundBlaster drivers v3512. In the
+SB mixer, check ``digital out only''. Also, uncheck ``decode AC3'' and uncheck ``bass redirection''
+Start your favorite media player and select SPDIF out in the audio configuration.
+
+Windows XP: This OS should not require any tweaking, driver shuffles or service packs for proper
+playback and SPDIF setup.
+
+The Creative LiveWare software 5.1 sound test will not work for all 6 channels. It's best to test
+your connection with a Dolby Digital 5.1 DVD if possible.
+
+If you currently own a SoundBlaster 5.1 or a Live! model and are using SPDIF, your advised to buy
+the Hoontech adapter which allows correct voltage out for SPDIF. Link-http://www.hoontech.com/
+(Important when using an IDE cable: The colored side of the cable should be on pin 1 on both
+Hoontech and SoundBlaster card!)
+
+Also, see the Creative FAQ for the 5.1 sound cards
+
+Creative's Audigy can not decode DTS but it can pass it via SPDIF. The card can pass both DD and
+DTS as well as decode Dolby Digital also. It was pointed out by Goa333 that it might be a good idea
+to do a listening test between your AC3 decoding options such as WinDVD, PowerDVD, Sound Blaster AC3
+hardware decoding and of course an external AC3 decoder. Your quality might be much better using one
+or the other. It has been reported that the Audigy card might suffer with AV sync problems using
+Wave Out as the audio device. Instead of setting this to ``Wave Out'' within the software player,
+it's possible ``DirectSound SBAudigy Wave Device'' might solve sync problems if experienced.
+
+\subsection{Any AC3/spdif information for linux?}
+
+All the popular players for linux (xine, mplayer, vlc) include AC3 decoding support 'out of the
+box'. For s/pdif output, your player will need must also be ALSA (advanced linux sound architecture)
+compatible. Steps to using alsa are as follows:
+
+1. Make sure your sound card is supported by checking alsa-project.org.
+
+2. Make sure your kernel has alsa support compiled in. ALSA is the default sound architecture in the
+2.6.x kernels, and many 2.4 kernels shipping with distributions are compiled with alsa built-in.
+
+3. Install software \& set up your soundcard: make sure you have the alsa-driver, alsa-lib and
+alsa-utils installed (may be called something else in different distributions) and run alsaconf. You
+will be prompted to select your soundcard. If you have no error messages, then run alsasmixer to set
+your default levels. Make sure to activate the S/PDIF output if you wish to use it. On my card, this
+is referred to as ``IEC958 output''.
+
+4. Install a player with alsa support. The simplest way to see if mplayer has alsa support is to
+type 'mplayer -ao help' and see if alsa is one of the choices. If your mplayer does not contain alsa
+support, simply build mplayer from source, and if you have alsa-lib (+ alsa-lib-devel on some
+platforms) mplayer will detect and compile in alsa audio out support. Then add a '-ao alsa' to your
+playback command or your mplayer.conf file, and the alsa output will be used. To playback AC3 over
+spdif, you'll also need to add a '-ac=hwac3' switch to your commandline. Alternatively you can add
+'ac=hwac3,' to your mplayer.conf file (note the comma after hwac3), which will cause mplayer to try
+ac3 pass through first on any file and then other codecs.
+
+http://www.linuxdvb.tv/documentation/ac3sound.html http://www.au.linuxvideo.org/
+http://liba52.sourceforge.net/
+
+\subsection{Is it possible to record AC3 via SPDIF in?}
+
+Yes. For a guide and discussion, see this post and the comments that follow.
+
+\section{AAC FAQ}
+
+\subsection{What is AAC?}
+
+AAC stands for Advanced Audio Coding which is a general purpose lossy audio compression format
+defined by the MPEG-4 standard and developed by Fraunhofer, Dolby, Sony and AT\&T as major
+contributors. It is the natural successor of MPEG Layer III / MP3 in the new multimedia standard
+MPEG-4 that uses MP4 as the container format for all kinds of content. AAC is able to include 48
+full-bandwidth (up to 96 kHz) audio channels in one stream plus 15 low frequency enhancement (LFE,
+limited to 120 Hz) channels, up to 15 data streams and much more
+
+
+\subsection{What are HE-AAC and LC-AAC?}
+
+Both are different profiles of the MPEG4 AAC standard. LC means ``low complexity'' and HE means
+``high efficiency''. HE-AAC is also called AAC SBR/AAC+/aacplus, etc. Note that HE-AAC is meant to
+be used for low bitrate encoding and it is great for multichannel files (smaller filesize). For
+HE-AAC files, a HE capable decoder is required as well, see Q6. If you want to see comparison with
+other popular audio codecs at 64kbps, look here (Thanks to rjamorim )
+
+More technically, HE-AAC is the combination of AAC and SBR. SBR stands for Spectral Band
+Replication. The point of SBR is to encode at low bitrate the entire frequency range without
+introducing additional artifacts. Traditionally, at low bitrates, audio codecs had the choice of
+reducing the frequency range and downsampling (see the MP3 FAQ \#7) or introducing unpleasant audio
+artifacts. SBR fixes this problem by leaving the underlying codec to code the low range of
+frequencies, and the SBR decoder generates the high range frequencies through analysis of the low
+frequencies, along with guidance information embedded in the bitstream at a very low bitrate (~2
+kbps). Therefore this is why using a non-SBR decoder is a very bad idea, as your bandwidth
+(frequency response) will be severly limited. It can also be seen why this is called Spectral Band
+Replication, as the frequencies are replicated, and not reconstructed. For more information on SBR
+technologies see here and here.
+
+Like with MPEG-4 Video, AAC comes in different Profiles, from which the Low Complexity (LC AAC)
+Profile (aka MAIN $@$ Level 2) is the one most widely used in the consumer market (for example in
+Apple's very popular iTunes music store)
+
+other profiles are for example the Long Term Prediction Profile (LTP), Scalable Sampling Rate (SSR)
+or Low Delay (LD)
+
+\subsection{How can I encode AAC?}
+
+LC Profile Only:
+\begin{itemize}
+  \item FAAC (Free Advanced Audio Coder): free and open source LC-AAC $[$CLI, DirectShow (3ivx), foobar, CoolEdit,WinAmp$]$
+  \item Apple's AAC: CBR only with quicktime $<$7, quicktime 7 and later include VBR AAC. Apple's codec does not handle multichannel. $[$Quicktime Pro, iTunes$]$ iTunes uses the same codec but is freely available. A command line encoder that uses the quicktime codec is also available. The iTunes/apple codec is based on the original Dolby code and has also been tuned for quality significantly, despite the fact that it is CBR only the quality is quite good.
+  \item PsyTEL AACENC: Don't use it for multichannel as it produces wrong channel mapping! $[$Commandline, AACMachine (GUI using BeSweet) $]$
+  \item Dicas' Compaact AAC encoder
+  \item Sorenson AAC Encoder
+  \item Winamp version 5 and up features an LC AAC encoder based on Dolby code, but without as much tuning as iTunes.
+\end{itemize}
+
+LC \& HE Profile:
+\begin{itemize}
+  \item Nero Burning Rom ( Encode files in extras menu ) and accompanying Wave Editor allows both LC and HE AAC encoding. Alternative Nero AAC/MP4 plugins are available at cd-rw.org
+  \item RealPlayer 10 Gold and Real Producer 10 also include a HE/LC AAC encoder based on Coding Technologies' implementation. RP10 Gold now encodes to AAC in M4A by default, and is an excellent free AAC encoding solution. To encode HE AAC with Real Producer, you will also need the addon package from helix.
+\end{itemize}
+
+GUIs/Frontends:
+\begin{itemize}
+  \item BeSweet: Thanks to DSPguru Nero AAC can be encoded through BeSweet. There are also two excellent GUIs, OagMachine with an accompanying Doom9 guide and BeSweetGUI. Note: BeSweet users need to make sure to use an updated build, for more info read Q\#19.
+  \item foobar2000: With the nero aac encoder/decoder plugin (foo\_nero.dll) you can directly transcode any audio to Nero LC/HE AAC, again a guide is available. Note that you need foobar\_special version for disk writer plugin. Foobar can also encode to FAAC aac with the diskwriter plugin and a command line build of FAAC (available from rarewares).
+  \item Recent versions of HeadAC3he also can encode to FAAC aac from AC3, WAV, or any of the other supported HeadAC3he input formats.
+  \item winLame, the multi-tool GUI by DeXt, now supports AAC encoding via FAAC.
+\end{itemize}
+
+
+quality comparison of LC AAC with other good formats $@$ 128kbps (thanks to rjamorim):
+
+note that lame (the best mp3 codec available) and vorbis provide in their latest versions much
+better quality (as you can see here)
+
+also note that the wma codec used in this test is wma9 pro, which is a totally different and better
+quality providing codec than the standard wma9 codec (which is the one used in music stores and cd
+players) and to which its not backwards compatible
+
+when it comes to low bitrates and multichannel encoding AAC offers the High Efficiency extension (HE
+AAC), making it one of the best formats in the low bitrate range too:
+
+quality comparison of HE AAC with other popular formats $@$ 64kbps (thanks to rjamorim):
+
+note that QT is the LC AAC codec offered in Quicktime, He is the HE AAC codec offered in Nero
+
+when it comes to very low bitrates also the Parametric Stereo extension (PS AAC), which uses HE AAC
+at the same time too, has to be mentioned (Nero is working on an implementation). How it does
+compared to other codecs at 32kbps can be seen here
+
+The results of public listening tests conducted by rjamorim, comparing these AAC codecs at 128kbps
+are available here and here
+
+\subsection{What about encoding AAC under other platforms (Linux, MAC OS 10, etc.)?}
+
+FAAC and FAAD, being GPL software, can be built under OS X, Linux, and most other unixes. The FAAC
+codec is also implemented in avidemux, mencoder,gstreamer, and other encoding tools. Most major
+multimedia-capable distributions include these packages.
+
+General FAAC compiling instructions are as follows: (taken from the FAAC documentation)
+
+\begin{lstlisting}
+1. Make sure you have autoconf, automake and libtool installed. For MP4 support, you must have
+libmp4v2 (included in older source of faad2, or recent cvs source of FAAC) installed.
+
+2. Unpack the source archive: tar xvzf faac-x.xx.tar.gz
+
+3. cd to FAAC source dir
+
+4. Run: ./bootstrap
+
+./configure
+
+make
+
+make install
+\end{lstlisting}
+
+Binary packages are also availble for several platforms:
+Debian
+RPMs
+
+\subsection{Is it possible to convert AC3/DTS to AAC and preserve 5.1?}
+
+Yes, it is possible with Oagmachine/BeSweetGuI. Doom9 has a guide available. However, keep in mind
+that AC3 and DTS are lossy formats, and any transcoding of these sources will result in a
+significant reduction of quality. HE-AAC is recommended for 5.1 encodes when a great reduction of
+size is desired. 5.1 transcoding is also possible using the 3ivx filter suite along with graphedit
+(AC3-$>$AC3 parser-$>$AC3 filter-$>$3ivx audio encoder-$>$3ivx media muxer-$>$MP4) or foobar2000. For more
+information on AC3 and DTS transcoding see the respective FAQs.
+
+\subsection{Is there an opensource AAC encoder/decoder available?}
+
+FAAC and FAAD2 are an open source AAC encoder (LC only) and decoder respectively. The CoreAAC
+Directshow filter, winamp plugin, and many other AAC decoders are derived from FAAD2 which has the
+abillity to decode HE-AAC as well as LC. The official website of FAAC/FAAD2 is www.audiocoding.com.
+
+\subsection{How can I mux AAC into AVI/OGM/MKV/MP4?}
+
+AVI: AVI MUX GUI is the only application that currently allows AAC muxing in avi. Note that AVI is
+not recommended for AAC as modern containers such as MP4 (which is AAC's native container).
+
+OGM: Ogg Mux Nic can be used for direct muxing of LC AAC into OGM. For HE-AAC, use the 3ivx filter
+suite and Graphedit.
+
+MKV: MKVtoolnix and AVI MUX GUI can both be used to mux AAC in Matroska.
+
+MP4: 3ivx filter suite and Graphedit.
+
+Nero Recode2 automates direct transcoding of DvD to NeroDigital and HE AAC in the MP4 container.
+Other tools that support MP4 muxing include Ivan\&Menno and mp4UI. For more information on the MP4
+(MPEG-4) container format see the MP4 FAQ.
+
+Note that when muxing HE-AAC from raw .aac streams, you have to indicate to the muxer that ``AAC is
+SBR'' in MKVtoolnix and AVImux GUI. When muxing .mp4, SBR is automatically detected.
+
+\subsection{What do I need for AAC playback?}
+
+Download and install the CoreAAC DirectShow filter or the 3ivx audio decoder (bundled with 3ivx
+codec), both are excellent for AAC (Both LC and HE) playback in any directshow compatible media
+player. For the latest CoreAAC filter and winamp/foobar plugins, refer to john33's thread at
+HydrogenAudio.org.
+
+Note that for MP4 streams, 3ivx or another MPEG-4 splitter is required for playback in DirectShow
+compatible media players. For raw AAC streams, the AACparser filter from rarewares is required. When
+muxing in OGM or Matroska, an appropriate splitter is needed as well. See the FAQs in the New
+Container Formats forum for more information.
+
+\subsection{What about playback of AAC under linux / *nix?}
+
+Any relatively recent build of mplayer includes both MP4 file format support and AAC decoding via
+FAAD. FAAD is included in the mplayer source code, and should require no additional libraries or
+compilation.
+
+VLC supports AAC and MP4 as well, but if you build VLC from source you'll need to have FAAD
+installed for AAC support. As always you should check through the VLC required libraries list before
+building VLC from source.
+
+\subsection{What's the difference between MPEG-4 and MPEG-2 AAC?}
+
+There is practically no difference between MPEG-2 and MPEG-4 AAC streams except in the header. But
+there are some applications like QuickTime which don't accept MPEG-2 AAC. Use Ivan \& Menno to change
+the header. Other programs capable of the header fix are Nic's AAC Patch or foobar2000.
+
+\subsection{What is the difference between *.AAC and *.MP4 and *.M4A?}
+
+AAC files usually contain AAC with ADTS headers or raw AAC data streams. Raw AAC cannot be processed
+without decoding some of the stream. MP4, on the other hand, is a container format of the MPEG4
+standard which can contain AAC streams and many other things. The data format of the two is very
+different and hence you cannot rename them to one another, they must be muxed (put into the
+container) or demuxed. Muxing of AAC into MP4 and demuxing can be done with Ivan \& Menno. M4A is
+normally audio in an MP4 container that has been renamed to clarify that it is audio only. Itunes,
+Winamp5, and Realplayer gold encode to M4A now by default. Note that M4A and MP4 files can be
+switched to each other by simply renaming, since they are both extensions for the same container
+format.
+
+Note that the ``Export ISO 13818-7 Stream'' option in the Nero encoder produces *.AAC files with ADTS
+headers. Again this is not a raw aac stream, Ivan \& Menno is required to convert to raw aac.
+
+More information on the MP4 container format can be found in the appropriate FAQ. 
+
+\subsection{How can I split and join AAC files?}
+
+AAC in MP4:
+
+MP4Box can be used for splitting and joining all MP4 files including those with AAC audio. See this
+thread for full information.
+
+MP4 with AAC inside can also be edited by QuickTime Pro.
+
+Raw AAC streams:
+
+Raw aac streams (*.aac) can be split and joined by using BeSplit.
+
+Splitting:
+Code:
+
+besplit -core( -input in.aac -prefix out -type aac -ending ) -split( 0.0 x.x )
+
+This command-line would cut in.aac into two parts: 0.0 s up to x.x s and x.x s up to the end of the
+file (-ending).
+
+Joining:
+
+First create a list file, which is a text file listing each file to be joined on a separate line.
+Then save as join.lst and use BeSplit:
+
+Code:
+
+besplit -core( -input join.lst -prefix out -type aac -join )
+
+AAC streams (*.aac) can also be joined via command prompt:
+Code:
+
+copy /b first.aac + second.aac joined.aac
+
+\subsection{What are the pros and cons of the AAC audio format?}
+
+Pros:
+\begin{itemize}
+  \item Low bitrate (with comparable quality to other codecs) and hence low filesize, with SBR in
+  specifications.
+  \item Multichannel (up to 48 full bandwidth channels can be implemented)
+  \item AAC is the official audio format of the MPEG-4 standard, and future hardware support is very likely.
+\end{itemize}
+
+Cons:
+\begin{itemize}
+  \item No standalones that playback AAC are available at this time.
+  \item AAC is heavily patented technology.
+\end{itemize}
+
+
+\subsection{Is it possible to pass AAC over S/PDIF?}
+
+It is possible, although it has not yet been fully implemented. Only a few hardware devices
+currently support AAC decoding, and no DirectShow filter has yet been implemented with AAC
+pass-through ability. However, this is definitely a possibility for the future. Read more about
+S/PDIF and AAC hardware support here and here.
+
+However, until AAC over SPDIF becomes more viable, there are several DirectShow filters that can be
+used to encode six channel AAC to AC3 over S/PDIF on the fly. Dolby Out DS filter by Haaan , as well
+as 1.x versions of AC3Filter can be used for this purpose. Although this reencoding on the fly
+process will theoretically result in a quality loss, using the full 640 kb/s bitrate allowed will
+result in an excellent listening experience and minimal quality loss.
+
+\subsection{How are bitrates divided among channels in 5.1 LC and 5.1 HE AAC? What bitrate should be used for 5.1 AAC to be equvalent in bits/channel to 128kbps?}
+
+For the bits/channel to be the same, one must add 2x(bitrate per stereo)(FL,FR,RL \& RR)+ 1x(mono
+bitrate(Centre))+ a small additional bitrate for lfe. Therefore the total bitrate should be about
+2.5-3x as much as stereo to achieve the same bits/channel. So to achieve the datarate equivalent to
+128kbps stereo: 128kbps*2.5=320 kbps. 320kbps is a good quality bitrate for LC AAC. However due to
+the efficiency and channel coupling of AAC, one can encode HE-AAC at 128kbps and still have decent
+quality and 5.1 channels.
+
+\subsection{At what bitrates is the HE-AAC profile used in Nero?}
+
+For CBR settings, 96kbps and below use HE-AAC. For VBR settings, streaming profile and below can
+produce HE-AAC. If your input source is 5.1 aiff , then HE AAC can be produced at 128kbps using Nero
+only.
+
+\subsection{What gain setting should I use to encode AAC with BSN/Oagmachine?}
+
+Eventhough BeSweet/Bsn has implemented Hybrid gain, there are no Directshow filters capable of using
+the hybrid gain information at this time. So it is not recommended at the moment. Instead use
+normalization or pregain.
+
+\subsection{Is there any AAC ACM codec that can be used with VirtualDub?}
+
+There is currently no ACM AAC codec due to AAC and AVI not being completely compatible. In the FAAC project this was once attempted and never finished.
+
+\subsection{Encoding doesn't start with Besweet/Nero, i have installed all the BeSweet and Bsn files. Please help?}
+
+For BeSweet/BSN/Oagmachine/BeSweet GUI to encode Nero AAC, three dlls from a valid nero installation
+are needed: 'aac.dll', 'aacenc32.dll' and 'NeroIPP.dll'. These dlls need to be put in the BeSweet
+folder. From version 60023 onwards aac.dll and aacenc32.dll check for the NeroIPP dll in the
+registry, therefore a valid Nero Ultra Edition or NeroMix installation is needed.
+
+\subsection{I cannot see the Nero encoding GUI when encoding with OagMachine/BeSweet, how is it activated?}
+
+In Oagmachine, under the AAC encoding option, check ``show configuration dialogue''. If you are using
+command line, then add a '-config' to the '-bsn' section.
+
+\subsection{Why is my ac3/dts encoded at 48Khz in Oagmachine/BeSweet GUI slow when played back?}
+
+That's because you're probably using an old build of BeSweet, since the bug had been fixed in
+bsn.dll v0.21 (bundled with BeSweet). Check your BeSweet logfiles to make sure you have bsn.dll
+v0.21. More info on the old bug : The Nero encoder expects specific sample-rates depending on the
+bitrate, profile, and number of channels. When encoding using BSN earlier than v0.21, the internal
+nero resampler is not used and you must feed the Nero encoder with the correct sample rate. See this
+thread to determine your correct sampling rate and a more thorough explanation by bond.
+
+\subsection{How can I ensure my encoded AAC is HE and not LC?}
+
+Use the CoreAAC DirectShow filter properties to check ``AAC+SBR''. Foobar2000 also shows the same.
+In the 3ivx audio decoder config it is shown as HE-AAC.
+
+\subsection{What switch for multichannel should be used in Oagmachine/BeSweetGUI when using the 600X nero plugin?}
+
+Use -6chold for nero plugins earlier than or equal to v6.0011(old). Above 6.0011 use -6chnew.
+
+\subsection{My Nero encoded HE-AAC contains popping noises, what did I do wrong?}
+
+This problem occurs when you enable PNS in the Nero encoding GUI. Uncheck the PNS option to get rid
+of the problem.
+
+\subsection{Are there any recommendations for encoding with good quality with FAAC?}
+
+Yes, see the FAAC wiki and also this discussion on FAAC 5.1 encoding.
+
+\subsection{How can I convert AAC to WAV or AC3?}
+
+First you should read both this document and the AC3 FAQ to learn about the concepts and tools
+available. However if you still need a walkthrough, see this guide or this graphedit guide by
+magicclue.
+
+\subsection{Where can I find more information about AAC?}
+
+Audiocoding Wiki
+
+Coding Technologies
+
+Dolby 
+
+\end{document}

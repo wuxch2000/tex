@@ -1,0 +1,15 @@
+Dear David Korbel,
+
+I'm interested in your advertisement posted in LinkedIn for embedded software engineer. 
+
+I have worked in one of the largest telecom company for over 10 years as embedded software development engineer. Most of my development work used C/C++ language under Linux or VxWorks OS. I think my experience of development meet the requirement you ask, and I'm glad to take such challenge if possible.
+
+Plus, I'm a fan for Linux and GNU software such as Emacs, Latex.
+
+Attached is my resume about detailed information of me. 
+
+Thank you for your time and consideration.
+
+Sincerely
+
+Jason Wu

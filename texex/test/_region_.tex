@@ -1,0 +1,29 @@
+﻿\message{ !name(test_tex.tex)}
+\message{ !name(test_tex.tex) !offset(-2) }
+\documentclass[a4paper]{article}
+\title{TITLE}
+\author{}
+\date{}
+
+\usepackage{fontspec,xunicode,xltxtra}
+\setmainfont[Mapping=tex-text]{Adobe Garamond Pro}
+\setsansfont[Mapping=tex-text]{Myriad Pro}
+\setmonofont[Mapping=tex-text]{Courier New}
+\usepackage{xeCJK}
+\setCJKmainfont[ItalicFont={Adobe Kaiti Std}]{Adobe Song Std}
+\setCJKsansfont{Adobe Heiti Std}
+\setCJKmonofont{Adobe Heiti Std}
+\punctstyle{banjiao}
+
+\begin{document}
+\TeX
+
+to be {\bf bold} or to {\sl emphasize} something.
+
+{\it italicized\/} and {\sl slanted\/} words
+
+{\it italicized} and {\sl slanted} words
+
+\end{document}
+
+\message{ !name(test_tex.tex) !offset(-29) }

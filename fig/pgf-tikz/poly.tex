@@ -1,0 +1,63 @@
+﻿\documentclass{article}
+
+\usepackage{config}
+
+\begin{document}
+
+\begin{tikzpicture}[scale=1,transform shape]
+
+\node[regular polygon, regular polygon sides=100, minimum size=4cm, draw, fill=red] at (9,-20){{\Huge 100}};
+
+\node[regular polygon, regular polygon sides=400, minimum size=4cm, draw, fill=red!80] at (14,-20){{\Huge 400}};
+
+\node[circle, minimum size=4cm, draw, fill=green!80] at (19,-20){{\Huge 圆}};
+
+
+\foreach \a in {3,...,6}
+{
+\node[regular polygon, regular polygon sides=\a, minimum size=2cm, draw, fill=blue!30] at (\a*3,0)
+{{\Huge \a}};
+}
+
+\foreach \a in {7,...,10}
+{
+\node[regular polygon, regular polygon sides=\a, minimum size=2cm, draw, fill=green!30] at (
+\a*3-12,-3) {{\Huge \a}};
+}
+
+\foreach \a in {11,...,14}
+{
+\node[regular polygon, regular polygon sides=\a, minimum size=2cm, draw, fill=yellow!30] at (
+\a*3-24,-6) {{\Huge \a}};
+}
+
+\foreach \a in {15,...,18}
+{
+\node[regular polygon, regular polygon sides=\a, minimum size=2cm, draw, fill=red!30] at (
+\a*3-36,-9) {{\Huge \a}};
+}
+
+\foreach \a in {19,...,22}
+{
+\node[regular polygon, regular polygon sides=\a, minimum size=2cm, draw, fill=red!50] at (
+\a*3-48,-12) {{\Huge \a}};
+}
+
+\foreach \a in {23,...,26}
+{
+\node[regular polygon, regular polygon sides=\a, minimum size=2cm, draw, fill=blue!50] at (
+\a*3-60,-15) {{\Huge \a}};
+}
+
+% \foreach \a in {100,200,300,400}
+% {
+% \node[regular polygon, regular polygon sides=\a, minimum size=2cm, draw, fill=blue!80] at (
+% \a*3-72,-18) {{\Huge \a}};
+% }
+
+
+
+\end{tikzpicture}
+
+
+\end{document}

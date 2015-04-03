@@ -1,0 +1,87 @@
+﻿\documentclass[11pt]{article}
+\title{同行评审 速查表}
+\author{wuxch}
+\date{}
+
+\usepackage{config}
+
+% \linespread{1.2}
+\begin{document}
+\pagestyle{empty}
+
+% \pagenumbering{gobble}
+% \twocolumn[
+% \begin{@twocolumnfalse}
+%   \maketitle\thispagestyle{empty}
+% %   \tableofcontents
+% \end{@twocolumnfalse}
+% ]
+
+% \clearpage
+
+% \pageaofbfoot{1}
+
+% \section{}
+\begin{center}
+  \begin{minipage}[c]{.6\columnwidth}
+    \makebox[1\textwidth][s]{\large 同行评审 速查表}
+  \end{minipage}\footnote{\href{http://pal.zte.com.cn/pal/Application/AssetQuery/PalAssetViewDetail.aspx?AssetID=20487}{详细的PAL同行评审规程链接}}
+
+  \begin{minipage}[c]{1\columnwidth}
+    \makebox[1\textwidth][r]{\it \footnotesize IMS分中心 NGN软件开发一部}
+  \end{minipage}
+\end{center}
+
+\section{评审类型}
+
+\begin{table}[htbp]
+  % \caption{}
+  \centering
+  % \rowcolors{2}{gray!25}{gray!35}
+  \begin{tabular}{lc}
+    \toprule[1pt]
+    评审对象 & 评审类型 \\
+    \midrule
+    软件需求说明书 & \colorem{审查} \\
+    软件接口规范 & 走查 \\
+    数据库设计说明 & 走查 \\
+    软件子系统/模块设计方案 & \colorem{审查} \\
+    软件模块详细设计 & 走查 \\
+    数据库设计说明 & 走查 \\
+    软件接口规范  & 走查 \\
+    软件模块测试规程 & 走查 \\
+    程序配置清单 & 走查 \\
+    软件模块测试报告 & 走查 \\
+    工程文件及程序源代码 & 走查 \\
+    \bottomrule[1pt]
+  \end{tabular}
+\end{table}
+\pagebreak
+\section{审查要求}
+\begin{enumerate}
+\item 必须在CMI库发起流程
+\item 不得少于6人。包括：
+  \begin{itemize}
+  \item 主持人/讲解员
+  \item 记录员
+  \item 作者
+  \item 评审员
+  \end{itemize}
+\item 评审员不得少于3人，评审员必须提交至少2条预审意见
+\item CMI流程从发起到提交总结不超过1个月
+\end{enumerate}
+
+\section{走查要求}
+\begin{enumerate}
+\item 必须在CMI库发起流程
+\item 不得少于3人。包括：
+  \begin{itemize}
+  \item 主持人/记录员
+  \item 作者
+  \item 评审员
+  \end{itemize}
+\item 评审员不得少于2人，评审员必须提交至少2条预审意见
+\item CMI流程从发起到提交总结不超过1个月
+\end{enumerate}
+
+\end{document}

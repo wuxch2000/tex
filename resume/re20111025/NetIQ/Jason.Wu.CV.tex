@@ -1,0 +1,131 @@
+% LaTeX resume using res.cls
+\documentclass[margin,11pt]{res}
+
+\usepackage{config}
+
+%\usepackage{helvetica} % uses helvetica postscript font (download helvetica.sty)
+%\usepackage{newcent}   % uses new century schoolbook postscript font 
+\setlength{\textwidth}{5.1in} % set width of text portion
+
+
+
+\begin{document}
+
+% Center the name over the entire width of resume:
+ \moveleft.5\hoffset\centerline{\large\bf \textsc{Jason Wu}}
+
+% \begin{center}
+% \makebox[.5\textwidth][s]{\textsc{Wu Xiaochun}}
+% \end{center}
+
+% Draw a horizontal line the whole width of resume:
+ \moveleft\hoffset\vbox{\hrule width\resumewidth height 1pt}\smallskip
+% address begins here
+% Again, the address lines must be centered over entire width of resume:
+ \moveleft.5\hoffset\centerline{\textsf{\small 10 Parkway Forest Dr. North York, ON M2J 1L3}}
+ % \moveleft.5\hoffset\centerline{North York, ON M2J 1L3}
+ \moveleft.5\hoffset\centerline{\textsf{\small Tel: (647) 918-9825  Email: \hyperlink{mailto:wuxch2000@gmail.com}{wuxch2000@gmail.com}}}
+
+\begin{resume}
+ 
+\section{Professional Summary}
+
+\begin{enumerate}
+    \item Over 10 years experience of software development, solid programming knowledge and
+      skills especially for large scale and real-time software
+    \item Extensive experience in software development processes defined by CMM
+    \item Up to date telecom and Internet networks concepts and in-depth knowledge in practice
+    \item Quick learner around new technology
+    \item Strong communication skills in a team setting
+\end{enumerate}
+
+\section{\textsc{Skills}} 
+   C/C++ (10+ years), UNIX Shell, Lisp, \\
+   Linux, VxWorks, \\
+   GNU tools, SCM software (Subversion, ClearQuest, ClearCase),\\
+   CUnit, CppUnit, \\
+   UML, Object-Oriented Analysis (OOA), Object-Oriented Design (OOD).
+
+\section{\textsc{Knowledge}} 
+\begin{enumerate}
+    \item Real-time OS and embedded software development
+    \item IP networks and protocols
+    \item Linux system programming
+    \item Telecom networks and technologies
+    \item Next Generation Network (NGN), softswitch
+    \item IP Multimedia Subsystem (IMS) of 3GPP
+    \item SIP, H.323, H.248 (MGCP) and other related protocols
+    \item Capability Maturity Model (CMM)
+    \item Software Configuration Management (SCM)
+    \item Web Knowledge, XML, HTML and related
+    \item Project Management
+\end{enumerate}
+ 
+\section{\textsc{Experience}} 
+    \mytitle{Senior Software Development Engineer} \mydate{July 2006 - August 2011}\\
+    NGN Network Software R\&D Dep. ZTE Corporation, China
+
+    \begin{enumerate}\itemsep -2pt %reduce space between items
+    \item Analysis SIP protocol for ZTE softswitch device, a core device of Next Generation Network
+      (NGN) supporting over million users
+    \item Designed the inner architecture for protocol module using UML language
+    \item Implemented SIP protocol module (TU layer) using C language in VxWorks real-time OS
+    \item Maintained SIP protocol module (TU layer). Fixed bugs which come from customers or test
+      verification teams, using Subversion and Clear Quest
+    \item Developed special module for system optimization analysis which promote performance
+    \item Developed and maintained daily build and smoke test environments
+    \item Conducted unit test for the protocol module using CUnit
+    \item Promoted the development procedure with QA
+    \end{enumerate}
+ 
+    \mytitle{Senior Software Development Engineer} \mydate{April 2003 - July 2006}\\
+    Fixed Network Software R\&D Dep. ZTE Corporation, China
+     \begin{enumerate}\itemsep -2pt %reduce space between items
+     \item System analysis and design for ZTE VoIP gateway, a device aimed to telecom market
+       supporting to 7000 lines concurrently
+     \item Analyzed user requirements and protocols
+     \item Implemented OS interface module to provide IPC/Trace/Timer/Network functions for other modules
+     \item Designed application module's architecture for a H.323 stack module
+     \item Implemented H.323 application module of Gateway using C++ Language in Linux OS
+     \item Maintained application module. Fixed bugs which come from customers or test
+      verification teams, using ClearCase and ClearQuest
+     \item Conducted unit test for stack module using CPPUnit
+     \end{enumerate} 
+
+    \mytitle{Software Development Engineer} \mydate{April 1999 - April 2003}\\
+    IP Software R\&D Dep. ZTE Corporation, China
+     \begin{enumerate}\itemsep -2pt %reduce space between items
+     \item Analysis system requirements for H.323 protocol module of ZTE VoIP gateway for enterprise
+       market supporting 120 lines concurrently
+     \item Carried out an implement for H.323 protocol module using C Language in Windows NT OS
+     \item Performed everyday maintenance for the protocol module
+     \end{enumerate} 
+
+\section{{\textsc{Patents}}}
+
+\begin{enumerate}
+\item \textbf{Wu Xiaochun},2004, A method which enable telecom device connect to Internet from LAN,
+  China, CN02150998
+\item \textbf{Wu Xiaochun}, Wang M.,2004, A method and telephone device which supports video
+  transfer, China, CN03112926
+\item Su D.J., Bao, \textbf{Wu Xiaochun}, 2005, A method using for SIP terminal detects the link
+  status with SIP server, China, CN200510130752
+\item Zhang L., Li Y., \textbf{Wu Xiaochun}, 2005, A method which enable IP Intelligent terminal
+  sends and receives SMS in NGN network, China, CN200510130753
+\item Su D.J., Lu J.W., \textbf{Wu Xiaochun}, 2006, A authenticate method which using for SIP
+  terminal, China, CN200610000904
+\item Lu J.W., \textbf{Wu Xiaochun}, 2007, A New System supports IP Video terminal, China,
+  CN200610003175
+\end{enumerate}
+
+\section{\textsc{Education}} 
+\mytitle{Master of Science, Instrumentation Engineering}  \mydate{April 1999}\\
+Southeast University, Nanjing, China \\
+Concentration: Instrumentation Engineering with Computer Control
+
+\mytitle{Bachelor of Science, Electrical Engineering} \mydate{July 1996}\\
+Nanchang University, Nanchang, China \\
+Concentration: Electrical Machine Analysis and Control
+ 
+\end{resume}
+\end{document}

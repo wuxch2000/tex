@@ -1,0 +1,145 @@
+﻿%%%%%%
+\ProvidesPackage{pgf-msg}
+
+\newif\ifpgfmsgaddseq\pgfmsgaddseqtrue
+\DeclareOption{addSeq}{\pgfmsgaddseqtrue}
+\DeclareOption{addSeq=true}{\pgfmsgaddseqtrue}
+\DeclareOption{addSeq=false}{\pgfmsgaddseqfalse}
+\ProcessOptions
+
+\usepackage{tikz}
+\usetikzlibrary{scopes,through,positioning,fadings,patterns,calc,shapes.geometric,arrows,shadows}
+
+\newcounter{vLevel}
+\newcounter{hLevel}
+\newcounter{msgSequence}
+
+% \def\xZero{0cm}
+% \def\yZero{-1cm}
+
+% \def\msgDistance{5ex}
+% \def\moduleDistance{2.5cm}
+
+\pgfdeclarelayer{background layer}
+\pgfdeclarelayer{foreground layer}
+\pgfsetlayers{background layer,main,foreground layer}
+
+% \tikzstyle{styleModule}=[rectangle,draw=blue!50,fill=blue!20,thick]
+\newcommand{\msgModule}[2]{% arg module name
+  \coordinate (zeroPoint) at (\xZero,\yZero);
+  \coordinate (point) at ($ (zeroPoint)  +\thehLevel*(\moduleDistance,0)$);
+
+  \begin{pgfonlayer}{foreground layer}
+    \node (#1) at (point) [styleModule] {#2};
+  \end{pgfonlayer}
+
+  \addtocounter{hLevel}{1}
+}
+
+\newcommand{\MsgWithFont}[1]{%
+  {\ifpgfmsgaddseq
+    % \textsf{\textcolor{blue}{\themsgSequence.}~#1}
+    % \textsf{\textcolor{gray}{\themsgSequence.}~#1}
+    % \colorbox{gray!10}{\textsf{\themsgSequence.}}\textsf{~#1}
+    \textcolor{gray}{\textsf{\themsgSequence.}}\textsf{~#1}
+    % \textsf{\textbf{\themsgSequence.}~#1}
+    \else
+    \textsf{~#1}
+    \fi}
+}
+
+\newcommand{\tikzDrawMsg}[3]{% arg1-3: from to message
+  \begin{pgfonlayer}{foreground layer}
+    \begin{scope}[>=latex]
+      \draw[->,thick] #1 -- #2 node[MESSAGE] {\MsgWithFont{#3}};
+    \end{scope}
+  \end{pgfonlayer}
+}
+
+
+\newcommand{\sendMsg}[3]{% arg1-3: from to message
+  \addtocounter{msgSequence}{1}
+  \addtocounter{vLevel}{1}
+  \coordinate (from) at ($(#1.south)+\thevLevel*(0,-\msgDistance)$);
+  \coordinate (to) at ($(#2.south)+\thevLevel*(0,-\msgDistance)$);
+
+  \tikzDrawMsg{(from)}{(to)}{#3}
+}
+
+\newcommand{\sendMsgDown}[3]{% arg1-3: from to message
+  \addtocounter{msgSequence}{1}
+  \addtocounter{vLevel}{1}
+  \coordinate (from) at ($(#1.south)+\thevLevel*(0,-\msgDistance)$);
+  \addtocounter{vLevel}{1}
+  \coordinate (to) at ($(#2.south)+\thevLevel*(0,-\msgDistance)$);
+
+  \tikzDrawMsg{(from)}{(to)}{#3}
+}
+
+
+
+% 画某个module的竖线
+\newcommand{\tikzVerticalLine}[1]{% arg1: mudule node
+  \coordinate (to) at ($(#1.south)+\thevLevel*(0,-\msgDistance)+.5*(0,-\msgDistance)$);
+  \begin{pgfonlayer}{background layer}
+    \draw[-] (#1.south) -- (to);
+  \end{pgfonlayer}
+}
+
+% 自动画所有module的竖线
+\newcommand{\tikzVerticalLines}{
+  \coordinate (zeroPoint) at (\xZero,\yZero);
+  % 构造一个虚拟的node，用于提取node的高度
+  \node (zeroNode) at (zeroPoint) {};
+  \coordinate (nodeHeight) at ($(zeroNode.south)-(zeroNode)$);
+
+  \begin{pgfonlayer}{background layer}
+    \foreach \x in {0,1,\thehLevel-1}
+    {
+      \coordinate (point) at ($ (zeroPoint)  +\x*(\moduleDistance,0)$);
+      \coordinate (from) at ($(point) + (nodeHeight) $);
+      \coordinate (to) at ($(from)+\thevLevel*(0,-\msgDistance)+.5*(0,-\msgDistance)$);
+      \draw[-,thin] (from) -- (to);
+    }
+  \end{pgfonlayer}
+}
+
+\def\ifEqString#1#2{\def\testa{#1}\def\testb{#2}\ifx\testa\testb}
+
+\newcommand{\msgSetMsgTextPosition}[1]{% arg1: begin, center, end
+  \ifEqString{#1}{center}
+  \tikzstyle{MESSAGE}=[above=.5ex,rectangle,fill=white, inner sep=0pt,midway,sloped, text centered]
+  \fi
+
+  \ifEqString{#1}{begin}
+  \tikzstyle{MESSAGE}=[above=.5ex,rectangle,fill=white, inner sep=0pt,near start,sloped]
+  \fi
+
+  \ifEqString{#1}{end}
+  \tikzstyle{MESSAGE}=[above=.5ex,rectangle,fill=white, inner sep=0pt,near end,sloped]
+  \fi
+}
+
+\newcommand{\msgSetModuleDistance}[1]{%
+  \def\moduleDistance{#1}
+}
+
+% 基本环境
+\newenvironment{msgdiagram}{
+  \def\xZero{0cm}
+  \def\yZero{-1cm}
+
+  \def\msgDistance{5ex}
+  \def\moduleDistance{2.5cm}
+
+  \tikzstyle{styleModule}=[rectangle,fill=blue!20,thick,
+    shading=axis, top color=gray!20, bottom color=gray!60, shading angle = 45]
+  % \tikzstyle{styleModule}=[rectangle,thick,shading=ball, ball color=white]
+  \tikzstyle{MESSAGE}=[above=.5ex,rectangle,fill=white, inner sep=0pt,midway,sloped]
+  \setcounter{vLevel}{0}
+  \setcounter{hLevel}{0}
+  \setcounter{msgSequence}{0}
+}
+{
+  \tikzVerticalLines
+}

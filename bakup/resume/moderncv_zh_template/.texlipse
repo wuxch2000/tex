@@ -1,0 +1,13 @@
+#TeXlipse project settings
+#Sun Apr 06 11:31:52 GMT 2008
+builderNum=2
+outputDir=
+makeIndSty=
+bibrefDir=
+outputFormat=pdf
+tempDir=tmp
+mainTexFile=junjun_zh.tex
+outputFile=junjun_zh.pdf
+langSpell=en
+markDer=true
+srcDir=

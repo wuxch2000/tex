@@ -1,0 +1,88 @@
+﻿\documentclass[a4paper,onecolumn]{article}
+\title{TITLE}
+\author{WuXiaochun}
+\date{}
+
+\usepackage{fontspec,xunicode,xltxtra}
+% \setmainfont[Ligatures=Common,Mapping=tex-text]{Georgia}
+% \setsansfont[Ligatures=Common,Mapping=tex-text]{Arial}
+% \setmonofont[Ligatures=Common,Mapping=tex-text]{Courier New}
+
+\setmainfont[Mapping=tex-text]{Adobe Garamond Pro}
+\setsansfont[Mapping=tex-text]{Myriad Pro}
+\setmonofont[Mapping=tex-text]{Courier New}
+
+\usepackage{color}
+\usepackage{indentfirst}
+\setlength{\parindent}{0in}
+
+\newcommand{\describe}[1]{\texttt{\color{red} #1}}
+
+
+\begin{document}
+\describe{normal}
+
+abcdefghijklmnopqrstuvwxyz
+
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+
+1234567890
+
+\describe{san serif}
+
+{\sffamily
+abcdefghijklmnopqrstuvwxyz
+
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+
+1234567890}
+
+\describe{ligature}
+
+ffi fi ffl
+
+\textsf{ffi fi ffl}
+
+\describe{Numbers=Lowercase Adobe Garamond Pro}
+
+\fontspec[Numbers=Lowercase]{Adobe Garamond Pro}
+1234567890
+
+\describe{Numbers=Uppercase Adobe Garamond Pro}
+
+\fontspec[Numbers=Uppercase]{Adobe Garamond Pro}
+1234567890
+
+\describe{Numbers=Lining Adobe Garamond Pro}
+
+\fontspec[Numbers=Lining]{Adobe Garamond Pro}
+1234567890
+
+\describe{Letters=SmallCaps Adobe Garamond Pro}
+
+\fontspec[Letters=SmallCaps]{Adobe Garamond Pro}
+Chinese
+
+
+\describe{Numbers=Lowercase Myriad Pro}
+
+\fontspec[Numbers=Lowercase]{Myriad Pro}
+1234567890
+
+\describe{Numbers=Uppercase Myriad Pro}
+
+\fontspec[Numbers=Uppercase]{Myriad Pro}
+1234567890
+
+\describe{Numbers=Lining Myriad Pro}
+
+\fontspec[Numbers=Lining]{Myriad Pro}
+1234567890
+
+\describe{Letters=SmallCaps Myriad Pro}
+
+\fontspec[Letters=SmallCaps]{Myriad Pro}
+Chinese
+
+
+\end{document}

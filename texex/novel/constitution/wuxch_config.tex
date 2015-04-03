@@ -1,0 +1,74 @@
+%%% Local Variables:
+%%% TeX-master: "constitution"
+%%% End:
+\usepackage{CJK}
+\usepackage{CJKnumb}
+\usepackage{CJKpunct}
+\usepackage{color}
+\definecolor{light-gray}{gray}{0.95}
+
+%生成PDF的链接
+\usepackage[dvipdfmx]{hyperref}
+\hypersetup{
+    bookmarks=true,         % show bookmarks bar?
+    pdfborder=1,
+    pdfhighlight=/P,
+    pdfauthor={wuxch},
+    unicode=true,           % non-Latin characters in Acrobat’s bookmarks
+    colorlinks,             % false: boxed links; true: colored links
+    linkcolor=blue,         % color of internal links
+    citecolor=green,        % color of links to bibliography
+    filecolor=magenta,      % color of file links
+    urlcolor=cyan,          % color of external links
+    CJKbookmarks=true
+}
+
+% 使用目录
+\usepackage{makeidx}
+\renewcommand{\contentsname}{目录}
+% 使用图形
+\usepackage{graphicx}
+% 首段也缩进
+\usepackage{indentfirst}
+
+% \usepackage{footmisc}
+\usepackage{pfnote}
+\usepackage{fnpos}
+
+% 嵌入的代码显示
+\usepackage{listings}
+\lstset{language=C++, breaklines, extendedchars=false}
+\lstset{keywordstyle=\color{blue},backgroundcolor=\color{light-gray}}
+
+%页眉页脚
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{\thepage}
+\fancyhead[RE]{\leftmark}
+\fancyhead[LO]{\rightmark}
+\fancypagestyle{plain}{%设置plain页格式
+    \fancyhf{}
+    \renewcommand{\headrulewidth}{0pt}
+}
+\lhead{\includegraphics[height=0.2in]{zte_logo}}
+
+\usepackage{chapterbib}
+\usepackage[sectionbib,super,square,sort&compress]{natbib}
+
+%章节
+% \renewcommand{\chaptername}{第\CJKnumber{\thechapter}章}
+% \renewcommand{\sectionname}{节}
+% \renewcommand{\figurename}{图}
+% \renewcommand{\tablename}{表}
+% \renewcommand{\bibname}{参考文献}
+% \renewcommand{\contentsname}{目~录}
+% \renewcommand{\listfigurename}{图~目~录}
+% \renewcommand{\listtablename}{表~目~录}
+% \renewcommand{\indexname}{索~引}
+% \titleformat{\chapter}[block]{\center\Huge}{\chaptername}{20pt}{}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "constitution"
+%%% End: 

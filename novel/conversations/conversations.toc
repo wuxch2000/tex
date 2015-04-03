@@ -1,0 +1,17 @@
+\contentsline {section}{\numberline {1}Remembering auto\_ptr}{2}{section.1}
+\contentsline {section}{\numberline {2}Null References}{6}{section.2}
+\contentsline {section}{\numberline {3}Genesis}{10}{section.3}
+\contentsline {section}{\numberline {4}So Who's the Portable Coder?}{14}{section.4}
+\contentsline {section}{\numberline {5}Virtually Yours}{18}{section.5}
+\contentsline {section}{\numberline {6}Obelisk}{23}{section.6}
+\contentsline {section}{\numberline {7}Access Restrictions}{27}{section.7}
+\contentsline {section}{\numberline {8}Redirections}{32}{section.8}
+\contentsline {section}{\numberline {9}Manipulations}{37}{section.9}
+\contentsline {section}{\numberline {10}Roots}{42}{section.10}
+\contentsline {section}{\numberline {11}Abstract Factory, Template Style}{49}{section.11}
+\contentsline {section}{\numberline {12}How to Persist an Object}{55}{section.12}
+\contentsline {section}{\numberline {13}Hungarian wartHogs}{59}{section.13}
+\contentsline {section}{\numberline {14}New Bases, Part 1}{65}{section.14}
+\contentsline {section}{\numberline {15}New Bases, Part2}{69}{section.15}
+\contentsline {section}{\numberline {16}Template Specializations}{75}{section.16}
+\contentsfinish 

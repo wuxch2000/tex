@@ -1,0 +1,455 @@
+
+
+/* js/bookmark.js */
+
+var TBControl=null;
+var ieBookmark=function(){var a=function(){if(TBControl!=null){TBControl.DoAction("SaveBookmark","")
+}};
+return{init:function(){if(!YDom.get("bookmark-insert")){return
+}if(TBControl==null){try{TBControl=new ActiveXObject("IEToolbar.IEContextMenu")
+}catch(b){TBControl=null
+}}if(TBControl==null){try{TBControl=new ActiveXObject("LIToolbar.TBControl")
+}catch(b){TBControl=null
+}}if(TBControl!=null){YDom.get("bookmark-insert").style.display="";
+YEvent.on("bookmark-link","click",function(c){YEvent.preventDefault(c);
+a()
+})
+}else{if(window.ActiveXObject&&navigator.platform.indexOf("Win")!=-1){YDom.get("bookmark-insert").style.display=""
+}}}}
+}();
+YEvent.on(window,"load",ieBookmark.init);
+
+/* js/miniprofile_popup.js */
+
+var a;
+(function(){if(LI.__HPA===true){console.info("HOMPAGE_PERFORMANCE_ANALYSIS :: js/miniprofile_popup.js ")
+}var i=500,f=400,d="lui-panel-body",c={zIndex:1007,underlay:"none",close:false,draggable:false,visible:false},h="panel-left",e="miniprofile-container",g="data-li-miniprofile-id";
+function b(l,j,k){this.url=l.className.split(" ")[1];
+this.id=l.id;
+this.node=l;
+this.panel=j;
+this.manager=k
+}b.prototype={addListeners:function(){LI.Controls.parseFragment(this.panel.getDomNode());
+YEvent.on("miniprofile-close","click",this.hide,this,true)
+},calculatePosition:function(l){var m=this.node,j=YDom.getRegion(m),q=YDom.getViewportWidth(),n=YDom.getViewportHeight(),u=this.panel.getDomNode(),o=YDom.getRegion(u),k=o.width,p=o.height,s,r,t;
+if(l===true){if((q-j.right)>k){s=j.right+3;
+r=j.top-10;
+t=false
+}else{s=j.left-k;
+r=j.top-10;
+t=true
+}}else{s=j.left-(k/2.4);
+r=j.bottom+2;
+t=false
+}if(window.self!=window.top){s=(s<0)?0:s;
+if(r+p>n){r=n-p-20
+}}return{x:s,y:r,flipped:t}
+},getID:function(){return this.id
+},hide:function(){var j=this.panel;
+this.removeListeners();
+j.setBody("");
+j.clearMiniProfileReference();
+j.hide()
+},removeListeners:function(){YEvent.removeListener("miniprofile-close","click",this.hide)
+},setContent:function(j){this.content=j
+},show:function(){var o=this.content,n=this.node,l=this.manager,j=this.panel,m,k=n.getAttribute("data-li-getjs");
+if(!o&&o!==false){if(k){YAHOO.util.Get.script(k)
+}l.requestContent(this.url,{success:function(p){this.setContent(p);
+this.show()
+},scope:this});
+return
+}if(o===false){return
+}j.setBody(o);
+this.addListeners();
+if(n.getAttribute("data-li-panelclass")){j.setClass(n.getAttribute("data-li-panelclass"));
+m=this.calculatePosition(false)
+}else{m=this.calculatePosition(true)
+}j.setPosition(m.x,m.y,m.flipped);
+j.setMiniProfileReference(this.id);
+j.show();
+l.onShowMiniProfileEvent.fire()
+}};
+window.MiniProfileManager=(function(){var C={},u={},z={},q=false,t=null,y=null,k,s=false,m=false,r=new YAHOO.util.CustomEvent("onShowMiniProfile");
+function l(){if(!t&&q){y=YDom.get(d);
+if(!y){y=document.createElement("div");
+document.body.appendChild(y);
+y.id=d
+}t=new YAHOO.widget.Overlay(y,c);
+t.render(document.body);
+YEvent.on(y,"mouseover",v);
+YEvent.on(y,"mouseout",D)
+}}k={setBody:function(F){l();
+if(y){y.innerHTML=F
+}},setPosition:function(F,H,G){l();
+if(!t){return
+}t.moveTo(F,H);
+if(!G){YDom.removeClass(y,h)
+}else{YDom.addClass(y,h)
+}},setClass:function(F){l();
+if(!t){return
+}YDom.addClass(y,F);
+t.hideEvent.subscribe(function(){YDom.removeClass(y,F);
+t.hideEvent.unsubscribe()
+})
+},show:function(){l();
+if(t){t.show()
+}},hide:function(){l();
+if(t){t.hide()
+}},getDomNode:function(){l();
+return y
+},setMiniProfileReference:function(F){l();
+if(y){y.setAttribute(g,F)
+}},clearMiniProfileReference:function(){l();
+if(y){y.setAttribute(g,"")
+}}};
+var p={requestShow:B,requestHide:n,requestContent:w,onShowMiniProfileEvent:r};
+YEvent.onDOMReady(function(){q=true
+});
+function E(G,F){C[G]=F
+}function j(F){return C[F]
+}function o(){if(!m&&!s){k.hide()
+}}function B(F){m=true;
+z[F.getID()]=window.setTimeout(function(){F.show()
+},i)
+}function n(){m=false;
+window.setTimeout(o,f)
+}function x(H,G){if(H&&H.success){var F=H.scope||window;
+H.success.call(F,G)
+}}function w(F,G){if(!YAHOO.lang.isUndefined(u[F])){x(G,u[F]);
+return
+}YAHOO.util.Connect.asyncRequest("GET",F,{success:function(I){var H=I.responseText||false;
+u[F]=H;
+x(G,H)
+},failure:function(H){u[F]=false
+}})
+}function v(){s=true
+}function D(F){var I=YEvent.getRelatedTarget(F);
+var H=YDom.get(d);
+if(I==H){return
+}var G=I;
+if(YDom.isAncestor(H,G)){return
+}s=false;
+window.setTimeout(o,f)
+}function A(){var F=YDom.get(d),G;
+if(!F){return null
+}G=F.getAttribute(g);
+if(G){return j(G)
+}return null
+}YEvent.on(document,"mouseover",function(G){var I=YEvent.getTarget(G),H,F=A();
+for(miniProfileId in z){if(YAHOO.lang.hasOwnProperty(C,miniProfileId)){window.clearTimeout(z[miniProfileId]);
+delete z[miniProfileId]
+}}while(I){if(YDom.hasClass(I,e)){if(!I.id){I.id=YDom.generateId()
+}H=j(I.id);
+if(!H){H=new b(I,k,p);
+E(I.id,H)
+}if(!t||!t.cfg.getProperty("visible")||!F||F.id!==H.id){B(H)
+}return
+}I=I.parentNode
+}n()
+});
+return{init:function(){},getCurrentMiniProfile:A,onShowMiniProfileEvent:r}
+})();
+window.MiniProfileManager.init()
+})();
+window.miniProfile=window.MiniProfileManager;
+
+/* js/util/ToggleClass.js */
+
+LI.define("ToggleClass");
+LI.define("ToggleClasses");
+LI.ToggleClass=function(c,b){if(LI.__HPA===true){console.info("HOMPAGE_PERFORMANCE_ANALYSIS :: js/util/ToggleClass.js ")
+}var a;
+b={classname:b.classname||"toggled",on:b.on||"body",stopEvent:(b.stopEvent==false)?false:true,enableBeforeToggleEvent:(b.enableBeforeToggleEvent==false)?false:true,targetSelector:b.targetSelector};
+if(b.enableBeforeToggleEvent){this.beforeToggleEvent=new YAHOO.util.CustomEvent("searchBegin")
+}if(typeof(b.on)=="string"){b.on=[b.on]
+}YEvent.addListener(c,"click",function(h){if(b.targetSelector&&!YSel.matches(b.targetSelector,[YEvent.getTarget(h)]).length){return
+}if(b.stopEvent===true){YEvent.preventDefault(h)
+}if(b.enableBeforeToggleEvent){this.beforeToggleEvent.fire()
+}for(var f=0,g=b.on.length;
+f<g;
+f++){a=Y$(b.on[f]);
+for(var d=0,k=a.length;
+d<k;
+d++){LI.toggleClass(a[d],b.classname)
+}}},this,true)
+};
+
+/* js/apps/SaveJobs.js */
+
+LI.define("SaveJobs");
+LI.SaveJobs=function(d,b){var e="SUCCESS",a="FAILURE",h=(b.callback)?b.callback:"LI.SaveJobs.toggleState";
+var g=function(m){var l=YEvent.getTarget(m);
+if(l&&l.tagName.toLowerCase()==="a"){YEvent.stopEvent(m);
+var i=YDom.getAncestorByClassName(l,"job-saving");
+if(i.getAttribute("data-li-savingjob")=="1"){return
+}else{i.setAttribute("data-li-savingjob","1")
+}var k=l.getAttribute("data-li-action"),j=l.href+"&ajax=",n={success:f,failure:c,timeout:10000,argument:{target:l,action:k}};
+YAHOO.util.Connect.asyncRequest("GET",j,n)
+}};
+var f=function(m){if(m){var l=m.argument.target;
+if(m.responseXML===null||m.responseXML.getElementsByTagName("responseInfo").length===0){window.location.href=l.href
+}else{if(m.responseXML&&m.responseXML!==null){var j=m.responseXML.getElementsByTagName("responseInfo")[0].firstChild.nodeValue,k=m.argument.action,i=YDom.getAncestorByClassName(l,"job-saving");
+if(j==a){c(m)
+}else{i.removeAttribute("data-li-savingjob");
+var n=LI.Controls.resolveName(h);
+n.call(null,k,i)
+}}}}else{c(m)
+}};
+var c=function(l){if(l){var k=l.argument.target,j=l.argument.action,i=YDom.getAncestorByClassName(k,"job-saving");
+i.removeAttribute("data-li-savingjob")
+}};
+LI.SaveJobs.className=b.className?' class="'+b.className+'"':"";
+LI.SaveJobs.saveText=b.saveText?b.saveText:LI.i18n.get("SaveJobs-save");
+YEvent.on(Y$(".job-saving"),"click",g)
+};
+LI.SaveJobs.ACTION_SAVE="save";
+LI.SaveJobs.ACTION_UNSAVE="unsave";
+LI.SaveJobs.toggleStateBase=function(d,a,b){var c="";
+if(d===LI.SaveJobs.ACTION_SAVE){c=b.unsaveHtml;
+c=c.replace(/%%URL%%/,a.getAttribute("data-li-url-unsavejob"));
+c=c.replace(/%%TEXT%%/,b.unsaveText);
+c=c.replace(/%%ACTION%%/,LI.SaveJobs.ACTION_UNSAVE)
+}else{c=b.saveHtml;
+c=c.replace(/%%URL%%/,a.getAttribute("data-li-url-savejob"));
+c=c.replace(/%%TEXT%%/,b.saveText);
+c=c.replace(/%%ACTION%%/,LI.SaveJobs.ACTION_SAVE)
+}a.innerHTML=c
+};
+LI.SaveJobs.toggleState=function(b,a){LI.SaveJobs.toggleStateBase(b,a,{saveText:LI.SaveJobs.saveText,saveHtml:"<a"+LI.SaveJobs.className+' href="%%URL%%" data-li-action="%%ACTION%%">%%TEXT%%</a>',unsaveText:LI.i18n.get("SaveJobs-unsave"),unsaveHtml:"<a"+LI.SaveJobs.className+' href="%%URL%%" data-li-action="%%ACTION%%">%%TEXT%%</a>'})
+};
+LI.SaveJobs.toggleStateComplex=function(b,a){LI.SaveJobs.toggleStateBase(b,a,{saveText:LI.SaveJobs.saveText,saveHtml:"<a"+LI.SaveJobs.className+' href="%%URL%%" data-li-action="%%ACTION%%">%%TEXT%%</a>',unsaveText:LI.i18n.get("SaveJobs-unsave"),unsaveHtml:LI.i18n.get("SaveJobs-jobSaved")+" [ <a"+LI.SaveJobs.className+' href="%%URL%%" data-li-action="%%ACTION%%">%%TEXT%%</a> ]'})
+};
+LI.SaveJobs.toggleStateOther=function(c,a){LI.SaveJobs.toggleState(c,a);
+var b=YDom.getPreviousSibling(a);
+if(YDom.hasClass(b,"saved")){if(c===LI.SaveJobs.ACTION_SAVE){b.innerHTML=LI.i18n.get("SaveJobs-saved")
+}else{b.innerHTML=""
+}}};
+LI.SaveJobs.removeUnsaved=function(g,a){var e=YDom.getAncestorByClassName(a,"job-listing");
+if(e){var l=a.getAttribute("data-li-savedjob-type"),m=Y$("#filter-all .total","sidebar",true),c=YDom.get("filter-all"),k=Y$("#filter-"+l+" .total","sidebar",true),j=YDom.get("filter-"+l),b=null,i;
+LI.SaveJobsTotals.allJobs--;
+if(l==="saved"){LI.SaveJobsTotals.savedJobs--;
+b=LI.SaveJobsTotals.savedJobs
+}else{LI.SaveJobsTotals.appliedJobs--;
+b=LI.SaveJobsTotals.appliedJobs
+}if(LI.SaveJobsTotals.allJobs<=0){LI.SaveJobsTotals.allJobs=0;
+if(YDom.hasClass(m,"current")){i+=" current"
+}c.innerHTML='<p class="'+i+'">'+YAHOO.lang.substitute(LI.i18n.get("SaveJobs-filter-all"),{0:LI.SaveJobsTotals.allJobs})+"</p>"
+}else{m.innerHTML=YAHOO.lang.substitute(LI.i18n.get("SaveJobs-filter-all"),{0:LI.SaveJobsTotals.allJobs})
+}if(b<=0){b=0;
+i="total";
+if(YDom.hasClass(m,"current")){i+=" current"
+}j.innerHTML='<p class="'+i+'">'+YAHOO.lang.substitute(LI.i18n.get("SaveJobs-filter-"+l),{0:b})+"</p>"
+}else{k.innerHTML=YAHOO.lang.substitute(LI.i18n.get("SaveJobs-filter-"+l),{0:b})
+}YDom.removeClass(e,"visible");
+LI.fade(e);
+if(LI.SaveJobsTotals.allJobs===0){LI.hide("results-header");
+LI.hide("result-set");
+LI.hide("pagination");
+var d=YDom.get("content");
+var h=document.createElement("p");
+h.className="nosaved";
+h.innerHTML=LI.i18n.get("SaveJobs-no-jobs");
+YDom.insertAfter(h,Y$(".results-module .header","content",true))
+}else{var f=Y$("#result-set li.visible");
+if(f.length===0){LI.hide("result-set");
+YDom.addClass("pagination","no-results")
+}else{if(!YDom.hasClass(f[0],"first")){YDom.addClass(f[0],"first")
+}}}}};
+
+/* js/apps/Share.js */
+
+LI.define("Share");
+LI.Share=function(c,b){if(LI.__HPA===true){console.info("HOMPAGE_PERFORMANCE_ANALYSIS :: /js/apps/Share.js")
+}b={url:(b.url)?b.url:null,title:(b.title)?b.title:LI.i18n.get("share-dialog-title"),lazyEvent:(b.lazyEvent)?b.lazyEvent:null},jsFiles=LI.SharingDialog.Scripts,cssFiles=LI.SharingDialog.Styles;
+YEvent.on(c,"click",a);
+if(b.lazyEvent){a(b.lazyEvent)
+}function a(d){YEvent.preventDefault(d);
+LI.Dialog().open({name:"sharingDialog",type:"task-modeless",width:500,content:{title:b.title,url:b.url},dependencies:{jsFiles:jsFiles,cssFiles:cssFiles}})
+}};
+
+/* js/apps/CompanyFollow.js */
+
+LI.define("CompanyFollow");
+LI.CompanyFollow=function(b,a){var a={container:b,actionLink:Y$("a",b,true),scope:this,startFollowingURL:(a.startFollowingURL)?a.startFollowingURL:null,stopFollowingURL:(a.stopFollowingURL)?a.stopFollowingURL:null,settingsURL:(a.settingsURL)?a.settingsURL:null,noAjax:(a.noAjax)?a.noAjax:false,isMiniProfile:(a.isMiniProfile)?a.isMiniProfile:false,followText:(a.followText)?a.followText:LI.i18n.get("followCompany"),stopFollowText:(a.stopFollowText)?a.stopFollowText:LI.i18n.get("stopFollowing"),hideStopFollowText:(a.hideStopFollowText)?a.hideStopFollowText:false};
+if(YDom.hasClass(a.container,"stop-following")&&a.settingsURL){this.initMenu(null,a)
+}else{YEvent.on(a.actionLink,"click",this.toggleState,a)
+}};
+LI.CompanyFollow.prototype={toggleState:function(a,c){LI.removeAlert();
+YEvent.preventDefault(a);
+if(YDom.hasClass(c.container,"stop-following")){var d=c.stopFollowingURL+"&ajax="
+}else{var d=c.startFollowingURL+"&ajax="
+}var f={success:e,failure:b,timeout:15000,scope:c.scope};
+YAHOO.util.Connect.asyncRequest("GET",d,f,null);
+function e(i){var g=i.responseXML.getElementsByTagName("responseInfo")[0].firstChild.nodeValue;
+if(g=="SUCCESS"){if(YDom.hasClass(c.container,"stop-following")){c.actionLink.innerHTML="<strong>"+c.followText+"</strong>";
+YDom.replaceClass(c.container,"stop-following","start-following");
+if(c.settingsURL){YEvent.removeListener([c.actionLink,c.container],"click");
+YEvent.on(c.actionLink,"click",this.toggleState,c)
+}this.updateTotals(c,false)
+}else{if(!c.hideStopFollowText){c.actionLink.innerHTML="<strong>"+c.stopFollowText+"</strong>"
+}else{c.actionLink.innerHTML=""
+}YDom.replaceClass(c.container,"start-following","stop-following");
+if(c.settingsURL){YEvent.removeListener(c.actionLink,"click");
+this.initMenu(null,c)
+}this.updateTotals(c,true)
+}if(document.getElementById("lui-panel-body")&&YDom.getChildren("lui-panel-body").length!=0){var h=MiniProfileManager.getCurrentMiniProfile();
+h.setContent("")
+}}else{LI.injectAlert(LI.i18n.get("followError"),"error")
+}}function b(){LI.injectAlert(LI.i18n.get("followError"),"error")
+}},initMenu:function(a,b){if(a){YEvent.preventDefault(a)
+}if(b.container.getElementsByTagName("ul").length==0){var c;
+YDom.addClass(b.container,"droplist");
+var e=document.createElement("ul");
+var d=YAHOO.lang.substitute('<li><a href="{0}">{1}</a></li><li><a href="{2}">{3}</a></li>',{0:b.stopFollowingURL,1:b.stopFollowText,2:b.settingsURL,3:LI.i18n.get("notificationSettings")});
+e.innerHTML=d;
+if(!b.noAjax){YEvent.on(Y$("a",e,true),"click",this.toggleState,b)
+}YEvent.on(Y$("li:last-child a",e),"click",function(f){YEvent.preventDefault(f);
+if(!YAHOO.lang.isObject(c)){c=new LI.CompanyFollowSettings(this);
+c.openDialog(f,this.href+"&ajax=")
+}});
+b.container.appendChild(e)
+}YAHOO.util.Get.script(LI.CompanyFollowAssets.DropListJS,{onSuccess:function(){var f=new DropList(b.container,{actionType:"click"})
+}})
+},updateTotals:function(b,e){var d=Y$("span.followers-total","body");
+if(d.length==0){return
+}for(var c=0,a=d.length;
+c<a;
+c++){if(b.isMiniProfile===true&&document.getElementById("nav-company-followers")){break
+}var h,f=d[c].innerHTML,g;
+h=f.match(/[,.]/);
+h=(h&&h[0])?h[0]:"";
+if(h){g=new RegExp("\\"+h,"g");
+f=f.replace(g,"")
+}f=parseInt(f);
+if(e){f=f+1
+}else{f=f-1
+}if(h){f=YAHOO.util.Number.format(f,{thousandsSeparator:h})
+}d[c].innerHTML=f
+}}};
+LI.define("CompanyFollowSettings");
+LI.CompanyFollowSettings=function(c,b){var a=c.href+"&ajax=";
+YEvent.on(c,"click",this.openDialog,a)
+};
+LI.CompanyFollowSettings.prototype={openDialog:function(a,b){YEvent.preventDefault(a);
+YAHOO.util.Get.css(LI.CompanyFollowAssets.SettingsCSS,{onSuccess:function(){LI.Dialog().open({name:"companyFollowSettingsDialog",type:"task-modeless",width:650,content:{title:LI.i18n.get("changeFollowSettings"),url:b}})
+}});
+YEvent.on("update-settings","submit",function(c){YEvent.preventDefault(c);
+var e={success:f,failure:d,timeout:15000};
+YAHOO.util.Connect.setForm(this);
+YAHOO.util.Connect.asyncRequest("POST",this.action,e);
+function f(h){if(!h.responseXML){d();
+return
+}var g=h.responseXML.getElementsByTagName("responseInfo")[0].firstChild.nodeValue;
+if(g=="SUCCESS"){LI.Dialog().close()
+}else{d()
+}}function d(){LI.injectAlert(LI.i18n.get("settingsError"),"error","dialog-error")
+}})
+}};
+
+/* js/util/ProcessingOverlay.js */
+
+(function(){var a=window.YDom,c=a.setStyle;
+function b(e,d){if(LI.__HPA===true){console.info("HOMEPAGE_PERFORMANCE_ANALYSIS :: js/util/ProcessingOverlay.js")
+}if(e){this.contextEl=e
+}this.width=(d&&d.width)?d.width:75
+}b.prototype={getContextEl:function(){return this.contextEl
+},hide:function(){var d=this.overlay,e;
+if(d){e=d.parentNode;
+if(e){e.removeChild(d)
+}}},setContextEl:function(d){this.contextEl=d
+},show:function(i){i=i||this.contextEl;
+var f=this.overlay,l=i.offsetHeight,g=i.offsetWidth,j=a.getXY(i),d=this.width,k=(l<d)?d:l,e=(g<d)?d:g,h=document.body;
+if(!f){f=LI.domify('<div class="processing-overlay processing-overlay-'+d+'"></div>');
+h.appendChild(f);
+this.overlay=f
+}if(f.parentNode!==h){h.appendChild(f)
+}c(f,"height",k+"px");
+c(f,"width",e+"px");
+a.setXY(f,j);
+c(f,"visibility","visible")
+}};
+LI.ProcessingOverlay=b
+})();
+
+/* js/apps/JobsResumeUpload.js */
+
+LI.define("JobsResumeUpload");
+LI.JobsResumeUpload=function(b,a){var c=function(d){YEvent.stopEvent(d);
+var f=a.formName||"job-seeking-edit-application-form";
+var e=a.deleteFieldName||"deletePreviousResume-edit_application_form";
+YDom.removeClass("resume-upload","hidden");
+YDom.addClass("resume-info","hidden");
+YDom.get(f).elements[e].checked=true
+};
+YEvent.on(Y$(".remove",b,true),"click",c)
+};
+
+/* js/apps/JobApplyModal.js */
+
+LI.define("JobApplyModal");
+LI.JobApplyModal=function(f,g){var n,a,l,c,j,p,m,i=document.getElementById("cover-letter-link"),d=Y$("textarea",f)[0],b=g.landingPageLink,k=function(){c=LI.Controls.getControl("jobs-apply-modal-wrapper","ProcessingOverlay");
+if(c){c.hide()
+}},e=function h(r){var s=Y$(".job-apply-modal .dialog-window")[0],q=YAHOO.util.Connect.setForm(f,f.resumeAttached.value!=="");
+YEvent.stopEvent(r);
+LI.Dialog().removeAlert();
+LI.Controls.getControl("jobs-apply-modal-wrapper","ProcessingOverlay").show(s);
+YAHOO.util.Connect.asyncRequest("POST",g.submitAjaxLink,p,q)
+},o=function(r){var q=YDom.getAncestorByTagName(d,"p");
+if(typeof r==="undefined"){r=true
+}if(r){YDom.addClass(i,"hidden");
+YDom.removeClass(d,"hidden");
+YDom.addClass(q,"has-tip")
+}else{YDom.removeClass(i,"hidden");
+YDom.addClass(d,"hidden");
+YDom.removeClass(q,"has-tip")
+}};
+if(d.value.length>0){o()
+}if(g.isAjaxApplySuccess==="true"&&b){b=b+"&jobId="+g.jobId;
+if(f.featureApplication&&f.featureApplication.checked){b=b+"&isFeatured="
+}if(g.appID&&parseInt(g.appID,10)!==(-1)){b=b+"&appID="+g.appID
+}window.location=b;
+return
+}else{k()
+}n=function(r){var q;
+if(r.status===200&&r.responseText){if(r.responseText.indexOf("jobs-apply-modal-wrapper")===-1){window.location.reload()
+}else{LI.Dialog().swap({name:"newDialog",type:"task-modeless-secondary",width:480,className:"job-apply-modal",content:{title:LI.i18n.get("apply_modal_apply_now"),html:r.responseText}})
+}}};
+a=function(q){LI.Dialog().injectAlert(LI.i18n.get("apply_modal_apply_error"),"error");
+k()
+};
+m=function(q){if(q.responseText){q.status=200;
+n(q)
+}else{a(q)
+}};
+toggleProfileInfo=function(s,u){var r=s,q,v=YDom.getAncestorByTagName(s,"ul"),t;
+if(u){q=YDom.getNextSibling(s);
+t=YDom.getChildrenBy(v,function(w){if(YDom.hasClass(w,"see-more-less")){return false
+}else{if(YDom.hasClass(w,"hidden")){return true
+}}})
+}else{q=YDom.getPreviousSibling(s);
+t=YDom.getChildrenBy(v,function(w){if(YDom.hasClass(w,"see-more-less")){return false
+}else{if(YDom.hasClass(w,"toggle")){return true
+}}})
+}LI.hide(r);
+LI.show(q);
+YDom.batch(t,function(w,x){if(x){YDom.addClass(w,"hidden")
+}else{YDom.removeClass(w,"hidden")
+}},(u?false:true))
+};
+l=function(){var q=g.submitAjaxLink;
+if(q){p={success:n,failure:a,upload:m,timeout:20000};
+YEvent.on(f,"submit",e)
+}YEvent.on(Y$(".dialog-close",f),"click",function(r){LI.Dialog().removeAlert()
+});
+YEvent.on(f,"click",function(r){var s=YEvent.getTarget(r);
+if(!s){return
+}if(s.id==="cover-letter-link"){o()
+}else{if(YDom.hasClass(s,"see-less")){YEvent.preventDefault(r);
+toggleProfileInfo(s,false)
+}else{if(YDom.hasClass(s,"see-more")){YEvent.preventDefault(r);
+toggleProfileInfo(s,true)
+}else{if(s.className==="btn-primary"){e(r)
+}}}}})
+};
+l()
+};

@@ -1,0 +1,53 @@
+﻿\documentclass{article}
+
+\usepackage{config}
+
+\begin{document}
+
+\begin{tikzpicture}[scale=1,transform shape]
+% calendar is :
+% a         b
+%     X1
+% c         d
+% c1        d1
+%     X2
+% e         f
+\coordinate (A) at (0,5);
+\coordinate (B) at (5,5);
+\coordinate (C) at (0,4);
+\coordinate (D) at (5,4);
+\coordinate (E) at (0,0);
+\coordinate (F) at (5,0);
+
+\coordinate (C1) at ($(C)-(0,.2)$);
+\coordinate (D1) at ($(D)-(0,.2)$);
+
+\definecolor{calendarupsidebegin}{rgb}{0.9451 0.7137 0.7137}
+\definecolor{calendarupsideend}{rgb}{0.7882 0.0078 0.0078}
+\definecolor{calendarmiddlelinecolor}{rgb}{0.5 0.1333 0.1333}
+\definecolor{calendargray}{gray}{0.92}
+
+\shade[top color=calendarupsidebegin, bottom color=calendarupsideend] 
+    {[rounded corners=10](C) -- (A) -- (B)} -- (D) -- cycle;
+
+
+\fill[color=calendarmiddlelinecolor] (C) -- (D) -- (D1) -- (C1) -- cycle;
+
+\fill[color=calendargray] {[rounded corners=10](C1) -- (E) -- (F)} -- (D1) -- cycle;
+
+\coordinate (X1) at ($0.5*(C)+0.5*(D)+0.5*(A)-0.5*(C)$);
+\coordinate (X2) at ($0.5*(E)+0.5*(F)+0.5*(C1)-0.5*(E)$);
+
+\newfontfamily\largeup[Scale=1.5,Color=black]{Arial}
+\node [font=\largeup\bfseries](node-x1) at (X1) {Sept.'09};
+
+\newfontfamily\largedown[Scale=10,Color=black]{Arial}
+\node [font=\largedown\bfseries](node-x1) at (X2) {9};
+
+
+% \draw[help lines](0,0) grid (5,5);
+
+\end{tikzpicture}
+
+
+\end{document}

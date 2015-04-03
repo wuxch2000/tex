@@ -1,0 +1,68 @@
+﻿\usepackage{fontspec,xunicode,xltxtra}
+% \setmainfont[Mapping=tex-text]{Georgia}
+\setmainfont[Mapping=tex-text]{Arial}
+\setsansfont[Mapping=tex-text]{Arial}
+\setmonofont[Mapping=tex-text]{Courier New}
+
+\usepackage{xeCJK}
+\setCJKmainfont[ItalicFont={楷体_GB2312}]{宋体}
+\setCJKsansfont{黑体}
+\setCJKmonofont{黑体}
+
+\usepackage{indentfirst}
+
+\usepackage[dvipdfmx]{hyperref}  % options: dvipdfmx, pdftex 
+\hypersetup{
+    % bookmarks=true,         % show bookmarks bar?
+    bookmarksopen=true,
+    pdfpagemode=UseNone,    % options: UseNone, UseThumbs, UseOutlines, FullScreen
+    pdfstartview=FitH,      % options: FitH, FitV
+    pdfborder=1,
+    pdfhighlight=/P,
+    pdfauthor={wuxch},
+    unicode=false,          % xetex should set to false
+    colorlinks,             % false: boxed links; true: colored links
+    linkcolor=blue,         % color of internal links
+    citecolor=green,        % color of links to bibliography
+    filecolor=magenta,      % color of file links
+    urlcolor=cyan           % color of external links
+}
+\makeindex
+
+\usepackage[dvips,dvipsnames,svgnames]{xcolor}
+\definecolor{light-gray}{gray}{0.95}
+
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage{picinpar}
+
+\renewcommand\contentsname{\center{目~~~~~录}}
+\renewcommand\listfigurename{\center{插~~~~~图}}
+\renewcommand\listtablename{表格}
+\renewcommand\indexname{索引}
+\renewcommand\figurename{图}
+\renewcommand\tablename{表}
+
+\usepackage{caption}
+\renewcommand{\captionfont}{\scriptsize \sffamily}
+\setlength{\abovecaptionskip}{0pt}
+\setlength{\belowcaptionskip}{0pt}
+
+
+\graphicspath{{fig/}}
+
+
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\fancyhf{}
+\lhead{}
+\rhead{\scriptsize{\textsf{南京汉口路西延工程之我见}}}
+\cfoot{\scriptsize{\textsf{第 \thepage ~页，共 \pageref*{LastPage} 页}}}
+% \cfoot{第\thepage页，共\pageref{LastPage}页}
+
+% \cfoot{\thepage\ of \pageref{LastPage}}
+
+
+\usepackage{enumitem}
+\setitemize{label=$\bullet$,leftmargin=3em,noitemsep,topsep=0pt,parsep=0pt}
+\setenumerate{leftmargin=3em,noitemsep,topsep=0pt,parsep=0pt}

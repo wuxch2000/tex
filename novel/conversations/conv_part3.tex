@@ -1,0 +1,1508 @@
+%%% Local Variables:
+%%% mode: latex 
+%%% TeX-master: "conversations" 
+%%% End: 
+\section{Abstract Factory, Template Style}
+
+\textit{``Do we know what it is?'' I gestured at the device lying on the cold metal table before us. It had been one of the
+  first to have been retrieved by the recon parties exploring the immense building buried below us in the ice.}
+
+\textit{Jeannine shook her head. ``Nyet, tovarisch. It could be a toaster, a hyperdrive motor, a child's toy, or just junk.
+  Last week we thought we had the power system worked out, for this and the other devices, but when we ran the juice through
+  them nothing happened. The techs are back to the drawing board as far as the power goes, but they're hopeful that they'll
+  get it right soon.''}
+
+\textit{``And what makes them think they will?''}
+
+\textit{``Hope.''}
+
+\textit{I glanced at the clock on the wall of the chamber. ``Well, it's nearly time. I'm beat, and I'm freezing. Every time
+  we ask the recon teams to give us something new to work on, they produce something new and different. I just wish we could
+  understand even one of these.''}
+
+\textit{``I wish we knew more about what was coming out of our little historical 'artifact factory' here,'' Jeannine
+  agreed.}
+
+\textit{``That reminds me of something that happened to me back when--''}
+
+\textit{Jeannine rolled her eyes. ``Tell me when we get someplace warm.''}
+
+\wuxchcenterline{}
+
+``Bad news,'' I called glumly over the cubicle wall to Wendy.
+
+``Wazzup?'' she gophered up.
+
+``You know that class I worked on last week?''
+
+``Not intimately, but do go on.''
+
+I ignored that. ``Well,'' I continued, ``I have to create a class factory for it. The Guru suggested I look at the class
+factory the client group wrote.''
+
+``Yeah, so?'' Then a sudden look of dismay crossed her face: ``Oh. Bob wrote that, didn't he?''
+
+I nodded glumly. ``Well, one thing I'll give him credit for -- every time I crack open his code, I learn how not to do
+something.'' Wendy giggled and sank back into her chair.
+
+I sighed and checked out the source code. It wasn't quite as bad as I had anticipated. There was only one humongous series
+of cascading if statements -- I had expected a lot worse. Still, it was pretty hairy code, so with the Guru's blessing I set
+about implementing an Abstract Class Factory \footnote{Gamma, Helm, Johnson, Vlissides. Design Patterns: Elements of Reusable Object-Oriented Software (Addison Wesley, 1995)}. Absent any requirements for multithreading or other concurrency, I decided
+to implement the factory as a singleton:
+
+\begin{footnotesize}
+\begin{lstlisting}
+class BaseFactory
+{
+    typedef std::auto_ptr<Base> (*BaseCreateFn)();
+    typedef std::map<std::string, BaseCreateFn> FnRegistry;
+    FnRegistry registry;
+
+    BaseFactory() {}
+    BaseFactory(const BaseFactory &); // Not implemented
+    BaseFactory & operator=(const BaseFactory &); // Not implemented
+
+public:
+    static BaseFactory & instance() { static BaseFactory bf; return bf; }
+
+    bool RegCreateFn(const std::string &, BaseCreateFn);
+
+    std::auto_ptr<Base> Create(const std::string &) const;
+};
+
+bool BaseFactory::RegCreateFn(const std::string & className, BaseCreateFn fn)
+{
+    registry[className] = fn;
+    return true;
+}
+
+std::auto_ptr<Base> BaseFactory::Create(const std::string &className) const
+{
+    std::auto_ptr<Base> theObject(0);
+    FnRegistry::const_iterator regEntry = registry.find(className);
+    if (regEntry != registry.end()) 
+    {
+        theObject = regEntry->second();
+    }
+    return theObject;
+}
+\end{lstlisting}
+\end{footnotesize}
+
+In the Base implementation file, I added:
+
+\begin{footnotesize}
+\begin{lstlisting}
+namespace 
+{
+    std::auto_ptr<Base> CreateBase()
+    {
+        return std::auto_ptr<Base>(new Base);
+    }
+
+    bool dummy = BaseFactory::instance().RegCreateFn("Base", CreateBase);
+}
+\end{lstlisting}
+\end{footnotesize}
+
+``OK, that's cool,'' I thought. ``You register a function with the factory, and creating an instance is as simple as one, two,
+three:''
+
+\begin{footnotesize}
+\begin{lstlisting}
+int main()
+{
+    std::auto_ptr<Base> anObject = BaseFactory::instance().Create("Base");
+}
+\end{lstlisting}
+\end{footnotesize}
+
+I then proceeded to create a derived class, to test creating it via the factory. In the derived class's implementation file,
+I added:
+
+\begin{footnotesize}
+\begin{lstlisting}
+
+namespace 
+{
+    std::auto_ptr<Derived> CreateDerived()
+    {
+        return std::auto_ptr<Derived>(new Derived);
+    }
+
+    bool dummy = BaseFactory::instance().RegCreateFn("Derived", CreateDerived);
+}
+\end{lstlisting}
+\end{footnotesize}
+
+But the compiler stopped me cold -- it complained that it couldn't convert CreateDerived to the correct type. After puzzling
+over it for a moment, I remembered the problem I had experienced previously with implicit conversions to pointers-to-Base
+\footnote{Jim Hyslop and Herb Sutter. ``Conversations: Roots,'' C/C++ Users Journal C++ Experts Forum, May 2001,
+  http://www.cuj.com/experts/1905/hyslop.htm}. I realized I had just run into another situation where the compiler couldn't
+implicitly convert the pointers, so I had to rewrite the create function slightly:
+
+\begin{footnotesize}
+\begin{lstlisting}
+namespace 
+{
+    std::auto_ptr<Base> CreateDerived()
+    {
+        return std::auto_ptr<Base>(new Derived);
+    }
+
+    bool dummy = BaseFactory::instance().RegCreateFn("Derived", CreateDerived);
+}
+\end{lstlisting}
+\end{footnotesize}
+
+Looking back at the base class, I realized that the registration code was almost identical, so I created a macro to wrap it
+up:
+
+\begin{footnotesize}
+\begin{lstlisting}
+#define REGISTER_CLASS(BASE_CLASS, DERIVED_CLASS) \
+namespace \
+{ \
+    std::auto_ptr<BASE_CLASS> Create##DERIVED_CLASS() \
+    { \
+        return std::auto_ptr<BASE_CLASS>(new DERIVED_CLASS); \
+    } \
+    bool dummy=BaseFactory::instance().RegCreateFn( \
+        #DERIVED_CLASS, Create##DERIVED_CLASS); \
+}
+\end{lstlisting}
+\end{footnotesize}
+
+Using the macro was quite simple:
+
+\begin{footnotesize}
+\begin{lstlisting}
+REGISTER_CLASS(Base, Base)
+\end{lstlisting}
+\end{footnotesize}
+
+``Not bad for a few hours' work,'' I muttered when I was done.
+
+``Yes, indeed, my child. But you can do better.''
+
+I jumped yet again at the Guru's soft voice behind me. ``Wha--?''
+
+``Macro expansions like that,'' she explained, ``are difficult to read and understand, and macros are not type safe. Also,
+what is the purpose of the bool dummy variable?''
+
+``Well,'' I said, slightly defensively, ``it was the only way I could think of to ensure that the registration function got
+called automatically. I wanted to get away from the typical factory code that requires a modification each time you add a
+new class.''
+
+She inclined her head. ``Wise thinking, my child. However, your factory is not very generic. We are dealing with more and
+more classes that require abstract factories. I want you to create a factory that will handle, not require, modification for
+each class hierarchy it will be used on.''
+
+``A generic abstract factory? That's a pretty tall order, isn't it?''
+
+``My young apprentice, you are not afraid of a challenge, are you? Experience is by industry achieved\ldots and perfected by
+the swift course of time,'' I finished \footnote{William Shakespeare. Two Gentlemen of Verona, I iii 22}. ``No, I'm not
+afraid of the challenge, but I don't want the swift course of time to turn the schedule aside.''
+
+``You are most of the way there already. All you need to do is think generically,'' she observed.
+
+``Think generically\ldots as in, templates!'' I exclaimed and turned back to my monitor. A few minutes later, I glanced
+behind me and saw that the Guru had disappeared again as silently as she had appeared. I shivered, but only slightly, and
+went back to work.
+
+After a short while, I came up with a factory template:
+
+\begin{footnotesize}
+\begin{lstlisting}
+template <class ManufacturedType, typename ClassIDKey=std::string>
+class GenericFactory
+{
+    typedef std::auto_ptr<ManufacturedType> (*BaseCreateFn)();
+    typedef std::map<ClassIDKey, BaseCreateFn> FnRegistry;
+    FnRegistry registry;
+
+    GenericFactory();
+    GenericFactory(const GenericFactory&); // Not implemented
+    GenericFactory &operator=(const GenericFactory&); // Not implemented
+
+public:
+    static GenericFactory &instance();
+
+    void RegCreateFn(const ClassIDKey &, BaseCreateFn);
+
+    std::auto_ptr<ManufacturedType> Create(const ClassIDKey &className) const;
+};
+\end{lstlisting}
+\end{footnotesize}
+
+I realized that not all classes would necessarily need a std::string as the key, so I made the key type a parameter to the
+template. The implementation of each function was the same as I had used for BaseFactory, except for the registration
+function. I came up with a more elegant template for that:
+
+\begin{footnotesize}
+\begin{lstlisting}
+template <class AncestorType, class ManufacturedType, typename ClassIDKey=std::string>
+class RegisterInFactory
+{
+public:
+    static std::auto_ptr<AncestorType> CreateInstance()
+    {
+        return std::auto_ptr<AncestorType>(new ManufacturedType);
+    }
+
+    RegisterInFactory(const ClassIDKey &id)
+
+    {
+        GenericFactory<AncestorType>::instance().RegCreateFn(id, CreateInstance);
+    }
+};
+\end{lstlisting}
+\end{footnotesize}
+
+Now, each class derived from the base class simply had to add one line to get a type-safe registration of the creation
+function:
+
+\begin{footnotesize}
+\begin{lstlisting}
+RegisterInFactory<Base, Base> registerMe("Base");
+\end{lstlisting}
+\end{footnotesize}
+
+The RegisterInFactory template's constructor registers the name of the class in the creation registry \footnote{The complete factory file, along with a small driver program, is available on the CUJ website at hyslop.zip}.
+
+I glanced behind me, just in time to see the Guru approaching. I smiled to myself; for once I was slightly ahead of her
+game. ``Very good, my apprentice,'' she said, coming up behind me. ``Your factory is generic, portable, and does not rely on
+registration tables, DLL sentries, or other cumbersome techniques.''
+
+``There is one drawback, though,'' I interrupted. ``Because the registration relies on a static object being initialized,
+there is no guarantee that all the creation functions will be registered if you use the factory before main begins
+execution.''
+
+``Exactly, my apprentice, your factory is subject to the Static Initialization Order Fiasco, as explained by the prophet
+Cline \footnote{Marshall Cline. C++ FAQ-Lite, http://www.parashift.com/c++-faq-lite/}.'' She turned to leave.
+
+``Wait a second,'' I called. The Guru turned back. I was trying to figure out a graceful way of asking the question that was
+on my mind. The Guru patiently tucked a lock of her hair behind her ear while she waited. ``About Bob. If he's such a bad
+programmer,'' I managed to say, ``how come\ldots''
+
+``Why is he still here?'' the Guru supplied. I nodded. The Guru looked down in thought. ``Have you noticed that Bob hangs
+out with the execs? Senior management thinks he's some sort of golden boy and can do no wrong. Because of our\ldots um\ldots
+past, Bob has them convinced that any of my complaints about his job performance are just the petty grievances of a bitter
+ex-wife. And, according to him, anyone who agrees with me has been drawn into my little plots against him -- his words, not
+mine.''
+
+``Man, that must be tough. Why do you put up with it? You could find a new job like that.'' I snapped my fingers.
+
+She shrugged. ``Other than Bob, I like it here. Besides, if I left, I wouldn't get the satisfaction of bugging the heck out
+of him with this act.'' We both laughed. ``Seriously, though,'' she continued, ``this company has a lot of opportunities for
+career growth. For example, our new biomedical device division is going to need a head of software development -- I've
+applied for the position.''
+
+``Cool! Good luck,'' I said. The Guru nodded her thanks. I turned back to my workstation, to put the finishing touches on
+the abstract factory template.
+
+It was late at night a few days later when the news came, but I didn't find out about it until I got up the next morning.
+Still bleary-eyed, I was walking into the mess when the unusual level of noise made me put my hands over my ears and wince.
+``What's with all the chatter?'' I muttered grumpily at the dozen people who were already there, talking excitedly. ``It's
+too early for you guys to be this perky.''
+
+It was Major Gilb who answered, smiling. ``We think we've got it, my boy, we think we do.''
+
+``What?'' I grumped through mental cobwebs.
+
+``Looks like the power's on,'' Jeannine said simply.
+
+\section{How to Persist an Object}
+
+\textit{It was 00:10 local Europa Base time when I slumped down the corridor. I was exhausted; three days of afternoon watch
+  were getting to me.}
+
+\textit{A small beam of soft light spilled out across the cool metal corridor. It was coincidence, I think, that Major
+  Gilb's door was slightly ajar, although the fact that the ventilation system had been suffering lately probably also had
+  something to do with that. It was more coincidental that the Colonel was visiting the Major in the latter's office,
+  instead of the reverse.}
+
+\textit{It was, on the other hand, certainly no coincidence that, when I heard low voices, I slowed down and listened. The
+  sigh and hum of the ventilation made the listening more difficult, but it also concealed my presence.}
+
+\textit{``--me but that they're persistent mother's sons,'' the other voice, which I later found out to be the Colonel's,
+  was saying.}
+
+\textit{There was a silence, and then Gilb's voice: ``They're en route, then? How many? What's the ETA?''}
+
+\textit{``At least six ships.'' Pause. ``Give 'em a month. It's imperative that the UN retain control of this installation
+  until we can determine what technologies we're sitting on here. However long it takes.''}
+
+\textit{There was what had to be Gilb's laughter. ``The UN? You mean the Union.''}
+
+\textit{``It's all the same. The Asians are persistent. We have to discourage them.''}
+
+\wuxchcenterline{}
+
+``Y'know, pardner, you've seemed a little distracted lately,'' Wendy said as she mixed her wasabi into the soy sauce,
+getting ready to dig into her sushi. ``Everything all right?''
+
+I concentrated on my California rolls for a minute. ``It's Anna,'' I confessed. ``Ever since I found out that she's Bob's
+daughter, I've been avoiding her. She calls me every once in a while, but I haven't been returning her calls. I deleted her
+phone number from my PDA. I like her, but I don't know if I can handle\ldots''
+
+``Anna was at my baby shower last weekend,'' Wendy nodded understandingly. ``She really likes you.'' When I didn't answer,
+Wendy continued: ``I'm going to tell you what I told her. When I first met my husband, I was working a lot of overtime. It
+was one of those companies that always seems to be in deadline mode, you know? Anyway, Tom kept asking me out, and I wanted
+to, but I always had to work. Finally, I decided to make time. And the rest, as they say, is history. Tom kept trying, and
+so I told Anna to keep trying. Persistence pays off.''
+
+``Agh! Don't talk to me about persistence!'' I grumbled.
+
+Wendy blinked. ``Huh?''
+
+``Oh,'' I shook my head, ``I'm trying to implement some simple object persistence in my class hierarchy. I haven't been able
+to figure out how to do it. I asked the Guru for some help, but she said that she had taught me everything I need to know. I
+just can't figure it out.''
+
+Wendy pursed her lips in thought. ``This one time I'll waive our agreement about no shop talk over lunch. Fill me in a
+little more.''
+
+``I know it's not that difficult,'' I said around a mouthful of rice. ``Once I get going, I know I'll be fine. The main
+application can instantiate a derived class. I need to be able to write that class to an \textbf{ostream}. No problem. But
+I'm stuck on how to reconstitute the correct class when I read it back in.''
+
+``The Guru's right -- you do know everything you need to know. How do you create an object, when you don't know the exact
+type of the object until run time?''
+
+``Use a class factory,'' I said.
+
+``Right, just like the one you implemented last month \footnote{Jim Hyslop and Herb Sutter. ``Conversations: A Factory,
+  Template Style,'' C/C++ Users Journal C++ Experts Forum, June 2001}. Now, what do you pass to the factory to get the
+appropriate type?''
+
+``Some sort of token. I used a \textbf{std::string}.''
+
+``OK, now where do you get that token?''
+
+``Ummm\ldots well, it isn't going to appear out of thin air, so I guess I read it from the file.'' At that moment, the penny
+dropped. ``Oh, of course. When I write out the object, first I write out the token indicating what type of object it is, and
+then I write the object's information. Reconstituting it is a simple matter of reading the token, passing it to the factory,
+and then streaming it in from the file.''
+
+``Right,'' Wendy replied. ``And if you want to get really fancy, you can\ldots.''
+
+``Hold it!'' I signaled a time-out. ``Thanks for helping me clear my mental log jam. Now that it's clear, I'm re-invoking
+the 'no-shop-talk' rule.'' I dug into the main course.
+
+Later, when Wendy and I got back to the office, I sat at my computer and hammered out the base class fairly quickly:
+
+\begin{footnotesize}
+\begin{lstlisting}
+class Base
+{
+
+private:
+    // ... whatever data ...
+
+    virtual std::string classID() const { return "Base"; }
+
+protected:
+    // Derived classes should call their parent's
+    // implementation of this function after they 
+    // load themselves.
+    virtual void do_read( std::istream& );
+
+    // Derived classes should call their parent's
+    // implementation of this function after they 
+    // save themselves.
+    virtual void do_write( std::ostream& ) const;
+
+public:
+    // ... whatever virtual functions are required ... 
+
+    // Streaming functions.
+    void read( std::istream& );
+    void write( std::ostream& ) const;
+
+    virtual ~Base();
+};
+
+// Streaming helpers. Note that they are not friends!
+std::ostream& operator <<
+    ( std::ostream& o, const Base& b) { b.write(o); }
+std::istream& operator >>
+    ( std::istream& o, Base& b) { b.read(o); }
+// \footnote{A full, working example program is available to download from hyslop.zip.}
+
+\end{lstlisting}
+\end{footnotesize}
+
+``Very good, my child,'' I heard the Guru's voice behind me. As I jumped, I cursed at myself for not predicting her arrival.
+She continued: ``Give me a quick walk-through of your writings.''
+
+``Simple enough,'' I said, as the Guru sat in the guest chair. ``Base::write is called via the overloaded insertion
+operator. Here's its implementation:''
+
+\begin{footnotesize}
+\begin{lstlisting}
+void Base::write( std::ostream& o ) const
+{
+    o << classID() << std::endl;
+    do_write(o);
+}
+\end{lstlisting}
+\end{footnotesize}
+
+``Ah, the Template Method pattern,'' the Guru nodded. ``Very wise, my child \footnote{E. Gamma, R. Helm, R. Johnson, and J.
+  Vlissides. Design Patterns: Elements of Reusable Object-Oriented Software (Addison-Wesley, 1995).}.''
+
+``The implementation is fairly simple,'' I continued. ``It simply writes out the class identifier and then invokes the
+\textbf{do\_write} virtual function. \textbf{do\_write} handles the gory details of writing the object's information to the
+stream. Each derived class must call its parent's \textbf{do\_write} function. Reading is slightly more complicated,
+though.'' I called up the function I had written to encapsulate the reading:
+
+\begin{footnotesize}
+\begin{lstlisting}
+std::auto_ptr<Base> loadBase( std::istream& inFile )
+{
+    std::string className;
+    std::getline( inFile, className );
+
+    std::auto_ptr<Base> newBase =
+        genericFactory<Base>::instance().create(className);
+
+    if( newBase.get() != 0 ) {
+        inFile >> *newBase;
+    }
+
+    return newBase;
+}
+\end{lstlisting}
+\end{footnotesize}
+
+``It's a three-step process. First, I retrieve the class ID from the file. Then I use that identifier to get a new object
+from the class factory, and finally I reconstitute the class's data, via the \textbf{read} function:''
+
+\begin{footnotesize}
+\begin{lstlisting}
+void Base::read( std::istream& i )
+{
+    do_read(i);
+}
+\end{lstlisting}
+\end{footnotesize}
+
+``I'm using the Template Method pattern here, too, but that's probably overkill for a simple function like this.
+\textbf{do\_read}, of course, handles the gory details of reading in the information, validating it, and so on. Like the
+\textbf{do\_write} function, a derived class's \textbf{do\_read} should call its parent's \textbf{do\_read} function.''
+
+``Well done, my child,'' the Guru said as she stood up.
+
+``Before you go,'' I blurted out. The Guru paused. ``Tell Anna I've lost her phone number, but I'll be home tonight if she
+wants to call me.'' The Guru nodded and glided away.
+
+\wuxchcenterline{}
+
+\textit{``'Discourage.' Ah.'' It was Gilb's voice again. I blinked and shook my head to clear away the tired haze. ``What do
+  they know?''}
+
+\textit{``Not much, we think. The Asians suspect something.''}
+
+\textit{``They don't believe our cover story of communications problems that happen to cut off all of their nationals from
+  talking with them?'' Gilb's voice was openly sarcastic.}
+
+\textit{``They suspect,'' the other voice repeated. ``And they're coming. We need to deal with it. What have your tech teams
+  discovered so far?''}
+
+\textit{I was feeling increasingly uncomfortable standing in the corridor and didn't wait to hear more. There would be time
+  enough after a good night's sleep.}
+
+\section{Hungarian wartHogs}
+
+\textit{``Breakthrough!'' one of the officers called, poking her head into the mess hall.}
+
+\textit{Several people, Jeannine and I among them, looked up. ``What?'' ``Whose breakthrough?'' ``What happened?''}
+
+\textit{The sudden excitement was palpable, and no wonder -- things were worse than ever since the senior officers had made
+  known we'd lost contact with the orbiting station and the main surface base. Likely, they were overrun by the incoming
+  forces, although our officers had not yet officially admitted that we were in a hostile situation. When the news came, we
+  had been sealed into the local base near the excavation site for two days already. And progress on the alien artifacts had
+  continued to be maddeningly slow, knowing how near we must be to a breakthrough. Jeannine seemed closer than ever to
+  figuring out the power requirements.}
+
+\textit{``J\"oger says he's figured out part of the language, that's what,'' she informed us. The obscure writing on the
+  ancient, and mostly defunct, equipment had been a major obstacle to progress. Until now, attempts to decipher it had been
+  largely unsuccessful. ``Something about a built-in redundancy -- he's doping it out. Don't all rush in to bug him; he
+  needs to concentrate. Thought you'd like to know.'' And then the officer's head disappeared as she continued elsewhere to
+  spread the news.}
+
+\textit{``Redundant information,'' I sat back and mused aloud. ``Does that ever sound familiar. Why, back on my first
+  job\ldots''}
+
+\wuxchcenterline{}
+
+``Warts!''
+
+``Beg pardon?'' I turned at the sound of the Guru's voice.
+
+``You have warts, my child.''
+
+Suddenly feeling rather self-conscious, I asked: ``Uh, where? My medicated creams usually contr--''
+
+``Your latest code is covered in warts!'' she interrupted. ``Otherwise known as Hungarian notation. Your variables are
+beginning to look like this.'' She picked up the whiteboard marker and wrote: wartHog. ``In this case, the variable hog's
+wart has nothing to do with the pottery school \footnote{The first reader to correctly identify the source of this oblique
+  reference, as well as why it's appropriate for this November 2001 column, will receive an autographed copy of Sutter's
+  More Exceptional C++ when it is available in November 2001. All submissions must be sent by email to
+  \texttt{hsutter@acm.org} with the subject line "I know! I know!" and must include a valid (non-munged) return email
+  address and snail-mail postal address. Contest closes at midnight on October 15, 2001.}.''
+
+``Oh, that,'' I breathed a sigh of relief. ``Hungarian notation? Is that all? Sure, yeah, I read a cool article about
+Hungarian notation, and it sounded like a good idea. Apparently it was quite the trendy thing for a while. Almost kind of a
+type calculus-ish direction, sort of in a way, you know. So I--''
+
+``Gibberish!'' the Guru exclaimed.
+
+``Ah, well,'' I faltered. ``I thought I said that rather clearly.''
+
+``Not you, my child,'' the Guru corrected. ``The naming convention you chose to experiment with results in code that looks
+like gibberish. Even the prophet Petzold had his off days.''
+
+``Hmmmph,'' I hmmmphed, only slightly mollified. ``Well, it's supposed to make code easier to write and read. For example, I
+can catch some type errors just by reading the code. If I write something like
+ \lstinline$strcpy( szDestination, pachSource);$ 
+I can see a problem immediately -- the second parameter is a pointer to an array of characters, but not necessarily
+null-terminated as strcpy requires. Or if I write \lstinline$printf("%s", ulValue );$ ,
+I can see that I'm passing an unsigned long where a null-terminated string ought to go. The code tells me that I'm doing
+thewrong thing.''
+
+``Of dubious practical advantage even for type-unsafe calls in C, or in environments when nearly everything is a
+type-challenged int or void* handle,'' she shook her head sadly, ``and of no relevance at all in a type-safe object-oriented
+language like C++. This, you must unlearn. Warts are not information; they are disinformation.
+
+``Consider your own parables. In your first example, in C++ you would use strings, which are objects, and problems like the
+first cannot arise because a string's semantics are well defined and encapsulated. One who writes string destination =
+source; just cannot get the buffer-copying semantics wrong, for they are never exposed and the calling programmer never
+required to assist them; the implementation details are well and truly encapsulated and always managed for you. As for your
+second example, in C++ you would normally use streams or other type-safe methods to write output, and type checking along
+with overload resolution guarantee a type-correct result even if a conversion is needed. 
+One who writes \lstinline$cout << value;$
+
+just cannot get the type wrong: if value is an unsigned long, the \lstinline$operator<<$ for unsigned longs will be invoked;
+or, if value has a type for which no \lstinline$operator<<$ is defined but value's type can be converted unambiguously to a
+type for which \lstinline$operator<<$ is defined, that \lstinline$operator<<$ will be invoked; otherwise, a compile-time
+error occurs. Not only does the C++ language and standard library detect what would be run-time type errors with other
+type-unsafe calls, it turns them into compile-time errors.
+
+``In sum, the compiler already knows much more than you do about an object's type. Changing the variable's name to embed
+type information adds little value and is in fact brittle. And if there ever was reason to use some Hungarian notation in
+C-style languages, which is debatable, there certainly remains no value when using type-safe languages.''
+
+``Maybe so,'' I acquiesced. If nothing else, she had out-soliloquized me. ``But you have to admit that, once you know the
+rules, using Hungarian makes it easier to create variable names.''
+
+``So certain are you?'' the Guru arched her eyebrows. She placed herself in the guest chair. I knew what that meant: she was
+warming up for a debate. ``I had that in mind when I said 'brittle.' How is it easier, say you?''
+
+``Because the types tell you what to call the variables. It's almost mechanical,'' I said. ``The variable name is pretty
+much generated from its type. Once you know the type, you can generate the name,'' I rambled, then realized I was rambling,
+and stopped. When I had begun, I had somehow had the sense there would be something much more profound to say; now that I
+heard the words coming out of my mouth, it all sounded a bit superficial. I remember wondering why, when it had seemed so
+much deeper the first time.
+
+``And if the type changes\ldots?'' she prompted me just then.
+
+``Well, you'd have to change the variable name, I guess. But!'' I exclaimed, ``That then forces you to examine each usage of
+the variable in your program, to ensure that it is still being used properly.''
+
+``Not a bit of it,'' she riposted. ``It 'forces' you to do no such thing. In many cases, the programmers will simply forget
+-- or worse, not bother -- to consistently and globally change the variable name, never mind check the usage. And once they
+do not change the name, the code is lying to you, thus violating the commandment that says: 'Speak truth each one of you
+with his cubicle neighbor.' This,'' she shook her head quietly, ``is reprehensible. Such is the disinformational evil that
+must of necessity follow, sooner or later but probably sooner, from the deceptive wartHog style.''
+
+``Ah,'' I smiled, ``that's what global search-and-replace is for!''
+
+``Most assuredly not,'' she shook her head again. ``Never mind that you could inadvertently change other similar names of
+objects whose types have not changed! But even if the global replacement were done correctly, what value has it added? For
+it leaves the programmer no better off for his troubles than he would have been otherwise. If an error has been introduced
+by the change in type, such as because of implicit conversions, the error remains the same regardless of the object's
+superficial name, and you have merely added the menial and meaningless documentation work of changing the name. This too is
+vanity and a striving after wind.''
+
+It was time for me to fall back and regroup. ``But you'd have the error no matter what naming system you used. If I have int
+count; and I change it to short count;, then many programmers might not bother to check the usage at all and just hope the
+compiler catches any range problems.''
+
+``That,'' the Guru acknowledged, ``is what I just said. The problem is the same whether you uglify the variable's name or
+not, and by uglifying it you have merely added useless maintenance work because then you must additionally maintain the
+warty name. If you are not yet convinced, my child, I have one small question for you now: How would you apply Hungarian
+notation to templates?''
+
+That stumped me. ``Touch, I guess,'' I acknowledged. ``A template doesn't really have a type of its own, because the
+template generates an unknown number of types, one for each set of parameters it's instantiated with. There's no type until
+it's instantiated, so you can't really create a variable name that encodes the type of the template itself.''
+
+``Well spoken, well said. Even more,'' the Guru added, ``inside the template definition itself, how would you wartify the
+names of objects of a template parameter type? You do not know what they are.''
+
+``Oh, I see,'' I said. ``You mean like this.'' On the whiteboard, I scribbled an offhand example:
+
+\begin{footnotesize}
+\begin{lstlisting}
+template<typename T>
+T AddOne( T wartT ) // what wart should wart be?
+                    // papuch? lpsz? huh? 
+                    // (handle to unbounded harm)
+{
+ return wartT + T(1);
+}
+\end{lstlisting}
+\end{footnotesize}
+
+``I believe source code is a form of communication,'' the Guru pressed on. ``The question is, who is that communication
+aimed at? The compiler? No. Source code is a medium of communication from one programmer to another. It is an expression of
+intent, of what is desired to happen. We must strive to keep that communication as simple and clear as possible. In order to
+do that, variable names should reflect the roles that those variables play. The exact type is secondary to the role. A
+variable name such as sz tells you only that you are looking at a C-style string. It conveys no information as to the role
+that string is to play.''
+
+``Well,'' I put in, ``I don't think anyone would use just sz for a variable name.''
+
+``No? If we are to discuss Hungarian notation, we should discuss the canonical version presented by Dr.~Simonyi
+\footnote{harles Simonyi. "Hungarian notation." Reprinted at
+  \url{http://msdn.microsoft.com/library/en-us/dnvsgen/html/hunganotat.asp}. Readers are encouraged to study the naming
+  convention and decide for themselves, rather than rely on the opinions of the authors.}. His examples use variables named
+sz, pch, and so on. Such names, alas, present no useful information. If the variables were instead called xyzzy and yeti,
+respectively, or even merely x and y, I would still know simply by looking at their declarations that the first indicates an
+array of characters, and the second is a pointer to a character. Calling them sz and pch adds no useful information not
+already present in the code, and in particular, it adds no information not already well known to the compiler. Worse, it
+could be a lie if the type has changed since the wart was chosen. In any event, even if the wart lies not, the questions are
+still: What are the variables? What are they for? What do they do? How are they used? The wart helps not at all. I have to
+study the code to understand the roles they play. The code fails to communicate the intent of the programmer; therefore the
+names sz and pch are poor choices.''
+
+``In your opinion,'' I ventured.
+
+``In my opinion,'' the Guru nodded. ``Yes, this is still somewhat an area of opinion, rather than hard fact alone, although
+fact it is that names such as sz are next to useless and that Hungarian warts are brittle in the face of change. When we
+drafted the coding style guidelines several years ago, Hungarian notation was but one of many areas of lively debate. Unlike
+some discussions, this one was actually reasonably civilized. We examined the naming convention, listened to the experiences
+of those who had used it, and eventually came to the consensus that we did not like the convention. Although we did not
+dislike it enough to prohibit its use outright, we did consider it brittle enough to actively discourage it. Hence, to quote
+this team's standards:
+
+``Avoid Hungarian notation. It will make a liar out of you. 
+
+Warts are not information, but disinformation.''
+
+``Hungarian is not only mendacious, but it is high-cholesterol; it is suspected of being fattening, and it is in all
+probability a flagstone on the road leading to a wasted and dissolute life. Indeed, I recall only one time when Hungarian
+notation was useful on a project.''
+
+This hook intrigued me. ``What was that?''
+
+``One of the programmers on the project was named Paul,'' the Guru explained. ``Several months into the project, while still
+struggling to grow a ponytail and build his report-writing module, he pointed out that Hungarian notation had helped him
+find a sense of identity, for he now knew what he was\ldots'' She paused.
+
+I blinked. It took me about ten seconds, and then I shut my eyes and grimaced painfully. ``Pointer to array of unsigned
+long,'' I groaned.
+
+She smiled, enjoying my pain. ``True story,'' she said \footnote{Indeed a true story that happened to one of the authors.}.
+
+It was then that I thought I had found a way to corner her in an inconsistency. ``Well,'' I asked innocently, having quickly
+recovered from the awful pun, ``what about our convention of using a trailing underscore suffix for member variables? Isn't
+that kind of a watered-down version of Hungarian?''
+
+The Guru smiled pleasantly. ``So it may appear to the uninitiated, but appearances are in this case deceiving. The
+underscore has nothing to do with type -- it has to do with flagging scope and privacy. It also has a small practical
+benefit: we realized that passing a parameter to a member function -- particularly an initialization function or a
+constructor -- we would often want to use the same name for both the member variable, and for the passed parameter. For
+example:
+
+\begin{footnotesize}
+\begin{lstlisting}
+class T
+{
+ int count_;
+public:
+ T() : count_(0) {}
+ void init(int count) { count_=count; }
+};
+\end{lstlisting}
+\end{footnotesize}
+
+``We are giving the init function a count. Why come up with a different name for the parameter, when both the parameter and
+the member play the same role? We actually discussed several options for such cases: prefixing member variable names with my
+(or with our for static data), prefixing the parameter name with given, and so on. In the end, we decided to adopt a
+trailing underscore for the member, and no underscore for the provided parameter.''
+
+I frowned. ``Isn't this convention a little debatable?''
+
+The Guru grinned wryly. ``Wendy's personal preference is the other way around. But then no one is perfect, and she did just
+produce a most exceptionally beautiful child in Jeannine \footnote{Not the same Jeannine as in the framing story. See
+  \textit{Conversations: Back To Base-ics,} C/C++ Users Journal C++ Experts Forum, September 2001,
+  \url{www.cuj.com/experts/1909/hyslop.htm}.}, so one must make allowances.''
+
+
+
+\section{New Bases, Part 1}
+
+Things were very quiet in the Ballroom.
+
+That wasn't entirely unexpected; after all, we had no idea how we would ever leave it. It was the second day after the
+attacking forces had invaded our position inside the alien city beneath the Europan ice. With no help within reach from our
+own political faction on Earth, Gilb ordered retreat into the Ballroom and we barricaded the doors. The room was immense,
+but fortunately had few entrances. A few of our people had left us and surrendered in the disorder of the retreat; Jeannine
+and I didn't get the chance, for we were watched too closely by Gilb and his officers.
+
+It was cold in the Ballroom, and getting colder. Gilb authorized turning on the two portable heaters, since we had more
+energy cells with us than our group was likely to use in a year. It helped.
+
+We also had with us several of the alien artifacts, now powered but still mysterious, for we had only just managed to
+activate them and had had no time to experiment. J\"ager was with us, which was something; he knew the mysterious city's
+language better than anyone.
+
+The three 10-foot-diameter balls still hung suspended above the floor. Each still showed a different scene: the field of
+yellowish grasses with something like trees nearby; the dusk beach scene; and the metallic room much like our own, with the
+cabinets, where we had seen the gray-clad human who had started at seeing us and then had run away. He had not returned, nor
+had anyone else. We knew that throwing small objects into the balls put them into the scenes; a spent energy cell thrown
+through the meadow gate -- we were beginning to think of the balls as ``gates'' now -- pushed through the growths and
+bounced on the grassy ground before coming to rest. The energy cell was still visible, and nothing had jumped on it or
+otherwise reacted to the experiment.
+
+I turned to Jeannine, and we spoke of other cold and quiet times. It helped to distract us, while J\"ager tried to make
+himself more useful at the other end of the room by continuing to experiment carefully with one of the artifacts.
+
+\wuxchcenterline{}
+
+
+Things were very quiet around the office.
+
+That wasn't entirely unexpected; after all, it was January 2, and many people had taken the day off. I was puttering around
+with some small bits of programming on my to-do list, because my mind wasn't ready for anything big.
+
+I had recently started getting ``internal library'' development requests, which was a real thrill for me even though the tasks
+were small. You see, our company didn't have an officially separate team whose job was to build software library
+infrastructure for the whole company, which I thought was a good thing. That organization style never made sense to me, nor
+I think to the Guru. But we did have a set of internal libraries for common things that were shared by several projects. The
+internal libraries had no single ``owner,'' but items to be added or changed were reviewed by one of the more experienced
+developers. If we wrote something that was a likely candidate for reuse, we'd submit it to the shared libraries. Less often,
+someone would request a feature that wasn't in the shared area yet but probably should be, and someone capable would pick up
+the request and write it.
+
+So I was thrilled because being asked to write an addition to the internal library branded me as ``possibly capable.'' I was
+also thrilled because Bob wasn't ever asked, and this knowledge gave me a little ego boost. Ah, the vanity of youth.
+
+The problem seemed easy: ``Write a \textbf{ConvertBase} function that takes a \textbf{string} representing a number in base
+N and converts it to a \textbf{string} representing the same number in base M.''
+
+My first reaction was to write a hard-coded solution, something like this:
+
+\begin{footnotesize}
+\begin{lstlisting}
+string ConvertBase( size_t base1, size_t base2,
+                    const string& src )
+{
+  long value = 0;
+
+  // Read a base base1 number from src
+  for( int i = 0; i < src.size(); ++i )
+  {
+    // if src[i] is a valid base1 character,
+    //  multiply value by base1 and add the next digit
+    // else if src[i] is whitespace
+    //  break
+    // else
+    //  throw logic_error
+  }
+
+  // Write a base base2 number to dest
+  string dest;
+  while( value > 0 )
+  {
+    // find highest base2 digit
+    // append to dest
+    // reduce value appropriately
+  }
+}
+\end{lstlisting}
+\end{footnotesize}
+
+I had roughed in about that much and was still typing the last comment when a gentle throat-clearing behind me alerted me to
+the Guru's presence.
+
+I froze. There was silence.
+
+Then I heard a brief rustle of pages that I knew without looking was the Guru putting a marker into her book and closing it,
+and a calm low voice: ``Goodeve, my child.''
+
+``Ah, goodeve, master,'' I replied. If she was in her Guru shtick, then Bob had to be nearby, and appearances were important
+to successfully bugging Bob.
+
+``Your code,'' she gestured, walking around me into view and tapping on my display with her pen, ``bears a striking
+resemblance to library request 247.''
+
+``Ah, yes, I hope it does,'' I acknowledged. ``That's what I was working on. It looks like it's going to get kind of
+longish.''
+
+She nodded thoughtfully. There was another pause. After a moment she added: ``Did you happen to notice library request
+314?''
+
+``Ah, er\ldots no,'' I admitted.
+
+``No harm done. Request 314 asks for a facility to read and write a number of arbitrary base from a text stream. I presume
+that whoever codes 314 will end up writing much the same code as you were about to write there. May I make a suggestion, my
+apprentice?''
+
+``Sure. You want me to do 314 too?'' I asked, hope rising. If it was an honor to be asked to write one shared library
+facility, imagine the honor of being asked to write two after such a short time on the team!
+
+``Yes, but not immediately,'' said the Guru, arranging a wisp of graying hair behind her ear. ``A principle of programming
+is that we often gain useful insights into our code by writing the test cases first. Beck, Fowler, Martin, and others preach
+this gospel to anyone who will listen and to many who will not. In this case, why not write the code for request 247
+assuming that you already had the code for 314? Then write a simple test case for 247 and hard code just enough of a stub
+for 314 to make that test case compile. Finally, when you see in your 247 code the form that the solution to 314 should
+take, confirm that that form is acceptable to the people requesting 314, and do 314 too.''
+
+I blinked. ``I think I got that. So I'll take a first cut at 247 that uses 314's not-yet-written facility, which will let me
+see what 314's facility ought to look like. Right?''
+
+``Indeed.''
+
+``Okay.'' I thought for a moment and then started typing. I could assume that I had ``a facility to read and write a number
+of arbitrary base from a text stream.'' All right. If I had that, I could use streams to translate between bases. After
+further thought, I eventually came up with this code:
+
+\begin{footnotesize}
+\begin{lstlisting}
+string ConvertBase( size_t base1, size_t base2,
+                    const string& src )
+{
+  stringstream s1( src );
+  long value;
+
+  if( !( s1 >> Num( base1, value ) ) || 
+      !( s1 >> std::ws ).eof() )
+    throw logic_error
+      ( "src is not a valid number" );
+
+  stringstream s2;
+  if( !( s2 << Num( base2, value ) ) )
+    throw logic_error
+      ( "unexpected error emitting converted number" );
+
+  return s2.str();
+}
+\end{lstlisting}
+\end{footnotesize}
+
+Then I wrote a simple test case, with just enough of a \textbf{Num} stub hardwired to make the case compile:
+
+\begin{footnotesize}
+\begin{lstlisting}
+class Num
+{
+public:
+  Num( size_t base, long& value ) :
+    base_(base), value_(value) { }
+
+  size_t Base() const { return base_;  }
+  long& Value()       { return value_; }
+
+private:
+  size_t base_;
+  long& value_;
+};
+
+istream& operator>>( istream& i, Num& n )
+{
+  string s;
+  i >> s;
+  // todo: really convert input to n's base_
+  n.Value() = 255; 
+  return i;
+}
+
+ostream& operator<<( ostream& o, const Num& /* n */ )
+{
+  // todo: really output n.value_ in n.base_
+  return o << "FF"; 
+}
+
+int main()
+{
+  string result = ConvertBase( 10, 16, "255" );
+  cout << result << endl;
+  return result == "FF" ? 0 : 1;
+}
+\end{lstlisting}
+\end{footnotesize}
+
+After the compiler caught a few typos, I was satisfied that this skeletal attempt worked. Next, I knew I would have to more
+fully address request 314 by actually implementing \lstinline$<<$ and \lstinline$>>$ for \textbf{Nums}.
+
+I looked at my watch; it was well past quitting time, but I could still make my train and therefore my date with Anna.
+Request 314 could wait till the morning.
+
+\wuxchcenterline{}
+
+\begin{itshape}
+I looked at my watch; it was well past time for our turn to sleep, so we took the opportunity. There was periodic banging on
+the other side of one of the doors, presumably from the invading force, but that was all -- so far. Unless something more
+happened, the strange balls, or gates, could wait till the morning. Although Gilb's people were still trying to use our
+portable comms gear to get a message to Earth, or to ships in transit I didn't know about, I had a feeling that the gates
+would be our only way out.
+\end{itshape}
+
+\section{New Bases, Part2}
+
+\begin{itshape}
+The change in control came suddenly.
+
+Gilb had been watching the main Ballroom door, where we had heard occasional pounding. The attack, when it came, was through
+the two side doors and caught us while most of us were asleep.
+
+I woke to the sound of loud banging and the glare from the intense points of light moving across the two opposing doors. It
+was immediately obvious that the enemy were cutting their way in, and quickly. Gilb's orders had been explicit -- in case of
+attack, grab our packs and alien artifacts and jump through the forest gate, and that's what we tried to do.
+
+Gilb and several of his officers made it through and quickly disappeared out of sight in the other world. Most of us were
+still racing for the ball-gate as the doors crumpled and armor-clad soldiers started pouring in toward us from two sides,
+shouting orders to stop. I was near the gate, ahead of Jeannine, and hesitated \ldots then shots were fired, and I jumped
+forward.
+
+I felt nothing unusual as I passed through the gate, except that my suit's external temperature reading jumped to 28C. I
+took a quick glance backward -- still in the Ballroom, Jeannine was dropping her pack and holding out her arms.~I didn't
+wait to watch her get captured; I hurried after Gilb's party into the new world's underbrush.
+\end{itshape}
+
+\wuxchcenterline{}
+
+The change in management came suddenly.
+
+Because neither our company nor our acquirer were publicly traded, the boards were able to negotiate the deal quietly and
+keep it under wraps, even from the employees, until just a couple of weeks before the actual closing date. So it was that
+shortly after New Year's Day we first heard the announcement of the merger (such a polite term for ``acquisition'' or
+``buyout'' given that we were much smaller and ailing than our buyer) and within two weeks found ourselves already working
+for the new boss.
+
+Pete Williams seemed like a reasonable fellow at first, even if he was a bit too given to sports metaphors for a manager of
+a technical team. I would have more of a chance to refine that opinion as time went on, and I gained experience working
+under him. I did approve of Pete's first action, or perhaps inaction: he kept our team together and didn't monkey much with
+the way we worked, at first. That was mostly a good thing. Except for Bob, who had somehow thought he would get a promotion
+out of this, we were all pleased with this turn of events.
+
+A few urgent assignments had taken me away from my lower-priority internal library-building work (not that the internal
+library wasn't important, but none of the requests assigned to me were, for I was only just starting out). When I next had a
+breather, I returned to the half-written library code. I had been filling two requests: Request 247 asked for ``a
+ConvertBase function that takes a string representing a number in base N and converts it to a string representing the same
+number in base M.'' The Guru had pointed out that Request 314 was for ``a facility to read and write a number of arbitrary
+base from a text stream.'' Thus guided, I had written the following to try to implement the former in terms of the latter
+and avoid redundant work:
+
+\begin{footnotesize}
+\begin{lstlisting}
+string ConvertBase( size_t base1, size_t base2,
+                    const string& src )
+{
+  stringstream s1( src );
+  long value;
+
+  if( !( s1 >> Num( base1, value )).eof() || 
+      !( s1 >> std::ws ).eof() )
+    throw logic_error( "src is not a valid number" );
+
+  stringstream s2;
+  if( !( s2 << Num( base2, value ) ) )
+    throw logic_error( "unexpected error emitting "
+                       "converted number" );
+
+  return s2.str();
+}
+\end{lstlisting}
+\end{footnotesize}
+
+That seemed to do it for 247, though as it relied on 314's \textbf{Num}, it wouldn't work until I finished that. So far I
+had just a simple test case, with a \textbf{Num} stub hardwired to make the case compile, and while I was looking at it, I
+added a check to limit the base to a reasonable range:
+
+\begin{footnotesize}
+\begin{lstlisting}
+class Num
+{
+public:
+  Num( size_t base, long& value )
+  : base_(base), value_(value)
+  {
+    if( base < 1 || base > 36 )
+      throw logic_error( "base must be from "
+                         "1 to 36" );
+  }
+
+  size_t Base() const { return base_;  }
+  long& Value()       { return value_; }
+  long  Value() const { return value_; } 
+
+private:
+  size_t base_;
+  long& value_;
+};
+
+istream& operator>>( istream& i, Num& n )
+{
+  string s;
+  i >> s;
+  n.Value() = 255; // todo: really convert input
+                   //       to n's base_
+  return i;
+}
+
+ostream& operator<<( ostream& o, const Num& /* n */ )
+{
+  return o << "FF"; // todo: really output
+                    //       n.value_ in n.base_
+}
+
+int main()
+{
+  string result = ConvertBase( 10, 16, "255" );
+  cout << result << endl;
+  return result == "FF" ? 0 : 1;
+}
+\end{lstlisting}
+\end{footnotesize}
+
+Next, I knew I would have to finish 314 by actually implementing \lstinline$<<$ and \lstinline$>>$ for Nums. As I was about
+to start coding, I noticed a serious deficiency in the signatures of my existing operators \lstinline$<<$ and
+\lstinline$>>$. I leaned closer to the screen and was nearly ready to start making changes when the telltale closing of a
+book behind me alerted me to the Guru's presence.
+
+``Is Bob around?'' I whispered.
+
+``No, we can just talk,'' she said and sat in my visitor's chair. ``What on earth possessed you to do that?'' she continued, pointing at the screen.
+
+``Yeah, I know, I was just looking at that. I've been away from this code for weeks, and now the obvious thing jumps out at
+me.''
+
+``Ah. Well then, counsel yourself.''
+
+I pointed at the offending operator \lstinline$<<$ and \lstinline$>>$ signatures. ``Aw, I accidentally hardwired them for
+basic char and \lstinline$char\_traits<char>$ streams only.''
+
+She smiled and stood. ``Very good. Carry on, apprentice,'' she added, as we both heard the sound of Bob's sloshing latte
+approaching.
+
+``Uh, that's it?'' I asked. ``No longer speech, no morality play, no programming lesson?''
+
+She arched an amused eyebrow. ``And why would there be? You spotted the wicked flaw in your writings without my help, and
+now you need time to fix it. What more can I teach until that is done?'' And without waiting for a further reply, she smiled
+quietly, reopened her tome, and glided silently away.
+
+I guessed that I must be improving if she was willing to let me get away without a three-page lesson. So I went back to the
+code. The first thing was to fix the signatures:
+
+\begin{footnotesize}
+\begin{lstlisting}
+template<class CharT, class Traits>
+basic_istream<CharT, Traits>& operator>>
+  ( basic_istream<CharT, Traits>& i, Num& n );
+
+template<class CharT, class Traits>
+basic_ostream<CharT, Traits>& operator<<
+  ( basic_ostream<CharT, Traits>& o, const Num& n );
+\end{lstlisting}
+\end{footnotesize}
+
+That was better. I checked it by eye, and it looked right this time. Next, I decided that input would be easiest. I began
+adroitly:
+
+\begin{footnotesize}
+\begin{lstlisting}
+template<class CharT, class Traits>
+basic_istream<CharT, Traits>& operator>>
+  ( basic_istream<CharT, Traits>& input, Num& n )
+{
+  locale loc = input.getloc();
+  CharT c;
+\end{lstlisting}
+\end{footnotesize}
+
+Here I congratulated myself on my own presence of mind, as I avoided the twin pitfalls of reading simply \textbf{chars} and
+of forgetting about locales. I then remembered that leading whitespace can be optionally skipped, and so I pressed on:
+
+\begin{footnotesize}
+\begin{lstlisting}
+  // If we should, then skip leading
+  // whitespace, if any.
+  if( input.flags() & ios_base::skipws )
+  {
+    do
+    {
+      input >> c;
+    }
+    while( isspace( c, loc ) );
+  }
+   
+  // Handle sign, if any.
+  int sign = ( c == '-' ? ¡ª1 : 1 );
+  if( c == '-' || c == '+' )
+    input >> c;
+\end{lstlisting}
+\end{footnotesize}
+
+So far, so good. When it came to actually handling the digits, the logic was simple, and it was mostly a matter of deciding
+on a reasonable way to decipher the digits. After all, green though I was, I was knowledgeable enough to realize that I
+couldn't just assume that the digit and/or letter characters would be contiguous and in order in the character set (even
+though each group was contiguous and in order in ASCII). For the time being, I decided on a helper structure that was
+suitable for searching with \lstinline$std::find()$:
+
+\begin{footnotesize}
+\begin{lstlisting}
+ CharT digits[]
+    = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  size_t numDigits 
+    = sizeof( digits ) / sizeof( digits[0] );
+
+  n.Value() = 0;
+  while( input.good() )
+  {
+    int index = find(digits, digits + numDigits,
+                     toupper (c, loc) )
+                ¡ª digits;
+    if( index < 0 || index > n.Base() )
+    {
+      break;
+    }
+
+    n.Value() = n.Value() * n.Base() + index;
+    input >> c;
+  }
+
+  if ( !input.eof() )
+    input.putback( c );
+
+  n.Value() *= sign;
+  return input;
+}
+\end{lstlisting}
+\end{footnotesize}
+
+That seemed reasonable enough for input, leaving only output. Output was easier, in part because I made a deliberate
+decision not to support the output formatting flags like \textbf{showpos} and \textbf{uppercase}; that could wait until a
+later request, if it was needed at all--
+
+I glanced furtively over my shoulder, in case the Guru had glided up and would pounce on me, remonstrating about supporting
+all the standard stream flags. All was dark (it being that time of year) and quiet. There was no Guru there. I waited a few
+moments, but there was no sound or movement. Satisfied, I turned back to my code.
+
+--so yes, as I was saying, I ignored the issue of formatting flags. If the Guru didn't like it, she could remonstrate after
+I checked it in, and I'd do a more complete job in version 2.0 of the code. If Wendy didn't like it, I would try to argue my
+way out of it by saying we didn't yet know if that was a requirement, so why complicate the code unnecessarily up front? If
+Bob didn't like it, he could go jump in the lake, particularly at this time of year.
+
+So my first cut at a real insertion operator looked like this:
+
+\begin{footnotesize}
+\begin{lstlisting}
+template<class CharT, class Traits>
+basic_ostream<CharT, Traits>& operator<<
+  ( basic_ostream<CharT, Traits>& o, const Num& n )
+{
+  long value = n.Value();
+  basic_string<CharT, Traits> s;
+
+  CharT digits []
+    = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+  basic_string<CharT, Traits>::size_type start=0;
+  do
+  {
+    s.insert( start, 1, 
+              digits[ value % n.Base() ] );
+    value /= n.Base();
+  }
+  while( value > 0 );
+
+  if( n.Value() < 0 )
+    s.insert( start, 1, '-' );
+
+  return o << s;
+}
+\end{lstlisting}
+\end{footnotesize}
+
+\wuxchcenterline{}
+
+\begin{itshape}
+I started running the code through a more extensive set of test cases and got ready to tackle the next item on my normal
+project's workload. Our new manager was big on ``time management,'' which seemed to consist of micromanaging our to-do
+lists. I wondered how that would work out.
+
+Fortunately, I was ahead of my list. Perhaps today I could leave a little early for a change.
+
+Fortunately, it was a mostly hospitable world we now found ourselves in -- for it was obvious, if only from the slightly
+heavier gravity, that it was a different world from any we had known among Sol's children. Yes, mostly hospitable: as the
+few rations gave out, we found local flora that was edible, and we did not immediately come across any indigenous humans, or
+more to the point they did not come across us.
+
+Gilb found out about the local fauna the hard way. We buried him a few days later and started posting sentries against the
+unfriendly five-legged carnivores we dubbed ``Goofies'' because of their passing resemblance to the cartoon character. That
+was when Da Rosa took over command of our small base and instituted a more rigorous testing of some of the artifacts we had
+determined were, or could be used as, weapons.
+
+I worried about Jeannine.
+\end{itshape}
+
+\section{Template Specializations}
+
+\begin{itshape}
+We watched the gate from a short distance, alert that the invaders might follow us through from the Europan base. It
+appeared, however, that the enemy was quite content to abandon us, or at least wait us out. The gate remained quiet.
+
+Despite constant alertness, Goofies had got a couple of our sentries. We had killed many Goofies -- sometimes with our
+conventional weapons, sometimes as tests of the alien artifacts, at least one of which spewed huge energy bolts that made it
+dangerous to aim at anything too close nearby -- but the Goofies seemed to be in unlimited supply.
+
+So it was that we were only partly surprised by the mutiny.
+\end{itshape}
+\wuxchcenterline{}
+
+``Hey, Junior, how's it going?'' I tensed at Bob's voice. But then it struck me -- Bob was not his usual condescending self.
+He was almost\ldots dare I say\ldots civil.
+
+``Not bad, Bob,'' I replied, turning to face him. We stared at each other for a moment.
+
+``Uh, say, Junior, I was wondering if I could get a little help.''
+
+I was stunned. Speechless. Bob, the worst programmer in the department; the man who delighted in writing obscure, difficult
+to maintain code; the man whose arrogance was so thick you could smell it a block away; the man who stopped by my cubicle
+only long enough to dump his problems in my lap (and latte on my desk) was standing at my cubicle, asking me for help?
+
+``Aaah, sure, Bob,'' I finally answered. ``What's up?''
+
+Bob sat himself down in the guest chair. ``OK, here's the scoop. I've managed to condense it down to this source code.'' He
+took over on the keyboard and called up a file on my workstation. I looked closely at it:
+
+\begin{footnotesize}
+\begin{lstlisting}
+#include <iostream>
+
+template<typename T, std::size_t size = 10>
+class c
+{
+  T m[size];
+public:
+  void print_size() 
+  {
+    std::cout << size << std::endl;
+  }
+};
+
+template<> class c<char>
+{
+  char m[100];
+public:
+  void print_size()
+  {
+    std::cout << 100 << std::endl;
+  }
+};
+
+int main()
+{
+  c<char>().print_size();
+  c<char, 10>().print_size();
+}
+\end{lstlisting}
+\end{footnotesize}
+
+``First, I don't see how it can compile. I mean, I thought the template argument has to be a class or type name, not a\ldots
+well, an ordinary parameter.''
+
+``You mean the size\_t parameter?'' I quizzed. Bob grunted, which I took to mean an affirmative. ``Yeah, the first time I
+saw a non-type parameter, my brain stopped for a moment too. I was used to seeing class or typename declarations, not
+regular parameters. The Guru assured me that it was allowed, but she made me look it up in the Standard for myself. You can
+only use integral or enumeration types, pointers or references to objects or functions, or pointers to member $[$1$]$. In
+fact, with integral types, the parameter becomes an integral constant expression\ldots.''
+
+``A whozer whatzit?'' Bob interrupted.
+
+``A compile-time constant,'' I translated from Standardese to English. ``Anyway, since it's an integr-- er, that is, since
+it's a compile-time constant, that allows you to use size to declare the array of T objects. Pretty nifty.
+
+``Once I learned this, I was toying with the idea of using a template to provide a more flexible switch statement, something
+like,'' I opened a new text file and typed in:
+
+\begin{footnotesize}
+\begin{lstlisting}
+template<int value1, int value2, int value3>
+void f(int currentValue)
+{
+    switch(currentValue)
+    {
+    case value1:
+        ...
+    case value2:
+        ...
+    case value3:
+        ...
+    }
+}
+void g()
+{
+    f<1, 2, 3>(1); // executes value1 case
+    f<2, 3, 1>(1); // executes value3 case
+}
+\end{lstlisting}
+\end{footnotesize}
+
+``I couldn't come up with a practical application for it, so I filed it in the 'nifty but no practical application for it'
+category\ldots''
+
+``Alongside other useless information that gets trotted out at parties, no doubt,'' Bob interrupted, glancing at his watch.
+``That's, uh, real interesting, Junior, but getting back to my problem,'' he reached over, closed my text window, and
+restored his original program. ``See, when I compiled and ran this, the first template prints out 100, just like I thought
+it would, 'cause it um\ldots instantiates the\ldots uh\ldots. specialization \lstinline$c<char>$. I expected the second
+template to print out 10, because I figured it'd match up the 10 with the default parameter of 10, but it prints out 100 as
+well.''
+
+I studied the code. Bob sipped his latte.
+
+``Well,'' I welled to fill in the silence, ``My first reaction would be that I'd expect both templates to print out 10.''
+
+``Y'know, that's what I told Her Holine-- uh, I mean, that's what I thought at first.'' Ah, that was a little more like the
+Bob I knew -- he was about to call the Guru a nasty name.
+
+``I try to think of default parameters as 'lazy shortcuts','' I continued. ``Whenever I write something that takes advantage
+of default parameters, I have to remember that the compiler treats it as if I had actually written the parameter.''
+
+``I know that,'' Bob said impatiently. He took over the keyboard and modified the program slightly:
+
+\begin{footnotesize}
+\begin{lstlisting}
+int main()
+{
+  c<char>().print_size();
+  // compiler acts as if I'd written
+  // c<char, 10>().print_size();
+
+  c<char, 10>().print_size();
+}
+\end{lstlisting}
+\end{footnotesize}
+
+``This is an exact match for the base template. In that case, though, the program would print out 10 for each size, but it
+prints out 100, so what's going on?'' Bob asked impatiently, glancing again at his watch.
+
+I savored this moment. Not only was Bob aware that I knew something he didn't, but he was actually acknowledging it!
+
+``That's not the only place the default parameter is used,'' I finally said. Bob gave me a quizzical look. ``The
+specialization uses it, too.'' I took over the keyboard, after carefully moving Bob's latte out of the way. ``The
+specialization that you wrote as\ldots''
+
+\begin{footnotesize}
+\begin{lstlisting}
+template<> class c<char>
+\end{lstlisting}
+\end{footnotesize}
+
+``\ldots acts as if you wrote:''
+
+\begin{footnotesize}
+\begin{lstlisting}
+template<> class c<char, 10>
+\end{lstlisting}
+\end{footnotesize}
+
+
+``So,'' I continued, ``you have not specialized on \lstinline$c<char>$, but on \lstinline$c<char, 10>$, where the size
+template parameter is an integral constant-expression with the value 10. In other words, your program acts as if you had
+written:''
+
+\begin{footnotesize}
+\begin{lstlisting}
+#include <iostream>
+template<typename T, std::size_t size = 10>
+class c
+{
+  T m[size];
+public:
+  void print_size() 
+  {
+    std::cout << size << std::endl;
+  }
+};
+ 
+template<> class c<char, 10>
+{
+  char m[100];
+public:
+  void print_size()
+  {
+    std::cout << 100 << std::endl;
+  }
+};
+
+int main()
+{
+  c<char, 10>().print_size();
+  c<char, 10>().print_size();
+}
+\end{lstlisting}
+\end{footnotesize}
+
+``I get it,'' Bob smiled as he leaned back in his chair. ``In main(), both instantiations of c instantiate the
+specialization.'' I didn't like the look of that smile on his face. He stood up, then in a louder tone of voice, he
+continued, ``And remember, Junior, that default parameters apply to template specializations as well.'' I was puzzled by his
+sudden change. I spotted the Guru approaching, an open tome in her hand as usual.
+
+She stopped in front of Bob. ``Why are you interrupting my apprentice's devotions?'' the Guru demanded.
+
+``Hello, doll-face,'' Bob beamed at the Guru. ``I was just explaining to Junior here, why the correct output of that program
+we were talking about is 100 100.'' He glanced at his watch. ``Yep, coming up on two o'clock -- I better get to Pete's
+office and go over this with him.''
+
+The Guru and I watched him disappear in the direction of Pete Williams's office. Pete was the new manager brought in when
+our company was acquired last month.
+
+``Figured it out, did he?'' the Guru murmured as she turned to me. ``Now matters are worse.'' My stomach did a flip-flop.
+
+``Um, what was that all about?'' I asked.
+
+The Guru sat down wearily in the guest chair. With Bob gone, she was back in ``normal'' mode. ``You asked me once why Bob
+was still around, even though he's an\ldots'' I could see her struggling for words.
+
+``Incompetent, arrogant, misogynistic\ldots '' I supplied, which the Guru capped with a word I would not care to repeat to
+my mother, even if she is stone deaf.
+
+``Yes, exactly,'' the Guru continued, calmer now. ``Bob was in quite tight with the previous upper management. He somehow
+had them hoodwinked into believing he's a\ldots well, a golden boy. All my attempts to expose him for what he is were swept
+aside because he had the upper management convinced that I was still bitter about our divorce. As if!
+
+``Anyway,'' she continued, ``when we had our change in management, I saw a perfect opportunity. I convinced Pete Williams to
+pose him a challenging question, which I knew Bob would never figure out. Or so I thought. Pete agreed that the question I
+posed would be simple enough even for you to answer.'' I bristled at that, but the Guru, absorbed in her explanation,
+ignored me. ``If Bob could not figure out the answer by two o'clock, Pete was going to keep a close eye on him, perhaps even
+put him on probation. Eventually, I'm sure I could have got Bob what he deserved -- a pink slip. Now, though, it's going to
+be much harder.''
+
+She sighed and silently stood and glided away.
+
+My stomach rose in my throat. ``What have I done?'' I muttered to myself.
+
+\wuxchcenterline{}
+
+\begin{itshape}
+It was just before daybreak that the conspirators acted. Several officers went armed into Da Rosa's tent, and we quickly
+discovered that only the mutineers' sergeants had functioning weapons. Da Rosa put up no real opposition; I think he was
+tired and already resigned to the fact that holding out further would be futile. He gave up his sidearm, Hinckel took
+command, and we prepared to surrender.
+
+A man was sent to throw a surrender note through the gate. We could see a brief glimpse of movement through the gate as the
+note was retrieved and soon came the reply. Following instructions, we put down our weapons and filed through the gate one
+by one. When my turn came, I stepped through into the dimly lit Ballroom and turned to find myself staring at the business
+end of weapons carried by grim-faced men. I sighed and was bound like the others.
+\end{itshape}
+
+\pagebreak
+%%% Local Variables:
+%%% TeX-master: "conversations"
+%%% End:

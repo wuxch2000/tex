@@ -1,0 +1,210 @@
+﻿\documentclass[hyperref={bookmarks=ture}xcolor=pdflatex,svgnames,table,compress]{beamer}
+
+\usepackage{config}
+
+\title{自定义封装函数的问题}
+\author{}
+\date{}
+
+\begin{document}
+\begin{frame}
+\titlepage
+\end{frame}
+
+\section{基本情况}
+\subsection{}
+\begin{frame}
+主要问题：
+\begin{itemize}
+    \item 函数参数定义问题
+    \item 函数实现问题
+\end{itemize}
+
+\textit{以下举例说明}
+\end{frame}
+
+\section{函数参数定义问题}
+\subsection{}
+\begin{frame}[containsverbatim]{参数顺序不一致}
+对于\lstinline{memcpy}:
+
+\begin{itemize}
+    \item SIP模块使用第{\color{red}3}个参数作为实际使用的复制大小：
+\begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+WORD32 P_SIPCA_memcpy(OUT VOID *pvDst,IN const VOID *pvSrc,'\hilight{IN WORD32 dwNeedCopyLen}',IN WORD32 dwDstMaxSize);
+\end{lstlisting}
+    \item MGCP/H248模块使用第{\color{red}4}个参数作为实际使用的复制大小:
+\begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+LPSTR PMGCP_MEMCPY(LPSTR pbDstBuffer,LPSTR pbSrcBuffer,WORD32 dwDestLen,'\hilight{WORD32 dwSrcLen}');
+LPSTR PH248_MEMCPY(LPSTR pbDstBuffer,LPSTR pbSrcBuffer,WORD32 dwDestLen,'\hilight{WORD32 dwSrcLen}');
+\end{lstlisting}
+\end{itemize}
+\comment{不一致的定义容易引发混淆}
+\end{frame}
+
+
+\subsection{}
+\begin{frame}[containsverbatim]{参数定义与标准函数不一致}
+对于\lstinline{memcpy}:
+
+\begin{itemize}
+    \item 使用\lstinline{WORD32}作为返回值，而不是缺省的目的指针地址:
+\begin{lstlisting}
+'\hilight{WORD32}' P_SIPCA_memcpy(OUT VOID *pvDst,IN const VOID *pvSrc,IN WORD32 dwNeedCopyLen,IN WORD32 dwDstMaxSize);
+\end{lstlisting}
+    \item 标准函数定义:
+\begin{lstlisting}
+'\hilight{void*}' memcpy (void* dstpp,const void* srcpp,size_t len);
+\end{lstlisting}
+\end{itemize}
+\comment{如果使用返回值，容易出现错误}
+\end{frame}
+
+\subsection{}
+\begin{frame}[containsverbatim]{参数定义与标准函数不一致}
+对于\lstinline{memcpy}:
+
+\begin{itemize}
+    \item 使用\lstinline{LPSTR}作为参数类型，而不是缺省的void*:
+\begin{lstlisting}
+'\hilight{LPSTR}' PMGCP_MEMCPY('\hilight{LPSTR}' pbDstBuffer,'\hilight{LPSTR}' pbSrcBuffer,WORD32 dwDestLen,WORD32 dwSrcLen});
+\end{lstlisting}
+    \item 标准函数定义:
+\begin{lstlisting}
+'\hilight{void*}' memcpy ('\hilight{void*}' dstpp,const '\hilight{void*}' srcpp,size_t len);
+\end{lstlisting}
+\end{itemize}
+\comment{这样会导致PCLINT对指针大小的判断失效}
+\end{frame}
+
+\subsection{}
+\begin{frame}[containsverbatim]{参数定义与标准函数不一致}
+对于\lstinline{strcpy}:
+
+\begin{itemize}
+    \item 封装函数:
+\begin{lstlisting}[basicstyle=\ttfamily\tiny]
+'\hilight{VOID}'  PH248_STRCPY(LPSTR strDes, LPSTR strS);
+'\hilight{WORD16}' P_SIPCA_strcpy(OUT BYTE *pbDst, IN const BYTE *pbSrc, IN '\hilight{WORD16}' wMaxDstLen);
+'\hilight{LPSTR}' PMGCP_STRCPY(LPSTR pbDstBuffer, LPSTR pbSrcBuffer, '\hilight{WORD32}' dwDestLen);
+'\hilight{WORD16}' P_SIPCA_strncpy(OUT BYTE *pbDst, IN const BYTE *pbSrc, IN '\hilight{WORD16}' wNeedCopyLen, IN '\hilight{WORD16}' wMaxDstLen);
+\end{lstlisting}
+    \item 标准函数定义:
+\begin{lstlisting}
+char *strncpy (char *dest, const char*src,size_t n);
+char *strcpy (char *dest, const char*src);
+\end{lstlisting}
+\end{itemize}
+\comment{应该返回什么？到底用WORD16还是用WORD32。}
+\end{frame}
+
+\section{函数实现问题}
+\subsection{}
+\begin{frame}[containsverbatim]{封装不彻底}
+对于\lstinline{strcpy}:
+
+\begin{itemize}
+    \item 封装函数:
+\begin{lstlisting}
+VOID  PH248_STRCPY(LPSTR strDes, LPSTR strS)
+{
+    if(strDes != NULL)
+    {
+        strcpy(strDes,strS);
+    }
+    return;
+}
+\end{lstlisting}
+\end{itemize}
+\comment{仅仅判断第一个指针? 另:此函数的注释是memcpy的注释}
+\end{frame}
+
+\subsection{}
+\begin{frame}[containsverbatim]{内部实现欠妥}
+对于\lstinline{memcpy}:
+
+\begin{itemize}
+    \item 封装函数:
+\begin{lstlisting}[basicstyle=\ttfamily\scriptsize]
+void* PH248_MEMCPY(void* pbDstBuffer, void* pbSrcBuffer, WORD32 dwDestLen, WORD32 dwSrcLen)
+{
+     ......
+     if(dwDestLen < dwSrcLen)
+     {
+         /** chengliang added for agcf */
+         '\hilight{memcpy(pbDstBuffer, pbSrcBuffer, dwDestLen);}'
+         '\hilight{return NULL;}'
+     }
+     memcpy(pbDstBuffer, pbSrcBuffer, dwSrcLen);
+     return pbDstBuffer;
+}
+\end{lstlisting}
+\end{itemize}
+\comment{返回null，表示函数执行失败，此时仍然执行复制了。\lstinline{PH248_MEMSET}一样。}
+\end{frame}
+
+\subsection{}
+\begin{frame}[containsverbatim]{内部实现欠妥}
+对于\lstinline{strncpy}:
+
+\begin{itemize}
+    \item 封装函数:
+\begin{lstlisting}[basicstyle=\ttfamily\tiny,escapechar=@]
+LPSTR PMGCP_STRCPY(LPSTR pbDstBuffer, LPSTR pbSrcBuffer, WORD32 dwDestLen)
+{
+    WORD32 dwSrcLen = 0;
+    if(NULL == pbDstBuffer || NULL == pbSrcBuffer||0 == dwDestLen)
+    {
+        return NULL;
+    }
+    @\hilight{dwSrcLen = strlen(pbSrcBuffer);}@
+    if(dwDestLen <= dwSrcLen)
+    {
+        strncpy(pbDstBuffer,pbSrcBuffer,dwDestLen);
+        *(pbDstBuffer+dwDestLen -1) = '\0';
+    }
+    else
+    {
+         strncpy(pbDstBuffer, pbSrcBuffer,dwSrcLen);
+         *(pbDstBuffer+dwSrcLen ) = '\0';
+    }
+    return pbDstBuffer;
+}
+\end{lstlisting}
+\end{itemize}
+\comment{且不说strlen额外进行了一次遍历，如果pbSrcBuffer没有结束符，strlen不安全}
+\end{frame}
+
+\subsection{}
+\begin{frame}[containsverbatim]{无意义封装}
+对于\lstinline{strlen}:
+
+\begin{itemize}
+    \item 封装函数:
+\begin{lstlisting}
+WORD16 P_SIPCA_strlen(IN const BYTE *pbString)
+{
+    WORD16 wRet;
+    wRet = strlen((char*)pbString);
+    return wRet;
+}
+\end{lstlisting}
+\end{itemize}
+\comment{仅仅是多一次调用}
+\end{frame}
+
+\section{后续建议}
+\subsection{}
+\begin{frame}
+后续建议：
+\begin{itemize}
+    \item 参数和返回值定义请按照C标准库定义，可以增加参数，但是不要改变原有的参数定义
+    \item 函数实现请参考标准库的源代码，或者是gnu libc的源代码。这些基本函数会被多次调用，有必要仔细
+      推敲
+    \item 不需要每个模块都定义一套实现，应该部门内部共享共用
+    \item 函数名称改变需要修改pclint检查配置，否则会使pclint检查失效
+\end{itemize}
+\end{frame}
+
+
+\end{document}

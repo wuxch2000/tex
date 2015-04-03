@@ -1,0 +1,87 @@
+﻿\usepackage{fontspec,xunicode,xltxtra}
+\setmainfont[Mapping=tex-text]{Times New Roman}
+% \setmainfont[Mapping=tex-text]{Arial}
+\setsansfont[Mapping=tex-text]{Arial}
+\setmonofont[Mapping=tex-text]{Courier New}
+% \setmonofont[Mapping=tex-text]{Times New Roman}
+
+\usepackage{xeCJK}
+\setCJKmainfont[ItalicFont={Adobe Kaiti Std}]{Adobe Song Std}
+% \setCJKmainfont[ItalicFont={Adobe Kaiti Std}]{Adobe Kaiti Std}
+\setCJKsansfont{Adobe Heiti Std}
+% \setCJKsansfont{Microsoft YaHei}
+\setCJKmonofont{Adobe Heiti Std}
+\punctstyle{banjiao}
+
+% \usepackage{indentfirst}
+\usepackage[dvips,dvipsnames,svgnames]{xcolor}
+\definecolor{light-gray}{gray}{0.4}
+\definecolor{more-light-gray}{gray}{0.2}
+
+\usepackage[dvipdfmx]{hyperref}  % options: dvipdfmx, pdftex 
+\hypersetup{
+    % bookmarks=true,         % show bookmarks bar?
+    bookmarksopen=true,
+    pdfpagemode=UseNone,    % options: UseNone, UseThumbs, UseOutlines, FullScreen
+    pdfstartview=FitH,      % options: FitH, FitV
+    pdfborder=1,
+    pdfhighlight=/P,
+    pdfauthor={wuxch},
+    unicode=false,          % xetex should set to false
+    colorlinks=true,             % false: boxed links; true: colored links
+    linkcolor=black,         % color of internal links
+    citecolor=green,        % color of links to bibliography
+    filecolor=magenta,      % color of file links
+    urlcolor=light-gray           % color of external links
+}
+% \makeindex
+
+
+\usepackage{graphicx}
+\graphicspath{{fig/}}
+
+\usepackage{enumitem}
+% \setitemize{label=$\bullet$,leftmargin=1em}
+\setitemize{label={\color{blue} $\star$},leftmargin=1em}
+% \setitemize{label=$\bullet$,leftmargin=3em,noitemsep,topsep=0pt,parsep=0pt}
+% \setenumerate{leftmargin=3em,noitemsep,topsep=0pt,parsep=0pt}
+
+% \setlength{\parskip}{1.5ex plus 0.5ex minus 0.2ex}
+% \setlength{\parskip}{2.0ex plus 0.5ex minus 0.2ex}
+
+% \setlength{\parindent}{5ex}
+% \setlength{\parindent}{0ex}
+
+% \usepackage{setspace}
+% \linespread{1.25}
+
+% 英文的破折号--不明显，使用自己画的线。
+% \newcommand{\myrule}{\hspace{0.5em}\rule[3pt]{1.6em}{0.3mm}\hspace{0.5em}}
+
+% 以下定义简历中的格式
+
+% section的格式定义
+\renewcommand{\sectionfont}{\sffamily \color{blue}}
+
+\renewcommand{\namefont}{\Large \sffamily}
+
+% 时间 职位 部门 职责
+\newcommand{\ztework}[4]%
+{%
+\begin{minipage}{1\textwidth}
+\vspace{2ex}
+{\sffamily #2} \hfill {\sffamily \small #1}
+\end{minipage}
+
+\begin{minipage}{1\textwidth}
+\begin{description}
+\item[{\sl 部门:}]#3
+\item[{\sl 职责:}]#4
+\end{description}
+\end{minipage}
+}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "wuxch-res9a"
+%%% End: 

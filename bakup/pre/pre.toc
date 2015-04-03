@@ -1,0 +1,66 @@
+\contentsline {section}{\numberline {1}General Conception}{1}{section.1}
+\contentsline {section}{\numberline {2}Terminology}{1}{section.2}
+\contentsline {section}{\numberline {3}Progression}{2}{section.3}
+\contentsline {subsection}{\numberline {3.1}Initiation}{2}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Prenatal period}{2}{subsection.3.2}
+\contentsline {subsubsection}{\numberline {3.2.1}Fertilization}{3}{subsubsection.3.2.1}
+\contentsline {subsubsection}{\numberline {3.2.2}Embryonic period}{3}{subsubsection.3.2.2}
+\contentsline {subsubsection}{\numberline {3.2.3}Changes by weeks of gestation}{5}{subsubsection.3.2.3}
+\contentsline {subsubsection}{\numberline {3.2.4}Gestational age vs. embryonic age}{5}{subsubsection.3.2.4}
+\contentsline {subsubsection}{\numberline {3.2.5}Week 3}{5}{subsubsection.3.2.5}
+\contentsline {subsubsection}{\numberline {3.2.6}Week 4}{6}{subsubsection.3.2.6}
+\contentsline {subsubsection}{\numberline {3.2.7}Week 5}{6}{subsubsection.3.2.7}
+\contentsline {subsubsection}{\numberline {3.2.8}Week 6}{6}{subsubsection.3.2.8}
+\contentsline {subsubsection}{\numberline {3.2.9}Week 7}{7}{subsubsection.3.2.9}
+\contentsline {subsubsection}{\numberline {3.2.10}Week 8}{7}{subsubsection.3.2.10}
+\contentsline {subsubsection}{\numberline {3.2.11}Week 9}{7}{subsubsection.3.2.11}
+\contentsline {subsubsection}{\numberline {3.2.12}Fetal period}{8}{subsubsection.3.2.12}
+\contentsline {subsubsection}{\numberline {3.2.13}Changes by weeks of gestation}{8}{subsubsection.3.2.13}
+\contentsline {subsubsection}{\numberline {3.2.14}Weeks 10-12}{8}{subsubsection.3.2.14}
+\contentsline {subsubsection}{\numberline {3.2.15}Weeks 13 to 16}{8}{subsubsection.3.2.15}
+\contentsline {subsubsection}{\numberline {3.2.16}Week 19}{9}{subsubsection.3.2.16}
+\contentsline {subsubsection}{\numberline {3.2.17}Week 23}{9}{subsubsection.3.2.17}
+\contentsline {subsubsection}{\numberline {3.2.18}Week 27}{9}{subsubsection.3.2.18}
+\contentsline {subsubsection}{\numberline {3.2.19}Week 31}{10}{subsubsection.3.2.19}
+\contentsline {subsubsection}{\numberline {3.2.20}Week 35}{10}{subsubsection.3.2.20}
+\contentsline {subsubsection}{\numberline {3.2.21}Weeks 36 to 39}{10}{subsubsection.3.2.21}
+\contentsline {subsection}{\numberline {3.3}Perinatal period}{11}{subsection.3.3}
+\contentsline {subsection}{\numberline {3.4}Postnatal}{11}{subsection.3.4}
+\contentsline {subsubsection}{\numberline {3.4.1}The postpartum period}{11}{subsubsection.3.4.1}
+\contentsline {subsubsection}{\numberline {3.4.2}Physical}{11}{subsubsection.3.4.2}
+\contentsline {subsubsection}{\numberline {3.4.3}Psychological}{12}{subsubsection.3.4.3}
+\contentsline {subsubsection}{\numberline {3.4.4}Cultures}{12}{subsubsection.3.4.4}
+\contentsline {subsection}{\numberline {3.5}Duration}{12}{subsection.3.5}
+\contentsline {section}{\numberline {4}Childbirth}{14}{section.4}
+\contentsline {subsection}{\numberline {4.1}The mechanics of vaginal birth}{14}{subsection.4.1}
+\contentsline {subsection}{\numberline {4.2}The stages of normal human birth}{15}{subsection.4.2}
+\contentsline {subsubsection}{\numberline {4.2.1}Latent phase}{15}{subsubsection.4.2.1}
+\contentsline {subsubsection}{\numberline {4.2.2}First stage: contractions}{15}{subsubsection.4.2.2}
+\contentsline {subsubsection}{\numberline {4.2.3}Second stage: birth}{16}{subsubsection.4.2.3}
+\contentsline {subsubsection}{\numberline {4.2.4}Third stage: placenta}{16}{subsubsection.4.2.4}
+\contentsline {subsubsection}{\numberline {4.2.5}After the birth}{17}{subsubsection.4.2.5}
+\contentsline {subsubsection}{\numberline {4.2.6}Pain}{17}{subsubsection.4.2.6}
+\contentsline {subsubsection}{\numberline {4.2.7}Descriptions}{17}{subsubsection.4.2.7}
+\contentsline {subsubsection}{\numberline {4.2.8}Non-medical pain control}{18}{subsubsection.4.2.8}
+\contentsline {subsubsection}{\numberline {4.2.9}Medical pain control}{18}{subsubsection.4.2.9}
+\contentsline {section}{\numberline {5}Diagnosis}{19}{section.5}
+\contentsline {section}{\numberline {6}Physiology}{21}{section.6}
+\contentsline {subsection}{\numberline {6.1}First trimester}{21}{subsection.6.1}
+\contentsline {subsection}{\numberline {6.2}Second trimester}{22}{subsection.6.2}
+\contentsline {subsection}{\numberline {6.3}Third trimester}{22}{subsection.6.3}
+\contentsline {subsection}{\numberline {6.4}Prenatal development and sonograph images}{23}{subsection.6.4}
+\contentsline {section}{\numberline {7}Physiological changes in pregnancy}{24}{section.7}
+\contentsline {subsection}{\numberline {7.1}Hormonal changes}{24}{subsection.7.1}
+\contentsline {subsection}{\numberline {7.2}Musculoskeletal changes}{24}{subsection.7.2}
+\contentsline {subsection}{\numberline {7.3}Physical changes}{25}{subsection.7.3}
+\contentsline {subsection}{\numberline {7.4}Cardiovascular changes}{25}{subsection.7.4}
+\contentsline {subsection}{\numberline {7.5}Respiratory changes}{26}{subsection.7.5}
+\contentsline {subsection}{\numberline {7.6}Metabolic changes}{26}{subsection.7.6}
+\contentsline {subsection}{\numberline {7.7}Renal changes}{26}{subsection.7.7}
+\contentsline {section}{\numberline {8}Management}{26}{section.8}
+\contentsline {subsection}{\numberline {8.1}Nutrition}{26}{subsection.8.1}
+\contentsline {subsection}{\numberline {8.2}Weight gain}{27}{subsection.8.2}
+\contentsline {subsection}{\numberline {8.3}Immunological tolerance}{28}{subsection.8.3}
+\contentsline {subsection}{\numberline {8.4}Drugs in pregnancy}{29}{subsection.8.4}
+\contentsline {subsection}{\numberline {8.5}Sexuality during pregnancy}{29}{subsection.8.5}
+\contentsline {subsection}{\numberline {8.6}Abortion}{30}{subsection.8.6}

@@ -1,0 +1,27 @@
+﻿\documentclass[]{article}
+
+\usepackage{config}
+\usepackage[addSeq=true]{pgf-msg}
+
+\pagestyle{empty}
+
+\begin{document}
+\begin{center}
+
+  \begin{tikzpicture}
+    \begin{msgdiagram}
+      \msgSetMsgTextPosition{center}
+      \msgSetModuleDistance{3cm}
+
+      \msgModule{Control}{Control}
+      \msgModule{Observer}{Observer}
+      \msgModule{Execute}{Execute}
+
+      \sendMsg{Control}{Observer}{message 1}
+      \sendMsgDown{Control}{Execute}{message 2}
+      \sendMsg{Observer}{Execute}{message 4}
+
+    \end{msgdiagram}
+  \end{tikzpicture}
+\end{center}
+\end{document}

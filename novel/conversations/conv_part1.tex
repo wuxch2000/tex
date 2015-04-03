@@ -1,0 +1,777 @@
+\section{Remembering auto\_ptr}
+\begin{flushright}--- A class with an auto\_ptr member: How can copying go wrong? Let us count the ways\ldots\end{flushright}
+
+\textit{I had met Jeannine only the day before, in the crew rotation staging area now far below us. ``I'll always remember
+  my first job,'' I told her after the flight attendant walked past, checking our belts.}
+
+\textit{``What about it?''}
+
+\textit{``The senior programmer on my project,'' I smiled, remembering. ``She was an odd duck. We called her the Guru.
+  Management didn't like to assign new programmers to her team; I was the only one of four hires that year to last through
+  the probation period.''}
+
+\textit{Jeannine tilted her head and was about to ask a question when the last chime sounded and the rumbling acceleration
+  took hold, cutting off conversation for a few minutes. At the end of the burn, as we left orbit, I told her the story of
+  my second day at work.}
+
+\begin{center}
+- - - - -
+\end{center}
+
+We were programming in early C++. On the afternoon of my second day, tired of reading employee handbooks, I wrote a utility
+class that contained a raw pointer as one of its members:
+
+\begin{footnotesize}
+\begin{lstlisting}
+#include "xStruct.h" // definition of struct X
+
+class xWrapper
+{
+  X* xItem;
+public:
+  xWrapper() : xItem(new X) { }
+  ~xWrapper() { delete xItem; }
+  void dump() { /* dumps xItem to cout */ }
+};
+\end{lstlisting}
+\end{footnotesize}
+
+Of course, the program using this class kept crashing intermittently with memory corruption, because I'd violated the Law of
+the Big Three: Whenever you provide any one of a destructor, copy constructor or assignment operator, you will generally
+need to provide all three\footnote{M. Cline, G. Lomow, and M. Girou. C++ FAQs, 2nd ed. (Addison-Wesley, 1999).}. ``So,''
+said I to myself, said I, ``I have to handle copying and assignment. Simple\ldots auto\_ptr already has a copy constructor and
+assignment operator, so I'll use that.'' (You've heard of the auto\_ptr in the original C++ library, right?)
+
+Since the auto\_ptr automatically deletes the object it points to, all I had to do was change the type of xItem and remove
+the delete statement in the destructor -- auto\_ptr would take care of the rest, right?
+
+\begin{footnotesize}
+\begin{lstlisting}
+class xWrapper
+{
+  auto_ptr<X> xItem;
+public:
+  xWrapper() : xItem(new X) { }
+  void dump() { /* dumps xItem to cout */ }
+};
+\end{lstlisting}
+\end{footnotesize}
+
+Unfortunately, my program was still crashing, this time because it was trying to dereference a null pointer. I had been
+trying to puzzle out the problem for about half an hour when the Guru, thin as a rail, decided to walk by, carrying a thick
+book open in one hand. She did that a lot\ldots show up at propitious times, I mean; I think it was some sort of prescient
+thing. Downright spooky, actually.
+
+``Uh, what're you reading?'' I asked her, pointing at her book to deflect attention away from my screen and hoping she would
+go away.
+
+The Guru blinked. ``The writings of Josuttis,'' she said softly, marked her page, and closed the book. ``What's that you
+have there, young one?''
+
+``I'm having problems with this wrapper class I'm writing,'' I admitted. ``I'm using an auto\_ptr member, but in my test
+harness its pointer keeps getting reset to null for some reason.''
+
+``Show me your writings,'' the Guru said. I showed her the screen. ``Ownership,'' she said immediately, after barely a
+glance.
+
+It was my turn to blink.
+
+``Ownership, child; your problem is ownership semantics. No person can serve two masters, and no pointer can serve two
+auto\_ptrs.''
+
+Her words, although certifiably strange, made me realize my mistake. ``Okay, right,'' I nodded. ``When you copy an
+auto\_ptr, the original one relinquishes ownership and gets reset to null. My xWrapper copy constructor reuses that default
+behavior, so the original xWrapper object's auto\_ptr is being reset, and when I try to access it I'm dereferencing a null
+pointer.''
+
+``Correct,'' the Guru agreed. ``You have done well to reuse the true tools of the Standard, but you must take care with
+them. For xWrapper, you must still manage xWrapper copying and assignment yourself.''
+
+``But I can't implement them in terms of auto\_ptr's own versions because those won't do the ri--- Oh. I get it. I'll use
+auto\_ptr's dereference operator to access the owned objects.'' I quickly wrote out the two functions:
+
+\begin{footnotesize}
+\begin{lstlisting}
+xWrapper::xWrapper(const xWrapper& other)
+  : xItem(new X(*other.xItem))
+{ }
+
+xWrapper\& xWrapper::operator=(const xWrapper &other)
+{
+  *xItem = *other.xItem;
+}
+\end{lstlisting}
+\end{footnotesize}
+
+``Hey, cool.'' This, I liked. ``I don't even need to check for self-assignment in the assignment operator.''
+
+``That is correct.''
+
+I should have stopped then and kept my mouth shut, but I wasn't that smart yet. ``auto\_ptr sure is easy to misuse. If only
+it could have told me I was trying to transfer ownership when I didn't expect that to happen\ldots''
+
+``Peace!'' interrupted the Guru. ``The fault is not with auto\_ptr in this instance. You should have said that you did not
+want the auto\_ptr to be copied, had that been your desire.''
+
+``But how? That's not possible.''
+
+``Ah, but it is. Remember the blessings of const-correctness. The way to state that an auto\_ptr is immutable is to make it
+const. Had you made the member a const auto\_ptr, the compiler would not have been able to silently perform the copy of the
+xWrapper object. Alternatively, had you used something like the strict\_auto\_ptr from the Second Revisionist rendering of
+Cline 30:12, the compiler would not have been able to mistakenly generate incorrect xWrapper copying and assignment. Of
+course, in this case making it const would have been simpler and sufficient.''\footnote{ibid., FAQ 30.12, pages 426-8.}
+
+She reopened her copy of Josuttis and resumed reading as she started to walk away, still talking to me absently, both she
+and her voice gradually drifting away: ``A word of caution, my child\ldots auto\_ptr is a useful tool, but as you have
+discovered, it is not a panacea. Read and meditate upon Josuttis chapter 4\footnote{N. Josuttis, The C++ Standard Library
+  (Addison-Wesley, 1999).}. You must never instantiate a Standard container of auto\_ptr, such as vector$<$auto\_ptr$>$,
+because auto\_ptr does not meet the copying and assignment requirements of the Standard. Furthermore, never attempt to use
+auto\_ptr to point to an array of objects, for the auto\_ptr's destructor uses non-array delete to delete the object it
+owns; for an array of objects, use a vector instead. The library\ldots''
+
+But then she turned a corner, and was gone. It was only my second day; I wondered, not idly, if I ought to update my
+r\'esum\'e while I could still pretend this job had never happened.
+
+\wuxchcenterline
+
+\textit{``Weird lizard,'' Jeannine opined, sipping coffee as we exited the Terran local traffic control area, still gaining
+  velocity. ``So, did you leave?''}
+
+\textit{``She was, but no. I'm not sure why,'' I added honestly. ``A few run-ins like that, and I was ready to leave during
+  probation like the rest. I guess he grew on me, though. Didn't you ever work with a quirk like that?''}
+
+\textit{``Mmm. Some. I suppose.''}
+
+\textit{It was not the last time I would speak with Jeannine about the Guru, or about more pleasant things.}
+
+\pagebreak
+\section{Null References}
+\begin{flushright}--- Can references be null? Case in point: A factory that returns a pointer to the newly created object.\end{flushright}
+\textit{Aboard ship, the last thing you want to feel is wind. Jeannine and I happened to be unlucky enough to be the closest
+  to the incident; straining together, we managed to wrestle the bulky door shut and seal it, isolating the breached
+  compartment. As we leaned against the door, breathing deeply, the klaxons stopped sounding.}
+
+\textit{``What in tarnation was that?'' the watch officer's voice demanded shrilly over the comlink.}
+
+\textit{``Just a small penetration, sir,'' Jeannine responded. ``We sealed off the compartment. All clear, no casualties.''}
+
+\textit{``You sealed off the compartment? Why didn't it seal automatically? Didn't we just refit that door?''}
+
+\textit{Jeannine and I glanced at each other. ``Uh, sir, it seems that the maintenance crews assumed the new locking
+  mechanism would be fine, because it was brand new from the factory, so they didn't check it. It was fine, only they didn't
+  take off all the packing materials and it couldn't seal by itself.''}
+
+\textit{There was a pause, then: ``All right, good work. There's a damage crew on the way.'' Then in the background, just
+  before the comlink was broken, we heard the XO's voice say: ``Mr. Johnson, have the chief of engineering see me in my
+  cabin. Now. Tell Reilly to--''}
+
+\textit{I grinned at Jeannine. ``I'd give a week's pay to hear that conversation. This reminds me of a code safety problem we had once, a long time ago\ldots''}
+
+\wuxchcenterline
+
+I had been on my first programming job for a couple of weeks, and I'd met the other programmers on my project. One of them
+was Bob. He was the antithesis of the Guru in almost every way: Bob was smug, his code was difficult for others to maintain,
+and he had a tendency to violate programming rules.
+
+I was well into my first project, and Bob had been assigned to perform a code review on some stuff I'd checked in. He came
+by my desk, holding a latte, and leaned against the partition. ``Your code is crashing with an access violation inside your
+helper function,'' he said. ``You better fix it before the Space Cadet hears about it.''
+
+``The Guru really is an excellent programmer, Bob,'' I bristled. True, the Guru was odd, and I was still uneasy around her.
+Every time I talked to her, I kept thinking about updating my rsum. But Bob's attitude just rubbed me the wrong way somehow.
+
+``Yeah, whatever,'' Bob waved his cup dismissively, sloshing a little. ``Anyway, your helper function is using a null. Let's
+take a look.''
+
+``But the helper function doesn't use any pointers,'' I frowned. ``Just a reference to an xWrapper class.'' I called up the
+code in my text editor. It was something like this:
+
+\begin{footnotesize}
+\begin{lstlisting}
+class xWrapper
+{
+  /* ... */
+public:
+  virtual void dump() { cout << name << endl; } 
+};
+void helper( xWrapper& w )
+{
+  w.dump(); 
+  // ... do other stuff with w ... 
+}
+\end{lstlisting}
+\end{footnotesize}
+
+Bob leaned at the monitor. ``Yeah, it's crashing at that dump() statement,'' he said, scratching his nose.
+
+``That's not possible.''
+
+``Sure it is, Junior.'' Bob was really starting to bug me. ``All I do is get a brand new pointer from the factory, and
+dereference it when I pass it to you. If that pointer's null, 'course, you have a null reference. You should check for
+that.''
+
+``Uh, well,'' I faltered, less certain now. After all, I was just fresh out of school, and Bob had several years of
+experience. ``I didn't think that was possible to see if a reference was null.''
+
+``All you do,'' Bob said, ``is check the address of the reference. Like I said, you want to be safe, you should check for
+that\ldots''
+
+``No,'' the Guru's quiet voice startled us both. Once again, she had appeared at the right moment, and now stood behind us,
+an open tome in hand. ``There is no need of such an abomination. The Standard teaches that it is not possible to have null
+references.''
+
+``But it is possible, dearie,'' Bob insisted. ``We've just shown that. That's his problem.''
+
+I wanted to smack him. The Guru merely favored him with a chill glare. ``No. You should check for that. Never dereference a
+null pointer. Change your code: If the pointer is null, do not call helper(). Show me the working code this afternoon.
+Begone, you instrument of malformed programs,'' she waved him away.
+
+Bob blinked. But she was the senior programmer on the team, so he shut up and left.
+
+``My apprentice,'' she continued to me alone, ``one of the major reasons to use a reference instead of a pointer is to free
+you from the burden of having to test to see if it refers to a valid object. The only way to create a null reference would
+be to dereference a null pointer -- an act clearly forbidden by the Holy Standard, well inside the realm of Undefined
+Behavior.''
+
+``Okay, but why tell only me? Why not tell Bob?''
+
+She shook her head sadly. ``This he knows. I cannot teach him; he is drawn to Undefined Behavior. My apprentice, beware the
+path to Undefined Behavior. Once you start down that path, it will dominate your life forever. It will consume your time, as
+you try to track down and fix problems.''
+
+I considered this. ``Well,'' I asked, ``what about accidentally creating an invalid reference? Say you pass an object to a
+function, and the object you pass goes out of scope before the function is finished with it. How do you guard against
+that?''
+
+She shook her head. ``You cannot. In this respect, references and pointers are very similar. Consider this parable.'' The
+Guru quickly scribbled out some code on my whiteboard:
+
+\begin{footnotesize}
+\begin{lstlisting}
+T* f() 
+{ 
+  T t; 
+  return &t;  // return a dangling pointer 
+}
+void f1( T* t ) 
+{ 
+  if( t ) 
+    t->doSomething(); 
+}
+
+int main() 
+{ 
+  T *tPtr = f(); 
+  f1( tPtr );   // evil 
+}
+\end{lstlisting}
+\end{footnotesize}
+
+
+``This f() quite clearly lives in infamy,'' she said, pushing a graying lock behind one ear, ``as it returns a pointer to a
+local object that oversoon goes out of scope. Thus tPtr in main() points to an object that has been destroyed. f1() does the
+best it can -- it checks for a null pointer. Some platforms also provide compiler-specific functions that can test whether a
+pointer points to a valid region of memory. However, such functions would still not detect the case that, inside f1(), the
+variable t does not point to a valid T object. It is impossible for f1() to be certain that t is valid; therefore as the
+programmer writing f1(), you must have faith. Faith that your fellow programmers will do everything in their power to
+provide you with a pointer to a valid object.''
+
+``Just as you must assume that a non-null pointer is valid, you must assume that a reference is valid. You must have faith
+in your fellow programmers.''
+
+``Even Bob?'' I asked.
+
+She nodded with an air of sadness, then drifted quietly away down the corridor, reading her tome.
+
+\wuxchcenterline
+
+\textit{``Did Bob last long?'' Jeannine asked.}
+
+\textit{``Longer than he should have.'' I stopped smiling. ``Our company also built software that got used in pacemakers.
+  You know, the devices they used to put inside people's chests. One time he checked in a piece of code that didn't verify
+  all its preconditions, and the code got out into production. And\ldots''}
+
+\textit{Jeannine lifted an eyebrow.}
+
+\textit{I nodded soberly. ``Bob finally did get another job, in retail sales. He can be glad it happened before the
+  programmer liability laws.'' Then the damage control team relieved us, and we got ready to go on watch.}
+
+\textit{It was not the last time I would speak with Jeannine about the Guru, or about more pleasant things.}
+
+\pagebreak
+\section{Genesis}
+\begin{flushright}--- How we got here from there: A colorfully rendered history of the C family of languages.\end{flushright}
+\textit{I burst into the compartment. ``Hey, have you heard the rumors?''}
+
+\textit{Jeannine looked up from her work. ``Hay is for horses. What rumors?'' }
+
+\textit{``About Ganymede,'' I explained. ``I hear they found something under the ice. No sign of recent melting, either;
+  it's something old, and definitely not natural.''}
+
+\textit{That got her attention. She blinked and stretched. ``Really? And not ours?''}
+
+\textit{``That's the buzz. Your neurons tingling yet?''}
+
+\textit{``Sure, sure. Wow. What else?''}
+
+\textit{``No more information yet,'' I admitted, letting myself drop down onto the couch. ``And it's just a rumor. But, man,
+  wouldn't that be exciting, if something big happened on our tour? We'll be there on station in less than two months.''}
+
+\textit{``In the ice\ldots?'' Jeannine considered this. ``Whether it's an artifact or not, it must be ancient. Makes you think
+  about all the big questions, doesn't it? Our own race's history, where we came from, where we're going.''}
+
+\textit{``Roots and directions, right. Y'know,'' I said, ``this reminds me of something that happened back when I was on my
+  first job\ldots''}
+
+\wuxchcenterline
+
+It was a slow day, and I was talking with Wendy. She was the girl next door\ldots literally, I mean. Her cubicle was next to
+mine.
+
+``Y'know,'' I said, ``I heard that Stroustrup chose the name C++ because it was an incremental change to the C language -- C
+incremented, right?''
+
+``Right,'' Wendy said. ``But if you think about the semantics of the name, what does it mean?''
+
+I puzzled for a moment, then shook my head. ``I dunno.''
+
+``Well, it uses the post-increment, so it means 'take the C language, increment it, and use the original.' `` We both
+laughed.
+
+``A common jest.'' The Guru's voice startled us both. We turned, and I tensed, but then I saw an unusual thing: A twinkle in
+the Guru's blue eyes. She added: ``But how well do you know the history of the language you are abusing?''
+
+I relaxed again, quickly at ease. ``How do you mean?''
+
+The Guru closed the book in her hand -- I recognized the cover of the D\&E\footnote{B. Stroustrup, The Design and Evolution
+  of C++ (Addison-Wesley, 1994) ISBN 0201543303.}. She raised her head slightly, her eyes focusing off in the distance. Then
+she began to recite, in almost a sing-song way, and her thin body seemed to resonate with the chanted words:
+
+\begin{quote}
+
+``In the beginning, computer languages were in chaos, and high-level computer languages were void, and without form. And from
+his desk at Bell Labs, Richard Martin did look upon the computer languages, and saw that a high-level language was needed.
+And he went forth, and developed BCPL, and he saw that it was good.
+
+``And Ken Thompson did look upon BCPL, and saw that it was good, but it had to be smaller to run on a PDP-7. And Thompson
+went forth, and did produce a new language, and he did call it B, which is a contraction of BCPL\footnote{see \url{http://cm.bell-labs.com/cm/cs/who/dmr/chist.html} for alternate etymologies of ``B''.}. And he saw that it was
+good.
+
+``But B was without types. And Dennis Ritchie saw that it was without types, and he too went forth, and extended the B
+language. Thus Ritchie added structs, and added types to the language, and he called it C, for C is the next letter after B,
+both in the alphabet and in 'BCPL.' And Ritchie saw that it was almost good, but he was not satisfied, and he continued to
+toil in the sweat of his brow and to refine the language. And in 1978 did Brian Kernighan and Dennis Ritchie proclaim 'The C
+Programming Language\footnote{B. Kernighan and D. Ritchie, The C Programming Language, 2nd edition (Prentice Hall, 1998) ISBN 0131103709.}.' And there was much rejoicing among the multitudes, and they saw that C was good. 'Yea, verily,
+this language is good,' proclaimed the multitudes.
+
+``And it came to pass that the multitudes began to use C. And new features were added, but not by all compiler vendors. And
+the multitudes were dismayed, and cried out. 'Yea, verily, we need a Standard C,' they did cry. And ANSI did hear their cry.
+And in 1989 did ANSI say, 'Behold, I bring you good tidings of great joy, which shall be unto all programmers. For unto you
+this day is adopted a Standard for C, which is X3.159-1989.' And then did ISO take up the cry, and did proclaim ISO/IEC
+9899-1990. And there was much rejoicing among the multitudes.
+
+``Now it also came to pass, before the C Standard was adopted, that Bjarne Stroustrup did also labor to perfect the C
+language. And Stroustrup labored to add Classes to C, and function argument type checking, and other features possessed of
+niftiness. And so he went forth, and in 1980 did he proclaim 'C With Classes.' And there was much rejoicing and excitement
+among the multitudes.
+
+``But Stroustrup was not satisfied. And he made further changes to the language, and he did call it C++, which is to say, the
+C language incremented. And so he went forth, and in 1986 proclaimed 'The C++ Programming Language,' and there was much
+rejoicing among the multitudes\footnote{B. Stroustrup, The C++ Programming Language, Special Edition (Addison-Wesley, 2000) ISBN 0201700735.}.
+
+``But as with all living things, the C++ language evolved. Templates, exception handling, and other features were added to
+the language. And there was rejoicing among the multitudes.
+
+``But also did the multitudes complain. For in those days, did various compiler vendors implement different solutions to
+templates and exceptions, and other features. Even did some compiler vendors refuse to implement them. And so the ISO went
+forth, and in 1998 -- which is to say, the sixth year of Clinton, while Chr└tien was prime minister of all Canada with the
+possible exception of Qu└bec, and Lewinsky was celebrity of choice in the media, for Simpson was no more and there was no
+news that year -- in the ninth month, on the first day of the month, did ISO proclaim, 'Behold, I bring you good tidings of
+great joy, which shall be unto all programmers. For unto you this day is adopted a Standard for C++, which is ISO/IEC
+14882:1998(E).' And ANSI did take up the cry, and proclaim the very same Standard, on the seventh month, on the
+twenty-seventh day of the month, which was technically before the day on which ISO did proclaim it because that's just how
+these things work out sometimes. And there was much rejoicing among the multitudes. 'Yea, verily, now maybe we shall get
+some work done,' the multitudes did proclaim.
+
+``Now it came to pass, during those days, that Patrick Naughton did work for Sun Microsystems. And Naughton was sore tried,
+and sought to leave Sun. But the Company counter-offered, and did say unto him, 'Thou shalt have a team of developers at thy
+disposal, if thou wilt but give us something cool.' And so was born the team known as Green.
+
+``And Green team did seek solitude, and went into exile in the wilderness. And they did seek an Object Oriented Language to
+be used in embedded devices, and they did start to modify C++. But C++ was too cumbersome for their needs, and so did they
+create a new language based on C++, and they called it Oak, for James Gosling did look out his window and see an oak tree.
+And the team looked upon Oak, and saw that it was good.
+
+``Now in those days it also came to pass that the National Center for Supercomputing Applications did beget Mosaic, and thus
+did they bring forth the World Wide Web. And there was much rejoicing among the multitudes. And then did Bill Joy seek to
+give away the source code to Oak, and to make Oak useable in web browsers. And Sun looked upon the idea, and saw that it was
+good. But the trademark Oak was already taken, and therefore did Sun call the new language Java. And so it came to pass that
+Sun did proclaim the Java Programming Language. And there was much rejoicing among the multitudes. 'Yea, verily, now we have
+another truly platform-independent language,' they did proclaim, 'we think, and it does really cool stuff.' "
+
+\end{quote}
+
+The Guru finished her recitation, and focused on me. ``And that, my young apprentice, is the story of the C family of
+languages.'' She pushed a gray lock behind her ear, stood still for a moment in a respectful silence, then bowed her head
+and silently walked away, reopening her D\&E.
+
+I sat there, stunned, and turned to Wendy.
+
+``Hey, don't look at me,'' Wendy shrugged. ``You'll get used to her. She really is the best programmer I've ever worked
+with.''
+
+I barely heard her. I was trying to remember where I'd put the floppy disk with my r\'esum\'e.
+
+\textit{``What did you spend more time at -- doing work, or thinking about how to get away from her?'' Jeannine asked,
+  smiling facetiously.}
+
+\textit{``Yes,'' I smirked back. It was not the last time I would speak with Jeannine about the Guru, or about more pleasant
+  things.}
+\pagebreak
+
+\section{So Who's the Portable Coder?}
+\begin{flushright}--Writing portable code. Case in point: Scope of variables declared in a for-init-statement.\end{flushright}
+\textit{``Hi, buster.'' Jeannine came over and sat down across from me in the mess. ``Hear any more rumors?''}
+
+\textit{I glanced at the time just to make sure, but I wasn't due to go on for another half hour. ``Hi, busted. No, not yet.
+  They're keeping a lid on it, whatever it is. You're off watch early?''}
+
+\textit{``Brzenkowski couldn't sleep, so he relieved me. I owe him one.''}
+
+\textit{``Thoughtful of him,'' I agreed around another mouthful of lunch. ``I really like him. He always does good work,
+  makes sure it won't affect other people, understands how he fits into the big picture. I wish we could keep working with
+  him after planetfall next month. Everyone should be that professional.''}
+
+\textit{``Most people are,'' Jeannine smiled. ``You're no slouch yourself.''}
+
+\textit{``Actually,'' I chuckled, ``it reminds me of Bob. You know, I've told you about him before, the other weird from my
+  first job. Man, sometimes he'd do things that'd just make you fry a lobe. It got to the point where if someone did
+  something dumb we'd say he 'pulled a Bob.' ''}
+
+\textit{I proceeded to explain\ldots}
+
+\wuxchcenterline
+
+A voice beside me said: ``Hey, Junior, you broke the build.''
+
+I sighed silently and closed my eyes. I'd been on the job nearly two months and already decided I hated the Guru's calling
+me ``my apprentice'' less than anything this rotten programmer, Bob, might call me -- especially ``Junior.'' I counted to
+ten, then answered without turning: ``What are you talking about, Bob?''
+
+``Your latest code checkin,'' Bob responded amiably, and sipped at his latt\'e. ``My compiler barfs on it. It complains that
+an iterator is already defined. You broke the build, man. Better fix it before Her Holiness finds out.'' I winced; as
+inexperienced as I was, I knew that breaking the build was A Bad Thing. I could just imagine the Guru's reaction: Remember,
+my young apprentice, the second commandment of team membership: Thou shalt not break the build.
+
+``Okay, fine,'' I sighed again, audibly this time. ``What part of the code are you talking about?''
+
+Bob leaned over, hit a few keys, and pulled up a function that looked something like this:
+
+\begin{footnotesize}
+\begin{lstlisting}
+// OBJMAP is a typedef for a standard container
+void f( OBJMAP &theMap )
+{
+    for( OBJMAP::iterator iter = theMap.begin();
+         iter != theMap.end();
+         ++iter )
+    {
+        // do something
+    }
+    // other code in here
+    for( OBJMAP::iterator iter = theMap.begin();
+         iter != theMap.end();
+         ++iter )
+    {
+        // do something else
+    }
+}
+\end{lstlisting}
+\end{footnotesize}
+
+``What's wrong with that?'' I asked. ``I checked it out in Stroustrup, and the iterator should go out of scope at the end of
+each loop \footnote{Bjarne Stroustrup. The C++ Programming Language, 3rd Edition (Addison-Wesley, 1997).}.'' ``Yeah, well,
+not with my compiler.'' Bob replied, picking at his teeth. ``It complains that iter is already defined. Easy fix,
+though\ldots just get rid of the second declaration of iter. In fact, that was how my code originally read when I checked it
+in. Then you went and broke the build.'' 
+
+Then I understood. I had to be diplomatic because I was still on probation, though.
+``Bob,'' I said reasonably, ``this has to compile on all the platforms we're targeting. I put the second declaration in
+because my compiler complained about the second iterator being undefined, and that's how it's supposed to work, according to
+Stroustrup.'' Bob seemed a little put off. ``I don't care about your newfangled compiler. I've been using mine for years and
+it's never let me down. Your code doesn't work.'' ``Bob. The code's right. It compiles fine for me.'' ``So you got a buggy
+compiler. Not my fault, I'm just doing my work, I don't care about other compilers,'' Bob shrugged again, more defensively.
+
+
+A quiet voice behind us said: ``I sense much fear in you.'' I jumped a little; Bob jumped more, sloshing his latt\'e. The
+Guru was far too good at gliding up silently behind us, a tome in one hand as she always had. The Guru shook her greying
+head slowly, frowning. ``Fear leads to anger,'' she continued. ``Aw, cut it out. I'm not afraid of other compilers!'' Bob
+said hotly, sucking the spilled latt\'e from his wrist. ``I don't care about them at all.'' ``Anger leads to hate. Hate´
+leads to suffering.'' ``I'm suffering, all right,'' I muttered under my breath. ``I'm just trying to write portable code.
+---All right, Bob,'' I capitulated, anxious to be rid of him, ``I'll fix it so it works. Okay?'' ``Like I said, Junior, just
+get rid of the second declaration.'' He glared once more, then turned and left. Wendy gophered up from the next cubicle,
+watching him go. ``So what's Bab complaining about this time?'' she asked us. While the Guru stood nearby, having resumed
+reading in her tome, I showed Wendy the code and explained what Bob wanted to do. ``Typical,'' Wendy snorted. ``Give him a
+choice between implementing a portable solution, and a solution geared towards his compiler, he'll unerringly choose the
+latter. His code is not portable, just like you said. Y'know, in this case, you don't really need to declare a new iterator
+for each loop anyway. Just declare it once, before the first loop, and it'll work on both compilers.'' She made some quick
+changes to the code
+
+\begin{footnotesize}
+\begin{lstlisting}
+// OBJMAP is a typedef for a standard container
+void f(OBJMAP &theMap)
+{
+    OBJMAP::iterator iter;
+    for( iter = theMap.begin();
+         iter != theMap.end();
+         ++iter ) {
+        // do something
+    }
+    // other code in here
+    for( iter = theMap.begin();
+         iter != theMap.end();
+         ++iter ) {
+    // do something else
+    }
+}
+
+\end{lstlisting}
+\end{footnotesize}
+
+The Guru looked up from her reading and glanced at the solution. ``Very wise, daughter.'' Wendy raised an eyebrow, but only
+a little; she was used to it. ``And, as you implied, that is not the only solution. Another elegant one might be to avoid
+the iterator declarations entirely, and perhaps improve readability, by using for\_each and expression templates, where
+possible \footnote{See the feature article on expression templates in the May 2000 issue of C++ Report.}. My apprentice,''
+the Guru continued to me, ``while it is important to know, understand, and obey the Holy Standard, it is also important to
+know your tools, even those that are Deviant. Bob is using a compiler that does not obey the scope of a variable declared in
+a for-init-statement. He cares not about portable code, as long as his own compiles.''
+
+``Hmm\ldots'' I said, rubbing my chin. ``Writing portable code is harder than I thought. So, we have to wait for a new
+release of Bob's compiler before we can take advantage of the code I originally had?''
+
+The Guru looked off in the distance for a moment. ``I am not a prophet, I cannot see the future. However, this I do foresee:
+Portability issues will never truly disappear. Compilers will not all become Standards-conforming at the same rate. Some
+vendors may even leave outdated behavior in their compilers, in order not to break legacy code.
+
+``Also, some compilers will introduce new features to extend the Standard. In and of itself, this is good, else would the
+language become stale, inflexible, and eventually die stagnant. Programs destined for only one platform may benefit from the
+new features. Using those non-Standard features in portable code, however, would be disastrous -- and some novitiates, such
+as yourself, may inadvertently use them, without being aware of their non-portability. Do not come to love one compiler so
+much as to fear others. Fear is the path to the unportable.''
+
+She paused a moment, then turned and walked off. As she left, we could hear her soft voice saying, ``I wish I could remember
+the name of the wise one who said, 'The difference between theory and practice is greater in practice than it is in theory
+\ldots' ''
+
+\wuxchcenterline
+
+\textit{``Bob just wasn't a big-picture fellow,'' I finished.}
+
+\textit{``Nobody had better pull a Bob on Ganymede,'' Jeannine agreed. ``It's not quite that forgiving a place, just yet.
+  Hey, you'd better go. Anderson's waiting.''}
+
+\textit{I looked at the time and stood up. ``Duty calls. What are you and Laura doing after third watch?'' I asked, since I
+  was discovering that there were, of course, more pleasant things to talk about than Bob, or even the Guru \ldots}
+
+\pagebreak
+\section{Virtually Yours}
+\begin{flushright}--An application of the Template Method pattern, and a discussion of when to use public vs. protected vs.
+  private virtual functions.\end{flushright}
+
+\textit{I gave the wrench another twist, but it was useless. I could have tried pounding the wrench with the hammer to try
+  to force it over, but that didn't seem like a good idea. ``It won't budge,'' I said. ``There's almost enough room for the
+  new module, but what's in there already is all just wedged in too tight.''}
+
+\textit{``Kee-ristopher,'' Jeannine complained, watching because there was only room for one of us to work on the machine.
+  ``It can't be that hard to extend the hardware.''}
+
+\textit{``It sure can be when it's not put together right,'' I sighed. ``Whoever slapped this together must've figured that
+  as long as it worked it was good enough. Everything's been put together too tightly coupled. We can extend it, all right,
+  but first we'll have to take it all the way apart and rebuild it.''}
+
+\textit{``Welcome to Europa, the pull-your-own-weight capital of the system. Back home we'd have techs doing this for us.''}
+
+\textit{I mopped my brow. ``You know,'' I said thoughtfully, ``this reminds me\ldots'' Jeannine smiled; that was the signal
+  for a caffeine break, and I began to tell her another story from my first job.}
+
+\wuxchcenterline
+
+I was working on some code that Wendy, the programmer in the next cubicle, had designed. She had created an abstract base
+class for the project, and my job was to derive a concrete class from it.
+
+As usual when studying a new class, I began with the public interface:
+
+\begin{footnotesize}
+\begin{lstlisting}
+class Mountie
+{
+public:
+    void read( std::istream & );
+    void write( std::ostream & ) const;
+    virtual ~Mountie();
+}
+\end{lstlisting}
+\end{footnotesize}
+
+No surprises here ！ a virtual destructor, implying that this is intended to be used as a base class. Non-virtual read and
+write members, though ！ I wanted to look into that one. Then I moved on to the protected interface:
+
+\begin{footnotesize}
+\begin{lstlisting}
+protected:
+    virtual void do_read( std::istream & );
+    virtual void do_write( std::ostream & ) const;
+\end{lstlisting}
+\end{footnotesize}
+
+After a moment, I realized that Wendy was using the Template Method pattern: the public, non-virtual functions clearly would
+invoke the protected virtual functions \footnote{E. Gamma, R. Helm, R. Johnson, and J. Vlissides. Design Patterns: Elements
+  of Reusable Object-Oriented Software (Addison-Wesley, 1995).}. Pleased with my own quick understanding, I was feeling
+pretty smug by this point ！ ready to handle anything that would be thrown at me. Until I looked at the private interface:
+
+\begin{footnotesize}
+\begin{lstlisting}
+private:
+    virtual std::string classID() const = 0;
+\end{lstlisting}
+\end{footnotesize}
+
+I stopped cold. A pure virtual, private function? How could it possibly work? I gophered up. ``Um, Wendy,'' I said, ``your
+\textbf{Mountie} class can't work. It's got a private virtual function.'' ``Have you tried it?'' Wendy asked, without
+looking up from her keyboard. ``Uh, well, no,'' I admitted. ``But my derived class can't possibly override the
+\textbf{classID} function.'' ``So certain are you?'' The Guru's quiet voice startled us both. ``Always with you it cannot be
+done. Have you learned nothing from me in these months you have been my apprentice?'' Despite the calm quiet of the Guru's
+voice, I was taken aback by the force of her words. ``My child,'' she continued, ``you have forgotten that access privilege
+and virtualness are independent of each other. Determining whether the function is to be statically or dynamically bound is
+the last step in resolving a function call. You need to read and meditate upon the Holy Standard, chapter 3.4 verse 1, and
+chapter 5.2.2 verse 1 \footnote{ISO/IEC 14882:1998, ``Programming Languages ！ C++,'' clauses 3.4 and 5.2.2.}.'' 
+
+I decided it was time to demonstrate my brilliance. I opened my mouth\ldots ``Oh, yeah. Uh, right.'' So much for brilliance.
+I decided to take another tack ！ distraction. ``But I still don't understand why it's private. It just doesn't make sense to
+me.'' ``Meditate upon this parable, my apprentice. You are creating a class, and after reflecting on the design, you decide
+the class requires a member function that should not be called by any other classes, not even its derived classes. What do
+you do?'' ``You make it private, of course,'' I replied. The Guru looked at me, her eyebrows raised expectantly. My brain
+kicked into overdrive trying to figure out how to link together private and virtual functions. Wendy spoke up. ``Have you
+examined the implementation of the \textbf{Mountie} class, especially the \textbf{write} function?'' I quickly turned to my
+keyboard, glad to briefly escape the Guru's unrelenting gaze. I found the function fairly quickly:
+
+\begin{footnotesize}
+\begin{lstlisting}
+void Mountie::write(std::ostream &Dudley) const
+{
+    Dudley << classID() << std::endl;
+    do_write(Dudley);
+}
+\end{lstlisting}
+\end{footnotesize}
+
+I could tell Wendy had spent way too much time watching cartoons as a child. ``I see now,'' I said. ``\textbf{classID} is an
+implementation detail, used to signal the concrete type of the class that is being saved. Derived classes must override the
+function, but since it is an implementation detail, it's kept private.'' ``Good, my child,'' the Guru agreed. ``Now explain
+to me why \textbf{do\_write} and \textbf{do\_read} are not private.'' That stopped me for a moment. But then the penny
+dropped: ``Because the derived class has to call its parent class's implementation of those functions so that the parent
+class has a chance to read and write its data.'' ``Very good, my apprentice,'' the Guru was almost beaming. ``But why not
+make them public?'' ``Because,'' I was really warming up to this now, ``they must be called in a controlled fashion,
+especially the \textbf{do\_write} function. The object type has to be written to the stream first so that when the object is
+read in, the factory knows which type of object to instantiate and then load from the stream. Allowing public access to the
+functions would cause chaos.'' ``Very wise, my apprentice.'' The Guru paused a moment. ``As with spoken languages, there is
+more to knowing the C++ language than just knowing the grammar and the rules. You must know the idioms.'' ``Yes, Coplien's
+book was the next one on my！ \footnote{Coplien. Advanced C++ Programming Styles and Idioms (Addison-Wesley, 1992).}'' The
+Guru held up her hand. ``Peace, child. I do not refer to the prophet Coplien. I refer to the linguistic sense of the word
+idiom ！ the implied meaning behind certain constructs. You know, for example, that a virtual destructor tells you `I am
+meant to be used as a polymorphic base class, you may create from me little ones as you need' whereas a non-virtual
+destructor tells you `I am not meant to be used as a polymorphic base class, do not derive from me for that reason, I pray.'
+``In a similar manner, the access privilege given a virtual function conveys an idiomatic meaning to the initiated. A
+protected virtual member tells you 'my little ones should ！ or perhaps even must ！ invoke my implementation of this
+function.' A private virtual function tells the initiated 'my little ones may or may not override me as they choose, however
+they may not invoke my implementation.' `` I nodded as I absorbed this. ``What about public virtual functions, though?''
+``Avoid them where possible, and prefer to use the Template Method. Consider this parable.'' She picked up the dry erase
+marker, and began writing in her delicate script:
+
+\begin{footnotesize}
+\begin{lstlisting}
+class HardToExtend
+{
+public:
+    virtual void f();
+};
+void HardToExtend::f()
+{
+   // Perform a specific action
+}
+\end{lstlisting}
+\end{footnotesize}
+
+``Consider that you have released this class, and your requirements have changed,'' she continued. ``In the second release
+of this class, you discover you need to implement the Template Method on the function \textbf{f()}. It will be nigh on
+impossible to accomplish. Can you see why?'' ``Uh, um. Yes, well\ldots I think\ldots No, I can't.'' ``There are two possible
+ways to convert this class to the Template Method. The first way would be to move the implementation code of \textbf{f()}
+into a new function and make \textbf{f()} non-virtual, like this:
+
+\begin{footnotesize}
+\begin{lstlisting}
+class HardToExtend
+{
+// possibly protected
+    virtual void do_f();
+public:
+    void f();
+};
+void HardToExtend::f()
+{
+    // pre-processing
+    do_f();
+    // post-processing
+}
+void HardToExtend::do_f()
+{
+    // Perform a specific action
+}
+\end{lstlisting}
+\end{footnotesize}
+
+  ``However, \textbf{HardToExtend}'s little ones will expect to override \textbf{f()}, not \textbf{do\_f()}. You must now
+  change all classes derived from \textbf{HardToExtend}. If you miss just one class, that class will attempt to override a
+  non-virtual function. This could introduce, in the words of the prophet Meyers, 'schizophrenic behavior' into your class
+  hierarchy \footnote{S.Meyers. Effective C++: 50 Specific Ways to Improve Your Programs and Design, 2nd edition
+    (Addison-Wesley, 1998); Item 37: "Never redefine an inherited non-virtual function."}. ``The other solution is to
+  introduce a new, non-virtual function and move f() to the private section, like this:''
+
+\begin{footnotesize}
+\begin{lstlisting}
+class HardToExtend
+{
+// possibly protected
+    virtual void f();
+public:
+    void call_f();
+};
+\end{lstlisting}
+\end{footnotesize}
+
+``This will cause users of the class no end of headaches. All the clients of \textbf{HardToExtend} will attempt to invoke
+\textbf{f()}, not \textbf{call\_f()}. Those clients will no longer compile. Furthermore, derived classes will most likely
+leave \textbf{f()} in the public interface, and clients that use those derived classes directly, rather than using a pointer
+or reference to \textbf{HardToExtend}, will still have direct access to the function you want to protect.
+
+``Virtual functions should be treated very much like data members ！ make them private, until design needs indicate a less
+restricted approach is indicated. It is much easier to promote them to a more accessible level, than it is to demote them to
+a more private level.''
+
+\wuxchcenterline{}
+
+\textit{``When did all this happen?'' Jeannine asked.}
+
+\textit{``Just before the turn of the millennium ！ the real turn, that is. It was at the end of 2000, I think. We were just
+  about to celebrate New Year's Day, and we were really looking forward to the special year of 2001, because of all the
+  literature, you know\ldots''}
+
+\textit{Oddly, it was shortly after that conversation that we heard about the discovery of the obelisk under the surface of
+  Europa.}
+
+\pagebreak
+
+%%% Local Variables:
+%%% TeX-master: "conversations"
+%%% End:

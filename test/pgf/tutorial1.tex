@@ -1,0 +1,31 @@
+\documentclass[12pt,a4paper,onecolumn]{article}
+\title{TITLE}
+\author{Wu_Xiaochun}
+\date{}
+\usepackage{CJK}
+\usepackage{indentfirst}
+\usepackage{tikz}
+
+\begin{document}
+\begin{CJK*}{GBK}{song}
+ª≠Õº°£
+\begin{tikzpicture}[
+nonterminal/.style={
+% The shape:
+rectangle,
+% The size:
+minimum size=6mm,
+% The border:
+very thick,
+draw=red!50!black!50, % 50% red and 50% black,
+% and that mixed with 50% white
+% The filling:
+top color=white, % a shading that is white at the top...
+bottom color=red!50!black!20, % and something else at the bottom
+% Font
+font=\itshape
+}]
+\node [nonterminal] {unsigned integer’˚–Œ};
+\end{tikzpicture}
+\end{CJK*}
+\end{document}

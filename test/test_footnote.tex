@@ -1,0 +1,49 @@
+﻿\documentclass[a4paper]{article}
+\title{TITLE}
+\author{}
+\date{}
+
+\usepackage{fontspec,xunicode,xltxtra}
+\setmainfont[Mapping=tex-text]{Adobe Garamond Pro}
+\setsansfont[Mapping=tex-text]{Myriad Pro}
+\setmonofont[Mapping=tex-text]{Courier New}
+\usepackage{xeCJK}
+\setCJKmainfont[ItalicFont={Adobe Kaiti Std}]{Adobe Song Std}
+\setCJKsansfont{Adobe Heiti Std}
+\setCJKmonofont{Adobe Heiti Std}
+\punctstyle{banjiao}
+
+
+\usepackage{xcolor}
+\usepackage[hang,symbol*]{footmisc}
+\DefineFNsymbols*{lamport}{*{$^\dagger$}{$^\ddagger$}\S\P\|{**}{{$^\dagger$}{$^\dagger$}}{{$^\ddagger$}{$^\ddagger$}}}
+\setfnsymbol{lamport}
+
+\begin{document}
+
+\TeX \LaTeX
+
+tariff difficlut tariff difficlut tariff difficlut tariff difficlut tariff difficlut tariff
+difficlut tariff difficlut tariff difficlut tariff difficlut tariff difficlut tariff difficlut
+tariff difficlut tariff difficlut\footnote{my footnote}.
+
+中文\footnote{footnote margin}
+
+{\it 中文}
+
+\textcolor{blue}{calendar}\footnote{another footnote}
+
+{\sf tariff difficlut}
+
+to be {\bf bold} or to {\sl emphasize} something.
+
+{\it italicized\/} and {\sl slanted\/} words
+
+{\it italicized} and {\sl slanted} words
+
+\def\cheater{A penalty of 50\% of the underpaid tax
+has been added for fraud.\par}
+
+\cheater\cheater
+
+\end{document}

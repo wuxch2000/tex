@@ -1,0 +1,230 @@
+\documentclass{article}
+% Racegrid.tex
+% Lay out the brackets for the 1995 Camarillo YMCA
+% Indian Guides Pinewood Derby.
+% Peter S. Simon, Camarillo, CA
+\usepackage{fontspec,xunicode,xltxtra}
+\setmainfont[Mapping=tex-text]{Georgia}
+\setsansfont[Mapping=tex-text]{Arial}
+\setsansfont[Mapping=tex-text]{Courier New}
+\usepackage{indentfirst}
+
+
+\special{papersize=11in,8.5in} % dvips: print landscape.
+\usepackage{fancybox,pstricks,pst-node}
+\setlength{\topmargin}{-0.75in}
+\setlength{\headheight}{0in} %
+\setlength{\headsep}{0in}
+\setlength{\footskip}{0in}
+\setlength{\textheight}{8in} %
+\setlength{\oddsidemargin}{-0.75in}
+\setlength{\evensidemargin}{-0.75in}
+\setlength{\textwidth}{10.5in} 
+
+\setlength{\fboxrule}{1.5pt}
+\pssetlength{\unitlength}{1}
+
+% \nbox draws an ovalbox labeled by the argument which is also used
+% as the node label.
+\newcommand{\nbox}[2][white]{\rnode{#2}{\psframebox[fillcolor=#1,fillstyle=solid]{\makebox[3.5\unitlength][l]%
+    {\scriptsize #2:}\rule[-.3\unitlength]{0cm}{0.6\unitlength}}}}
+
+% \race[#1]{#2}{#3}{#4}{#5}
+% \race draws two \nbox's vertically centered and separated by #4 (no units).
+% #1 is the top \nbox argument, #2 is the race label, #3 is the bottom \nbox
+% argument.
+\newcommand{\race}[5][white]{\vbox{\hsize=3.5\unitlength\addtolength{\hsize}{2\fboxsep}%
+    \addtolength{\hsize}{2\fboxrule}\nbox[#1]{#2}\par%
+    \vspace{#5\unitlength}\par\nbox[#1]{#4}}%
+  \ncline{-}{#2}{#4}\mput*{\small\sf Race #3}}
+
+
+\begin{document}
+\pagestyle{empty}
+\thispagestyle{empty}
+\psset{linewidth=1.5pt,framearc=0.3}
+%
+%  Winner's bracket...
+%
+\begin{center}
+  \begin{pspicture}(0,0)(25,20)
+%    \psset{unit=0.95cm}
+    \rput[t]{0}(12.5,20){\huge\bf
+      \begin{tabular}[t]{c}
+       \hphantom{The} Intratribal Winner's Bracket
+      \end{tabular}}
+    \rput[t]{0}(17,19){\large\bf
+      \begin{tabular}[t]{ll}
+        Tribe: & 
+        \underbar{\hphantom{The Shoshone Tribe}} 
+        \\[2\baselineskip]
+        Race Time: & 
+        \underbar{\hphantom{The Shoshone Tribe}} 
+      \end{tabular}}
+    \rput{0}(1,19){\race[yellow!40]{Car1}{1}{Car9}{.5}}
+    \rput{0}(1,16.5){\race[blue!40]{Car5}{2}{Car13}{.5}}
+    \rput{0}(1,14){\race[red!40]{Car3}{3}{Car11}{.5}}
+    \rput{0}(1,11.5){\race[green!40]{Car7}{4}{Car15}{.5}}
+    \rput{0}(1,9){\race[magenta!40]{Car16}{5}{Car8}{.5}}
+    \rput{0}(1,6.5){\race[cyan!40]{Car12}{6}{Car4}{.5}}
+    \rput{0}(1,4){\race[lime!40]{Car6}{7}{Car14}{.5}}
+    \rput{0}(1,1.5){\race[black!20]{Car10}{8}{Car2}{.5}}
+
+    \rput{0}(5.5,17.75){\race[yellow!40]{W1}{9}{W2}{1.7}}
+    \rput{0}(5.5,12.75){\race[red!40]{W3}{10}{W4}{1.7}}
+    \rput{0}(5.5,7.75){\race[green!40]{W5}{11}{W6}{1.7}}
+    \rput{0}(5.5,2.75){\race[blue!40]{W7}{12}{W8}{1.7}}
+
+
+    \psset{angleB=180,linearc=5pt}
+    \ncdiag{-}{Car1}{W1}    \ncdiag{-}{Car9}{W1}
+    \ncdiag{-}{Car5}{W2}    \ncdiag{-}{Car13}{W2}
+    \ncdiag{-}{Car3}{W3}    \ncdiag{-}{Car11}{W3}
+    \ncdiag{-}{Car7}{W4}    \ncdiag{-}{Car15}{W4}
+    \ncdiag{-}{Car16}{W5}    \ncdiag{-}{Car8}{W5}
+    \ncdiag{-}{Car12}{W6}    \ncdiag{-}{Car4}{W6}
+    \ncdiag{-}{Car6}{W7}    \ncdiag{-}{Car14}{W7}
+    \ncdiag{-}{Car10}{W8}    \ncdiag{-}{Car2}{W8}
+
+    \rput{0}(10,15.25){\race[yellow!40]{W9}{17}{W10}{4.25}}
+    \rput{0}(10,5.25){\race[red!40]{W11}{18}{W12}{4.25}}
+
+    \ncdiag{-}{W1}{W9}    \ncdiag{-}{W2}{W9}
+    \ncdiag{-}{W3}{W10}    \ncdiag{-}{W4}{W10}
+    \ncdiag{-}{W5}{W11}    \ncdiag{-}{W6}{W11}
+    \ncdiag{-}{W7}{W12}    \ncdiag{-}{W8}{W12}
+
+    \rput{0}(14.5,10.25){\race[yellow!40]{W17}{23}{W18}{9}}
+
+    \ncdiag{-}{W9}{W17}    \ncdiag{-}{W10}{W17}
+    \ncdiag{-}{W11}{W18}    \ncdiag{-}{W12}{W18}
+
+    \rput{0}(19,12){\race[yellow!40]{W23}{30}{W29}{2}}
+
+    \ncdiag{-}{W17}{W23}    \ncdiag{-}{W18}{W23}
+
+    \rput[l]{0}(22,12){\nbox[green!40]{W30}}
+
+    \ncdiag{-}{W23}{W30}    \ncdiag{-}{W29}{W30}
+
+    \rput{0}(19,5){\race[blue!40]{W23}{31 (if necessary)}{W29}{2}}
+    \rput[l]{0}(22,5){\nbox[lime!40]{Champ}}
+
+    \ncdiag{-}{W23}{Champ}    \ncdiag{-}{W29}{Champ}
+  \end{pspicture}
+\end{center}
+
+\newpage
+%
+%  Loser's bracket...
+%
+\begin{center}
+  \begin{pspicture}(0,0)(25,20)
+    \rput[t]{0}(12.5,20){\huge\bf
+      \begin{tabular}[t]{c}
+        \hphantom{The} Intratribal Loser's Bracket
+      \end{tabular}}
+    \rput[t]{0}(17,19){\large\bf
+      \begin{tabular}[t]{ll}
+        Tribe: & 
+        \underbar{\hphantom{The Shoshone Tribe}} 
+        \\[2\baselineskip]
+        Race Time: & 
+        \underbar{\hphantom{The Shoshone Tribe}} 
+      \end{tabular}}
+    \rput{0}(1,19){\race{L1}{13}{L2}{.5}}
+    \rput{0}(1,14){\race{L3}{14}{L4}{.5}}
+    \rput{0}(1,9){\race{L5}{15}{L6}{.5}}
+    \rput{0}(1,4){\race{L7}{16}{L8}{.5}}
+
+    \rput{0}(5.5,17.75){\race{W13}{19}{L9}{1.7}}
+    \rput{0}(5.5,12.75){\race{W14}{20}{L10}{1.7}}
+    \rput{0}(5.5,7.75){\race{W15}{21}{L11}{1.7}}
+    \rput{0}(5.5,2.75){\race{W16}{22}{L12}{1.7}}
+
+
+    \psset{angleB=180,linearc=5pt}
+    \ncdiag{-}{L1}{W13}    \ncdiag{-}{L2}{W13}
+    \ncdiag{-}{L3}{W14}    \ncdiag{-}{L4}{W14}
+    \ncdiag{-}{L5}{W15}    \ncdiag{-}{L6}{W15}
+    \ncdiag{-}{L7}{W16}    \ncdiag{-}{L8}{W16}
+
+    \rput{0}(10,16.5){\race{W19}{24}{L17}{1.5}}
+    \rput{0}(10,11.5){\race{W20}{25}{L18}{1.5}}
+    \rput{0}(10,5.25){\race{W21}{26}{W22}{4.25}}
+
+    \ncdiag{-}{W13}{W19}    \ncdiag{-}{L9}{W19}
+    \ncdiag{-}{W14}{W20}    \ncdiag{-}{L10}{W20}
+    \ncdiag{-}{W15}{W21}    \ncdiag{-}{L11}{W21}
+    \ncdiag{-}{W16}{W22}    \ncdiag{-}{L12}{W22}
+
+    \rput{0}(14.5,14){\race{W24}{27}{W25}{4}}
+    \rput{0}(14.5,7){\race{L23}{28}{W26}{2.5}}
+
+    \ncdiag{-}{W19}{W24}    \ncdiag{-}{L17}{W24}
+    \ncdiag{-}{W20}{W25}    \ncdiag{-}{L18}{W25}
+    \ncdiag{-}{W21}{W26}    \ncdiag{-}{W22}{W26}
+
+    \rput{0}(19,10.5){\race{W27}{29}{W28}{5}}
+
+    \ncdiag{-}{W24}{W27}    \ncdiag{-}{W25}{W27}
+    \ncdiag{-}{L23}{W28}    \ncdiag{-}{W26}{W28}
+
+    \rput[l]{0}(22,12){\nbox{W29}}
+    \ncdiag{-}{W27}{W29}    \ncdiag{-}{W28}{W29}
+  \end{pspicture}
+\end{center}
+
+\newpage
+%
+%  Intertribal Competition...
+%
+\begin{center}
+  \begin{pspicture}(0,0)(25,20)
+%    \psset{unit=0.95cm}
+    \rput[t]{0}(12.5,20){\huge\bf
+      \begin{tabular}[t]{c}
+        Intertribal Competition
+      \end{tabular}}
+    \rput{0}(1,19){\race{Car1}{1}{Car9}{.5}}
+    \rput{0}(1,16.5){\race{Car5}{2}{Car13}{.5}}
+    \rput{0}(1,14){\race{Car3}{3}{Car11}{.5}}
+    \rput{0}(1,11.5){\race{Car7}{4}{Car15}{.5}}
+    \rput{0}(1,9){\race{Car16}{5}{Car8}{.5}}
+    \rput{0}(1,6.5){\race{Car12}{6}{Car4}{.5}}
+    \rput{0}(1,4){\race{Car6}{7}{Car14}{.5}}
+    \rput{0}(1,1.5){\race{Car10}{8}{Car2}{.5}}
+%
+    \rput{0}(5.5,17.75){\race{W1}{9}{W2}{1.7}}
+    \rput{0}(5.5,12.75){\race{W3}{10}{W4}{1.7}}
+    \rput{0}(5.5,7.75){\race{W5}{11}{W6}{1.7}}
+    \rput{0}(5.5,2.75){\race{W7}{12}{W8}{1.7}}
+%
+    \psset{angleB=180,linearc=5pt}
+    \ncdiag{-}{Car1}{W1}    \ncdiag{-}{Car9}{W1}
+    \ncdiag{-}{Car5}{W2}    \ncdiag{-}{Car13}{W2}
+    \ncdiag{-}{Car3}{W3}    \ncdiag{-}{Car11}{W3}
+    \ncdiag{-}{Car7}{W4}    \ncdiag{-}{Car15}{W4}
+    \ncdiag{-}{Car16}{W5}    \ncdiag{-}{Car8}{W5}
+    \ncdiag{-}{Car12}{W6}    \ncdiag{-}{Car4}{W6}
+    \ncdiag{-}{Car6}{W7}    \ncdiag{-}{Car14}{W7}
+    \ncdiag{-}{Car10}{W8}    \ncdiag{-}{Car2}{W8}
+%
+    \rput{0}(10,15.25){\race{W9}{13}{W10}{4.25}}
+    \rput{0}(10,5.25){\race{W11}{14}{W12}{4.25}}
+    \ncdiag{-}{W1}{W9}    \ncdiag{-}{W2}{W9}
+    \ncdiag{-}{W3}{W10}    \ncdiag{-}{W4}{W10}
+    \ncdiag{-}{W5}{W11}    \ncdiag{-}{W6}{W11}
+    \ncdiag{-}{W7}{W12}    \ncdiag{-}{W8}{W12}
+%
+    \rput{0}(14.5,10.25){\race{W13}{15}{W14}{9}}
+    \ncdiag{-}{W9}{W13}    \ncdiag{-}{W10}{W13}
+    \ncdiag{-}{W11}{W14}    \ncdiag{-}{W12}{W14}
+    \ncdiag{-}{W13}{W15}    \ncdiag{-}{W14}{W15}
+%
+    \rput[l]{0}(19,10.25){\nbox{W15}}
+    \rput[b]{0}(20.7,10.7){\bf Champion}
+    \ncdiag{-}{W13}{W15}    \ncdiag{-}{W14}{W15}
+  \end{pspicture}
+\end{center}
+\end{document}

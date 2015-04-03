@@ -1,0 +1,403 @@
+\documentclass[12pt,a4paper,onecolumn]{article}
+\include{config}
+\begin{document}
+\renewcommand\contentsname{\center{印度AIRCEL版本话单类型故障分析}}
+
+\tableofcontents
+\pagebreak
+
+\section{故障发现和处理}
+\subsection{<2009-04-27 星期一 20:51> 用服周全反馈问题}
+
+\subsection{<2009-04-27 星期一 21:43> 张先红}
+
+业务观察被叫部分缺少重要的数据接口，从\lstinline{ev_cc_setup_ack}中可以看
+出：\lstinline{wH323Tag:50}，表明是调用了\lstinline{GetSubInfo}接口返回了：\lstinline{wH323Tag:50}。
+但是现场看了\lstinline{r_h323sub}表，却没有数据。请看看是否是数据乱了。
+
+问题如下：中\lstinline{GetSSInfo}获取的\lstinline{wTag:50},在业务看来是\lstinline{mcucall}，所以最后
+的\lstinline{RecType}填写9，现在的问题是请程万里看看，otherSS节点上配置了什么内容导
+致\lstinline{wTag}包含了：
+
+\begin{footnotesize}
+\begin{lstlisting}
+#define H323_RGK_MCUCALL (BYTE)0x10 /*MCU呼叫*/
+\end{lstlisting}
+\end{footnotesize}
+
+\subsection{<2009-04-28 星期二 00:41> 程万里}
+
+这个问题原因已经查明，是由CRDCR00520883故障单引入。
+
+升级前\lstinline{getssinfo}接口topoly的\lstinline{tag}字段只有H.323协议类型才返回给业务；业务有的地方拿
+到这个\lstinline{tag}直接当做H.323的\lstinline{tag}，与宏\lstinline{H323_RGK_MCUCALL}相与；
+
+升级后，接口无条件返回tag；tag值等于50对于SIP节点表示其他含义；但对于323节点表
+示\lstinline{MCUcall}；业务未判断协议类型是SIP，直接把tag解析成323的\lstinline{mcucall}，故出现此故
+障。
+
+修改方法建议：业务在使用\lstinline{getssinfo}出参\lstinline{wtag}的时候需要加判协议类型，因为不同的协
+议相同\lstinline{tag}位有不同含义（历史设计方案）。
+
+\subsection{<2009-04-28 星期二 09:07> 洪友春}
+
+这个单子CCB还特地讨论，并请业务评估清楚影响（张全信提单，记得请业务在CQ里进行描述的），看来当时放开条
+件（之前只有在节点类型为H323时，才会将\lstinline{r_topoly}上\lstinline{wTag}字段返回给业务）评估并不
+全面。
+
+请业务再仔细评估影响，谢谢
+\subsection{<2009-04-28 星期二 09:28> 张全信}
+
+数据应该是在CRDCR00065380“软交换判断长途呼入权限任务入库”时就应该入库的，但是数据当时漏合代码了。我在
+测试“PCCW TMR值填写规则”任务时发现数据没有返回otherss节点上配置的“ISUP标本标识”，就提单CRDCR00520883
+通知数据合入代码。
+
+当时也检查了业务代码，因为不知道数据会用相同的标记位返回节点上的不同标记，所以认为代码没有问题。
+\section{最终处理方案}
+\subsection{修改方法}
+
+当前数据维持现状，业务修改；其中业务新增SipTag标志，用于标识SIP-I协议类型；
+
+GetSSInfo接口处理逻辑：
+
+如果数据出参\lstinline{bIsGK==1}，则：
+\begin{footnotesize}
+\begin{lstlisting}
+wH323Tag=wMediaTag=tGetSsInfoAck.wTag;
+\end{lstlisting}
+\end{footnotesize}
+
+如果主叫为\lstinline{SIP_DOMAIN}，则(此时不能给\lstinline{wMediaTag}赋值)：
+
+\begin{footnotesize}
+\begin{lstlisting}
+SipTag=tGetSsInfoAck.wTag;
+\end{lstlisting}
+\end{footnotesize}
+
+后续业务修改当前判定SIP-I的所有地方；
+
+\subsection{影响评估}
+
+SIP模块： 仅使用了\lstinline{extTag}字段；因此不受影响；
+
+媒体控制：SIP-I节点以前应一直不支持媒体控制能力，仅H323GK、用户支持。GK配置截图如下：（理论上所有GK均
+配置了下列三个红色标志) 因此本次业务不能复用\lstinline{MediaTag}标志位；
+
+% \begin{figure}[h]
+% \begin{center}
+% \includegraphics[width=0.5\textwidth]{config.jpg}
+% \end{center}
+% \end{figure}
+
+
+\subsection{升级}
+<2009-05-04 星期一> 通过补丁版本升级。
+
+\section{故障分析和改进}
+\subsection{原因分析}
+本次故障，直接原因是业务在填写话单类型的时候使用了错误的标志。进一步的原因是由于业务在通知数据修改接
+口返回的时候评估不充分。开发人员在评估的时候，只是考虑这个数据接口修改那些版本需要，没有评估数据修改
+会影响那些版本，以及会产生哪些后果。同时开发人员在评估的时候没有考虑到同一个字段的宏值定义会重复。
+
+由于代码修改的两张故障单涉及的场景都与话单无关，代码修改后主要观察数据接口调用是否正常，因此在自测阶
+段没有发现故障。
+
+\begin{enumerate}
+    \item 对于\lstinline{r_topoly}，数据出于节省空间的需要，对于同一个字段在不同的节点类型可以有不同
+      的含义
+    \item 同一个字段的宏值定义，不同协议有冲突的情况，本例中，ISUP标识和MC呼叫有冲突情况
+\begin{scriptsize}
+\lstset{emph={ISUP_CHN,ISUP_ITU_T92,H323_RGK_MCUCALL},emphstyle=\color{red}}
+\begin{lstlisting}
+/* tag descripton for ISUP   4~7 bits */
+#define ISUP_NONE     (BYTE)0  /*非ISUP类型     */
+#define ISUP_CHN      (BYTE)1  /*中国ISUP     */
+#define ISUP_ITU_T88  (BYTE)2  /*ITU-T Q.761-4 (1988) */
+#define ISUP_ITU_T92  (BYTE)3  /*ITU-T Q.761-4 (1992) */
+#define ISUP_ANSI88   (BYTE)4  /*ANSI T1.113-1988   */
+#define ISUP_ANSI00   (BYTE)5  /*ANSI T1.113-2000   */
+#define ISUP_ETSI121  (BYTE)6  /*ETS 300 121    */
+#define ISUP_ETSI356  (BYTE)7  /*ES 300 356     */
+#define ISUP_GR317    (BYTE)8  /*BELLCORE GR-317   */
+#define ISUP_TTC87    (BYTE)9  /*JT-Q761-4(1987-1992) */
+#define ISUP_TTC93    (BYTE)10 /*JT-Q761-4(1993-)   */
+#define ISUP_HKG      (BYTE)11 /* HKG*/
+
+/* tag descripton for SIP   2~3 bits */
+#define SIP_INFO            (BYTE)0   /*INFO 方法*/
+#define SIP_INVITE_ISUP     (BYTE)1   /*INVITE方法，包括ISUP*/
+#define SIP_INVITE_SDP_ISUP (BYTE)2   /*INVITE方法，包括SDP和ISUP*/
+
+/*tag description for H323 Remote GK 0~1bits*/
+#define H323_RGK_AUDIO    (BYTE)1 /*允许音频*/
+#define H323_RGK_VIDEO    (BYTE)2 /*允许视频*/
+#define H323_RGK_DATA     (BYTE)4 /*允许数据*/
+#define H323_RGK_GWCALL   (BYTE)8 /*网关直接呼叫*/
+#define H323_RGK_MCUCALL  (BYTE)0x10 /*MCU呼叫*/
+#define H323_RGK_USESDP   (BYTE)0x20 /*是否强制使用SDP*/
+#define H323_RGK_SDPVALID (BYTE)0x40 /*SDP是否有效*/
+#define H323_RGK_GWGK     (BYTE)0x80 /*GKGW*/
+\end{lstlisting}
+\end{scriptsize}
+\end{enumerate}
+\subsection{拟改进措施}
+\begin{enumerate}
+    \item 检查现有重复宏值定义是否用类似情况(已做)
+    \item 对于历史遗留的宏值定义重复问题，目前保持现状。对于新增的宏值定义，要求不能重复。数据室把这
+      个条目写到数据详细设计检查单中
+    \item 要求进行接口影响评估时，需要提交评估报告。由业务室、数据室一起制订评估报告模板。
+    \item 准备开发话单检查工具，方便检查话单各字段是否正常(待任务安排)
+\end{enumerate}
+\subsection{代码分析}
+\subsubsection{出错前代码}
+\subsubsection{数据\lstinline{D_AI_GetSSInfo}接口}
+\begin{footnotesize}
+\begin{lstlisting}
+...
+else if(r_topoly.devtype == DEVTYPE_H323GK)
+{
+    ptAck->bIsGK = 1;
+    ptAck->wTag = r_topoly.tag;
+}
+...
+\end{lstlisting}
+\end{footnotesize}
+\subsubsection{业务\lstinline{C_BCM_DbGetSsInfo}接口}
+\begin{footnotesize}
+\begin{lstlisting}
+...
+/* added by tyf for H323 2003-11-18*/ /* 复用媒体属性标志 */
+ptccb->tCaller.tSubInfo.wH323Tag = tGetSsInfoAck.wTag;  		
+...
+\end{lstlisting}
+\end{footnotesize}
+
+\subsubsection{业务话单函数\lstinline{C_BCM_BILL_Fill_Rectype}}
+\begin{footnotesize}
+\begin{lstlisting}
+/* added by tyf for mcu call at 2004-8-5 */
+if ((ptccb->tCaller.tSubInfo.wH323Tag & H323_RGK_MCUCALL) ||
+	(ptccb->tCalled.tSubInfo.wH323Tag & H323_RGK_MCUCALL) ||
+	(ptccb->tNormalFlag.bSipMcuFlag == SIP_MCU_CALL))
+	*pbRecType = BILL_REC_TYPE_MCU_CALL;
+break;
+\end{lstlisting}
+\end{footnotesize}
+\subsubsection{出错后代码}
+\subsubsection{数据\lstinline{D_AI_GetSSInfo}接口}
+\begin{footnotesize}
+\begin{lstlisting}
+...
+else if(r_topoly.devtype == DEVTYPE_H323GK)
+{
+	ptAck->bIsGK = 1;
+}
+/*hxq CRDCR00520884[50.3] 2009-3-10 所有节点类型都需要返回tag字段*/
+ptAck->wTag = r_topoly.tag;
+...
+\end{lstlisting}
+\end{footnotesize}
+\subsection{相关CQ}
+\subsubsection{CRDCR00520883}
+
+主题：pccw tmr集成测试：被叫为otherss，封装了isup，但\lstinline{getssinfo}接口返回的wtag始终为0。
+
+描述：被叫为otherss，封装了isup，但\lstinline{getssinfo}接口返回的wtag始终为0。业务就判断不出被叫
+是\lstinline{SIP_I}，在主叫不能携带TMR的情况下，出向invite中TMR值就不会根据全局开关获取，始终
+为“语音”。
+
+提交人：张全信
+
+处理人：胡小琴
+
+===== 原始变更单中的沟通记录 =====
+
+===== State: 待批准 by:韦周芳 at 2009-3-4 17:24:08 =====
+
+审核意见：1.AB类故障单、工程故障单、新功能需求、新员工改动代码，及其他要求走查的CQ单已经提供预审代码、
+
+预审报告、走查报告。
+
+2.故障后果、触发条件、故障原因、规避办法、回溯纪录、存在故障的版本号内容填写完整。
+
+3.提供了联调自测报告。
+
+4.开发人员填写的故障级别满足部门要求。
+
+5.方案描述的内容是否与讨论确定的方案一致。
+
+
+===== State: 待技术审核 by:胡小琴 at 2009-3-4 16:42:08 =====
+
+故障原因分析：1.故障的后果：被叫为otherss节点，封装了ISUP，业务调用getssinfo接口返回
+的\lstinline{wTag}字段始终为0，未将节点上配置的ISUP封装正确的返回给业务。
+
+   业务同事描述的影响： 
+
+   （1）对长途权限判断的影响：主叫是ISUP入域时，应该判断CPC。由于接口返回的\lstinline{wTag}为0，导致
+   进入区号判断流程，使得长途权限判断不准确。
+
+
+   （2）对PCCW 53版本有影响，被叫为\lstinline{SIP_I}出域，要填写缺省的tmr值。现因
+   为\lstinline{getssinfo}不能返回“ISUP版本标识”，业务就不知道SIP出域是否封装了ISUP，就不会填写缺省
+   的tmr值。
+
+   2.触发条件：被叫为Otherss节点，封装ISUP，调用\lstinline{getssinfo}接口。
+
+3.故障原因：getssinfo接口只有在节点类型为H323时，才会将\lstinline{r_topoly}上wTag字段返回给业务。 
+
+4.规避办法：无。
+
+5.回溯记录（引入CQ单及任务）：CRDCR00065380软交换判断长途呼入权限任务入库； CRDCR00502896PCCW TMR填
+写规则整改代码入库
+
+方案内容：1.修改内容：不区分节点类型，直接将\lstinline{r_topoly}上的\lstinline{wTag}字段返回给业
+务，具体修改见附加信息。
+
+2.交流人：阮帮秋，张全信
+
+3.存在故障的版本号（全部列出）：60，61，62，50.3
+
+4.修改的兼容性影响说明：无
+
+信令协议：无
+
+模块接口：无
+
+数据配置：无
+
+功能流程：无
+
+5.版本升级说明：无
+
+6.测试用例说明：被叫为otherss，封装了ISUP，拨测，跟踪信令查看接
+口\lstinline{Getssinfo}的\lstinline{wTag}返回值。
+
+
+===== State: 待实施处理 by:韦周芳 at 2009-3-4 14:51:34 =====
+
+沟通记录：把业务相关说明写到CQ里，尽快走到待批准的状态，这种单子，以后要注意描述清楚故障的前因后
+果，以便CCB判断故障的后果，决策批版本情况
+
+审核意见：1.AB类故障单、工程故障单、新功能需求、新员工改动代码，及其他要求走查的CQ单已经提供预审代码、
+预审报告、走查报告。
+
+2.故障后果、触发条件、故障原因、规避办法、回溯纪录、存在故障的版本号内容填写完整。
+
+3.提供了联调自测报告。
+
+4.开发人员填写的故障级别满足部门要求。
+
+5.方案描述的内容是否与讨论确定的方案一致。
+
+
+===== State: 待批准 by:韦周芳 at 2009-3-3 18:26:29 =====
+
+沟通记录：做审核通过动作时，修改附件 
+
+
+审核意见：1.AB类故障单、工程故障单、新功能需求、新员工改动代码，及其他要求走查的CQ单已经提供预审代码、
+预审报告、走查报告。
+
+2.故障后果、触发条件、故障原因、规避办法、回溯纪录、存在故障的版本号内容填写完整。
+
+3.提供了联调自测报告。
+
+4.开发人员填写的故障级别满足部门要求。
+
+5.方案描述的内容是否与讨论确定的方案一致。
+
+===== State: 待技术审核 by:胡小琴 at 2009-3-3 16:30:19 =====
+
+沟通记录：反馈意见: 做提交处理方案动作时，修改附件 
+
+
+故障原因分析：1.故障的后果：被叫为otherss节点，封装了ISUP，业务调用\lstinline{getssinfo}接口返回
+的wTag字段始终为0，未将节点上配置的ISUP封装正确的返回给业务。
+
+2.触发条件：被叫为Otherss节点，调用\lstinline{getssinfo}接口。
+
+3.故障原因：getssinfo接口只有在节点类型为H323时，才会将\lstinline{r_topoly}上wTag字段返回给业务。 
+
+4.规避办法：无。
+
+5.回溯记录（引入CQ单及任务）：一直如此
+
+方案内容：1.修改内容：
+
+不区分节点类型，直接将\lstinline{r_topoly}上的\lstinline{wTag}字段返回给业务，具体修改见附加信息。
+
+2.交流人：阮帮秋，张全信
+
+3.存在故障的版本号（全部列出）：所有版本
+
+4.修改的兼容性影响说明：无
+
+信令协议：无
+
+模块接口：无
+
+数据配置：无
+
+功能流程：无
+
+5.版本升级说明：无
+
+6.测试用例说明：被叫为otherss，封装了ISUP，拨测，跟踪信令查看接
+口\lstinline{Getssinfo}的\lstinline{wTag}返回值。
+
+
+===== State: 待CCB处理 by:邓云 at 2009-3-3 9:26:13 =====
+
+数据在getssinfo接口中缺少相关处理,确认:张全信与胡晓琴沟通.
+
+
+
+\subsubsection{CRDCR00065380}
+
+主题：软交换判断长途呼入权限任务入库
+
+提交人：阮帮秋
+
+处理方案：
+
+1.修改内容：详细修改的内容见附件。
+
+2.交流人：邓云，胡小琴等
+
+3.存在故障的版本号（全部列出）：新增功能
+
+4.修改的兼容性影响说明：
+
+信令协议：无
+
+模块接口：与数据相关的接口\lstinline{EV_CD_UseSupSrv},\lstinline{EV_CD_MatchMask}增加长途指示字
+段\lstinline{bTollCallType}，指示使用号码分析结果，判断为国内长途还是国际长途。
+
+数据配置：无
+
+功能流程：在长途来话权限判断时，对使用号码分析结果进行判断的业务点上，如果号码分析结果为非长途的时
+候，按照主叫是本局用户、中继和入域（包括纯SIP入域和\lstinline{ISUP}封装入域），结合主被叫区号，主叫用
+户类别（CPC），和国际长途指示（\lstinline{bInternationalInd}）来进行判断。修改的业务点包括：
+
+长途来话禁止前转
+
+前转禁止转长途
+
+前转禁止转国际长途
+
+区别振铃
+
+振铃时长
+
+呼入权限判断
+
+呼出权限判断
+
+呼出限制
+
+5.版本升级说明： 使用全局业务开关（长途来话判断新方式），默认关闭，兼容原来的版本。开关打开，启用新的判断方式。
+
+
+\end{document}

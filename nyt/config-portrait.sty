@@ -1,0 +1,183 @@
+﻿
+\ProvidesPackage{config}
+
+% \usepackage{color}
+% \definecolor{light-gray}{gray}{0.95}
+% \definecolor{dark-green}{rgb}{0,0.25,0}
+\usepackage{fontspec,xunicode,xltxtra}
+% 网站使用Georgia
+% \setmainfont[Mapping=tex-text]{Georgia}
+% \setmainfont[Mapping=tex-text]{Garamond}
+% \setmainfont[Mapping=tex-text]{Linux Libertine}
+\setmainfont[Mapping=tex-text]{Adobe Garamond Pro}
+
+% \setmainfont[Ligatures=Required,Mapping=tex-text]{Palatino Linotype}
+% \setsansfont[Ligatures=Required,Mapping=tex-text]{Myriad Pro}
+% \setsansfont[Mapping=tex-text]{Arial}
+\setsansfont[Mapping=tex-text,Numbers=Uppercase]{Myriad Pro}
+\setmonofont[Mapping=tex-text]{Courier New}
+
+\usepackage{xeCJK}
+\setCJKmainfont[ItalicFont={Adobe Kaiti Std}]{Adobe Song Std}
+% \setCJKmainfont[ItalicFont={Adobe Kaiti Std}]{Adobe Kaiti Std}
+\setCJKsansfont{Adobe Heiti Std}
+% \setCJKsansfont{Microsoft YaHei}
+\setCJKmonofont{Adobe Heiti Std}
+\punctstyle{banjiao}
+
+% \usepackage[]{geometry}
+% \geometry{paperwidth=218.5mm,paperheight=146.5mm}
+% \geometry{twocolumn}
+% \geometry{left=20mm,right=20mm}
+% \geometry{top=10mm,bottom=10mm,foot=5mm}
+% \geometry{columnsep=10mm}
+
+
+\usepackage{indentfirst}
+
+\usepackage{xcolor}
+\definecolor{light-gray}{gray}{0.95}
+
+%生成PDF的链接
+\usepackage[dvipdfmx]{hyperref}
+\hypersetup{
+    bookmarks=true,         % show bookmarks bar?
+    bookmarksopen=true,
+    pdfpagemode=UseNone,    % options: UseNode, UseThumbs, UseOutlines, FullScreen
+    pdfstartview=FitH,
+    pdfborder=1,
+    pdfhighlight=/P,
+    pdfauthor={wuxch},
+    unicode=true,           % non-Latin characters in Acrobat’s bookmarks
+    colorlinks,             % false: boxed links; true: colored links
+    linkcolor=blue,         % color of internal links
+    citecolor=blue,        % color of links to bibliography
+    filecolor=magenta,      % color of file links
+    urlcolor=cyan           % color of external links
+}
+% 使用目录
+\usepackage{makeidx}
+% 使用图形
+\usepackage{graphicx}
+
+
+\usepackage{titletoc}
+
+\usepackage[sf]{titlesec}
+
+\dottedcontents{section}[1.5em]{}{2.3em}{1pc}
+
+
+\titleformat*{\section}{\sffamily\bfseries\Large}
+
+% % 页眉页脚的设定
+% \usepackage{fancyhdr}
+% \pagestyle{fancy}
+% \lhead{\includegraphics[height=0.2in]{zte_logo}}
+
+% \usepackage{footmisc}
+% \usepackage{pfnote}
+% \usepackage{fnpos}
+
+% % 嵌入的代码显示
+% \usepackage{listings}
+% \lstset{language=C++, breaklines, extendedchars=false}
+% \lstset{keywordstyle=\color{blue},
+%         commentstyle=\color{SeaGreen},
+%         stringstyle=\ttfamily,
+%         showstringspaces=false,
+%         backgroundcolor=\color{light-gray}}
+% \lstset{basicstyle=\small}
+
+\usepackage{booktabs}
+
+\usepackage{tipa}
+\usepackage{phonetic}
+\usepackage[gen]{eurosym}
+
+% \usepackage{CJK}
+\usepackage{makeidx}
+% \usepackage{glossary}
+
+\usepackage{fancyhdr}
+
+\usepackage{lastpage}
+\cfoot{\textbf{\textrm{{\color{Goldenrod} {\large \thepage}}}}\textsf{\scriptsize ~of~\pageref*{LastPage}}}
+
+\pagestyle{fancy}
+\fancyhead{}
+\renewcommand{\headrulewidth}{0pt}
+\pagenumbering{arabic}
+
+\usepackage{graphicx}
+\usepackage{picinpar}
+
+\usepackage{caption}
+% \captionsetup{font=small,labelfont=it,textfont=it}
+
+\renewcommand{\captionfont}{\footnotesize \itshape}
+\renewcommand{\captionlabelfont}{\footnotesize \itshape}
+\setlength{\abovecaptionskip}{.5ex}
+\setlength{\belowcaptionskip}{0ex}
+
+
+\graphicspath{{fig/}}
+\usepackage{wrapfig}
+\renewcommand\figurename{fig}
+
+\newcommand{\myphoto}[2]{%
+\begin{wrapfigure}{l}{0.4\textwidth}
+\vspace{-2ex}
+\includegraphics[width=0.4\textwidth]{#1}
+\caption{#2}
+\vspace{-3ex}
+\end{wrapfigure}
+}
+
+\setlength{\parindent}{0in}
+% \setlength{\parskip}{2.5ex plus4mm minus3mm}
+\setlength{\parskip}{3ex plus4mm minus3mm}
+% \setlength{\parskip}{.3\baselineskip}
+
+\setcounter{section}{0}
+
+% bibtex
+\usepackage[super]{natbib}
+% \usepackage[globalcitecopy,labelstoglobalaux]{bibunits}
+% \makeatletter
+% \renewcommand{\@bibunitname}{\jobname.\the\@bibunitauxcnt}
+% \makeatother
+
+% \renewcommand{\refname}{缩略语}
+% \renewcommand{\refname}{}
+
+\makeatletter                   % Reference list option change
+\renewcommand\@biblabel[1]{#1:  } % from [1] to 1: 
+\makeatother                    %
+% 文章内的数字上标字体
+\renewcommand{\citenumfont}[1]{\textsf{#1}}
+% 文章后的数字字体
+\renewcommand{\bibnumfmt}[1]{\textsf{#1}:}
+
+\renewcommand{\refname}{Vocabulary}
+
+\newcommand{\phonetic}[1]{{\fontspec[Colour=CC00CC]{Microsoft Sans Serif} #1}}
+
+\newcommand{\vocabulary}{\pagebreak \bibliographystyle{d:/wuxch/emacs_home/vocabulary/wuxchvcb}
+  \bibliography{d:/wuxch/emacs_home/vocabulary/vocabulary}}
+
+% 首字下沉
+\definecolor{Goldenrod}{rgb}{0.8549,0.6471,0.1255}
+\usepackage{lettrine}
+\setlength{\DefaultFindent}{0.5em}
+\setlength{\DefaultNindent}{0em}
+\renewcommand{\LettrineFontHook}{\color{Goldenrod}}
+
+\usepackage{wuxchcal}
+
+% \newcommand{\mycalendar}[2]{\marginpar{\raisebox{-3.4ex}{\wuxchcal{1}{#1}{0.45}{#2}{1.3}}}}
+
+\newcommand{\mycalendar}[2]{%
+\marginpar{\raisebox{-3.4ex}{%
+\wuxchcal{1}{#1}{0.45}{#2}{1.3}{.75}{6}{shadow xshift=.3ex, shadow yshift=-.3ex}}}
+}

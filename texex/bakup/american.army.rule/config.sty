@@ -1,0 +1,112 @@
+﻿\ProvidesPackage{config}
+\usepackage{fontspec,xunicode,xltxtra}
+\setmainfont[Mapping=tex-text]{Adobe Garamond Pro}
+\setsansfont[Mapping=tex-text,Numbers=Uppercase]{Myriad Pro}
+\setmonofont[Mapping=tex-text]{Courier New}
+
+\usepackage{xeCJK}
+% \setCJKmainfont[ItalicFont={Adobe Kaiti Std}]{Adobe Song Std}
+\setCJKmainfont[ItalicFont={Adobe Kaiti Std}]{Adobe Kaiti Std}
+\setCJKsansfont{Adobe Heiti Std}
+% \setCJKsansfont{Microsoft YaHei}
+\setCJKmonofont{Adobe Heiti Std}
+\punctstyle{banjiao}
+
+\usepackage[]{geometry}
+\geometry{paperwidth=221mm,paperheight=148.5mm}
+\geometry{twocolumn}
+\geometry{left=15mm,right=15mm}
+\geometry{top=10mm,bottom=10mm,foot=5mm}
+\geometry{columnsep=10mm}
+\setlength{\emergencystretch}{3em}
+
+
+\usepackage{indentfirst}
+
+\usepackage[dvipdfmx]{hyperref}  % options: dvipdfmx, pdftex 
+\hypersetup{
+    % bookmarks=true,         % show bookmarks bar?
+    bookmarksopen=true,
+    pdfpagemode=UseNone,    % options: UseNone, UseThumbs, UseOutlines, FullScreen
+    pdfstartview=FitH,      % options: FitH, FitV
+    pdfborder=1,
+    pdfhighlight=/P,
+    pdfauthor={wuxch},
+    unicode=false,          % xetex should set to false
+    colorlinks,             % false: boxed links; true: colored links
+    linkcolor=blue,         % color of internal links
+    citecolor=green,        % color of links to bibliography
+    filecolor=magenta,      % color of file links
+    urlcolor=cyan           % color of external links
+}
+\makeindex
+
+\usepackage[dvips,dvipsnames,svgnames]{xcolor}
+\definecolor{light-gray}{gray}{0.95}
+
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage{picinpar}
+
+\renewcommand\contentsname{目录}
+\renewcommand\listfigurename{插图}
+\renewcommand\listtablename{表格}
+\renewcommand\indexname{索引}
+\renewcommand\figurename{图}
+\renewcommand\tablename{表}
+
+\usepackage{caption}
+\renewcommand{\captionfont}{\scriptsize \sffamily}
+\setlength{\abovecaptionskip}{0pt}
+\setlength{\belowcaptionskip}{0pt}
+
+\graphicspath{{fig/}}
+
+
+\usepackage{fancyhdr}
+
+% \usepackage{lastpage}
+% \cfoot{\thepage\ of \pageref{LastPage}}
+
+% 嵌入的代码显示
+% \usepackage{listings}
+% \lstset{language=C++, breaklines, extendedchars=false}
+% \lstset{basicstyle=\ttfamily,
+%         frame=single,
+%         keywordstyle=\color{blue},
+%         commentstyle=\color{SeaGreen},
+%         stringstyle=\ttfamily,
+%         showstringspaces=false,
+%         tabsize=4,
+%         backgroundcolor=\color{light-gray}}
+
+\usepackage[sf]{titlesec}
+\titleformat{\section}{\normalsize\sffamily\bf\color{blue}}{\textsection~\thesection}{.1em}{}
+\titleformat{\subsection}{\normalsize\sffamily}{\thesubsection}{.1em}{}
+\titlespacing*{\section}{0pt}{1ex}{1ex}
+\titlespacing*{\subsection}{0pt}{0.2ex}{0.2ex}
+
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\fancyhf{}
+\lhead{}
+\rhead{}
+
+\cfoot{\scriptsize{\textsf{第 \thepage ~页，共 \pageref*{LastPage} 页}}}
+
+
+% \usepackage{enumitem}
+% \setitemize{label=$\bullet$,leftmargin=3em,noitemsep,topsep=0pt,parsep=0pt}
+% \setenumerate{leftmargin=3em,noitemsep,topsep=0pt,parsep=0pt}
+
+% \setlength{\parskip}{1.5ex plus 0.5ex minus 0.2ex}
+\setlength{\parskip}{2.0ex plus 0.5ex minus 0.2ex}
+
+% \setlength{\parindent}{5ex}
+\setlength{\parindent}{0ex}
+
+% \usepackage{setspace}
+\linespread{1.25}
+
+% 英文的破折号--不明显，使用自己画的线。
+\newcommand{\myrule}{\hspace{0.5em}\rule[3pt]{1.6em}{0.3mm}\hspace{0.5em}}

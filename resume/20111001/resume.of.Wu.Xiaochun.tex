@@ -1,0 +1,94 @@
+% LaTeX resume using res.cls
+\documentclass[margin]{res}
+%\usepackage{helvetica} % uses helvetica postscript font (download helvetica.sty)
+%\usepackage{newcent}   % uses new century schoolbook postscript font 
+\setlength{\textwidth}{5.1in} % set width of text portion
+
+\begin{document}
+
+% Center the name over the entire width of resume:
+ \moveleft.5\hoffset\centerline{\large\bf Wu Xiaochun}
+% Draw a horizontal line the whole width of resume:
+ \moveleft\hoffset\vbox{\hrule width\resumewidth height 1pt}\smallskip
+% address begins here
+% Again, the address lines must be centered over entire width of resume:
+ \moveleft.5\hoffset\centerline{10 Parkway Forest Dr.}
+ \moveleft.5\hoffset\centerline{North York, ON M2J 1L3}
+ \moveleft.5\hoffset\centerline{(647) 918-9825}
+
+
+\begin{resume}
+ 
+\section{OBJECTIVE}  A position in the field of computers with special 
+                interests in telecom or business applications programming, 
+                information processing, and management systems. 
+ 
+
+\section{EDUCATION} 
+                {\sl Master of Science,} Instrument Science Engineering\\
+                      % \sl will be bold italic in New Century Schoolbook (or
+	              % any postscript font) and just slanted in
+		      %	Computer Modern (default) font
+                Southeast University, Nanjing, China, 
+                April 1999 \\
+                Concentration: Computer Science \\
+
+                {\sl Bachelor of Science,} Electrical Engineering\\
+                      % \sl will be bold italic in New Century Schoolbook (or
+	              % any postscript font) and just slanted in
+		      %	Computer Modern (default) font
+                Nanchang University, Nanchang, China, 
+                July 1996 \\
+                Concentration: Electrical Machine \\
+ 
+ 
+\section{SKILLS} 
+                {\sl Computer Skills:} C, C++, Java, OOA, OOD.
+
+                {\sl Knowledges:} Telecom Network, Next Generation Network (NGN), Softswitch, Voice
+                over IP technology. SIP, H.323 and other related protocols.
+                Project Management Knowledges, CMM.
+ 
+\section{EXPERIENCE} 
+                {\sl Software development Manager} \hfill July 2006 - Auguest 2011 \\
+                Network Division of ZTE Corporation, China
+                 \begin{itemize}  \itemsep -2pt %reduce space between items
+                 \item Incharging of the whole process of software development for ZTE Softswich
+                   device
+                 \item Incharging of system analysis and design
+                 \item Incharging of totally telcom solution design and decision
+
+{\it
+                   ZTE Softswich is a core device of Next Generation Network (NGN) which support
+                   over million users. And it is one of the more successful products of ZTE. as
+                   oppucies the largest market share in China. Even in world telcom market, ZTE is
+                   also a major device provider.
+}
+                \end{itemize}
+ 
+                {\sl System Analysis and Design Engineer} \hfill  April 2003 - July 2006 \\
+                Network Division of ZTE Corporation, China
+                Institute 
+                 \begin{itemize}  \itemsep -2pt %reduce space between items
+                 \item Incharging of System analysis and design for new ZTE VoIP Gateway
+                 \item Director of software development of stack module of Gateway
+                 \item Analysis user requirements and protocol
+                 \item Coding using C and Java languages
+
+                   {\it This type of Gateway is the first VoIP gateway for telecommunication market
+                     which support up to 7200 concurrent busy lines. }
+
+                 \end{itemize} 
+
+                {\sl Software Development Engineer} \hfill        April 1999 - April 2003 \\
+                Network Division of ZTE Corporation, China
+                  \begin{itemize}
+                   \item Analysis user requirements and protocol
+                   \item Coding using C languages
+
+                     {\sl In charge of H.323 stack module's development and maintenance. This module
+                       is the core part of ZTE VoIP Gateway which is aimed to enterprise market. ZTE
+                       VoIP Gateway supports 120 concurrent busy lines. }
+                   \end{itemize} 
+\end{resume}
+\end{document}

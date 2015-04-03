@@ -1,0 +1,70 @@
+% Demonstration of pgf-umlsd.sty, a convenient set of macros for drawing
+% UML sequence diagrams. Written by Xu Yuan <xuyuan.cn@gmail.com> from
+% Southeast University, China.
+
+\documentclass{article}
+
+\usepackage{fontspec,xunicode,xltxtra}
+% Õ¯’æ π”√Georgia
+% \setmainfont[Mapping=tex-text]{Georgia}
+% \setmainfont[Mapping=tex-text]{Garamond}
+% \setmainfont[Mapping=tex-text]{Linux Libertine}
+% \setmainfont[Mapping=tex-text,Ligatures=Common]{Adobe Garamond Pro}
+\setmainfont[Mapping=tex-text,Ligatures=Common]{Myriad Pro}
+
+% \setmainfont[Ligatures=Required,Mapping=tex-text]{Palatino Linotype}
+% \setsansfont[Ligatures=Required,Mapping=tex-text]{Myriad Pro}
+% \setsansfont[Mapping=tex-text]{Arial}
+\setsansfont[Mapping=tex-text,Numbers=Uppercase]{Myriad Pro}
+\setmonofont[Mapping=tex-text]{Courier New}
+
+\usepackage{calc}
+\usepackage[paper=a6paper,landscape]{geometry}
+
+\pagestyle{empty}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows,shadows} % for pgf-umlsd
+\usepackage[underline=false,rounded corners=false]{pgf-umlsd}
+
+\begin{document}
+
+\begin{figure}
+  \centering
+  \begin{sequencediagram}
+    \newthread{ss}{A}
+    % \newinst{ps}{PhysicsServer}
+    % \newinst[1]{sense}{SenseServer}
+    \newthread[red]{ctr}{B}
+    
+    % \begin{sdloop}[green!20]{Run Loop}
+      \mess{ctr}{StartCycle}{ss}
+      % \begin{call}{ss}{Update()}{ps}{}
+      %   \prelevel
+      %   \begin{callself}{ctr}{SenseAgent()}{}
+      %     \begin{call}[3]{ctr}{Read}{sense}{}
+      %     \end{call}
+      %   \end{callself}
+      %   \prelevel\prelevel\prelevel\prelevel
+      %   \setthreadbias{west}
+      %   \begin{call}{ps}{PrePhysicsUpdate()}{sense}{}
+      %   \end{call}
+      %   \setthreadbias{center}
+      %   \begin{callself}{ps}{Update()}{}
+      %   \end{callself}
+      %   \begin{call}{ps}{PostPhysicsUpdate()}{sense}{}
+      %   \end{call}
+      % \end{call}
+      % \mess{ss}{EndCycle}{ctr}
+      % \begin{callself}{ctr}{ActAgent()}{}
+      %   \begin{call}{ctr}{Write}{sense}{}
+      %   \end{call}
+      % \end{callself}
+    % \end{sdloop}
+
+  \end{sequencediagram}
+  \caption{Example of a sequence with parallel activities.}
+\end{figure}
+
+
+\end{document}

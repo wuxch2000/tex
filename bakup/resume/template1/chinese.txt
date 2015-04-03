@@ -1,0 +1,146 @@
+最近在试着用 LaTeX 的 moderncv 模板制作个人简历，在此将一些心得和经验贴上来，希望能方便有同样需要的朋友。
+
+    * 1 获取 moderncv 模板
+
+    * 2 效果
+
+    * 3 中文支持
+
+    * 4 几个有用的命令
+
+          o 4.1 section
+
+          o 4.2 cventry
+
+          o 4.3 cvitem
+
+          o 4.4 cvlistitem
+
+          o 4.5 cvlistdoubleitem
+
+[编辑]
+
+获取 moderncv 模板
+
+下载地址： http://tug.ctan.org/tex-archive/macros/latex/contrib/moderncv/
+
+下载模板：http://tug.ctan.org/tex-archive/macros/latex/contrib/moderncv/
+
+examples/
+
+    * 将解压后的 moderncv 文件和你的简历 tex 文件放在同一目录即可。
+
+    * 或者将 moderncv 目录放在 texmf/tex/latex/ 目录下。
+
+[编辑]
+
+效果
+
+    * ftp://tug.ctan.org/pub/tex-archive/macros/latex/contrib/moderncv/exam...
+
+    * ftp://tug.ctan.org/pub/tex-archive/macros/latex/contrib/moderncv/exam...
+
+[编辑]
+
+中文支持
+
+修改 moderncv.cls 文件，在 required packages 部分中加入 CJK 支持：
+
+RequirePackage{CJK}
+
+在 234 行左右找到这一行：
+
+AtBeginDocument{RequirePackage[@moderncvthemeoptions]{moderncvtheme
+
+@moderncvtheme}}
+
+修改为：
+
+AtBeginDocument{RequirePackage[@moderncvstyleoptions]{moderncvtheme
+
+@moderncvtheme}begin{CJK*}{GBK}{song}}
+
+需要什么字体自己改就行了。
+
+在 311 行左右找到这一行：
+
+AtEndDocument{closesection{}}
+
+修改成：
+
+AtEndDocument{closesection{}end{CJK*}}
+
+在 313 行左右找到这一行：
+
+ewcommand*{section}[1]{%
+
+将它下面的这两行注释掉（在行首加 '%'）：
+
+phantomsection{}%
+
+addcontentsline{toc}{part}{#1}%
+
+[编辑]
+
+几个有用的命令
+
+[编辑]
+
+section
+
+定义一个大的分类，比如：
+
+section{个人信息}
+
+section{工作经历}
+
+section{兴趣爱好}
+
+section{自我评价}
+
+[编辑]
+
+cventry
+
+cventry 的格式是：
+
+cventry{1}{2}{3}{4}{5}
+
+1 是显示在左边的，2、3、4、5之间会自动添加英文逗号进行分隔，最后一个 5 后面会自动添加英文句点。
+
+默认的模板，3 会以斜体显示。
+
+[编辑]
+
+cvitem
+
+cvitem 的格式为：
+
+cvitem{title}{content}
+
+titile 将会显示在左边，content 显示在右边。
+
+[编辑]
+
+cvlistitem
+
+cvlistitem 的格式为：
+
+cvlistitem{content}
+
+显示的效果和 HTML 里的 li 标记（无序）一样：
+
+
+   
+
+content
+
+[编辑]
+
+cvlistdoubleitem
+
+cvlistdoubleitem 的格式为：
+
+cvlistdoubleitem{content_1}{content_2}
+
+显示的效果就是将两个 cvlistitem 并排放在一行。

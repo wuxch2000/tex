@@ -1,0 +1,69 @@
+%% start of file `template_en.tex'.
+%% Copyright 2007 Xavier Danaux (xdanaux@gmail.com).
+%
+% This work may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License version 1.3c,
+% available at http://www.latex-project.org/lppl/.
+\documentclass[11pt,a4paper]{moderncv}
+ 
+\moderncvtheme[blue, roman]{classic}                % idem
+% adjust the page margins
+\usepackage[scale=0.87]{geometry}
+\newcommand{\zte}{\includegraphics[height=9pt,origin=bc]{zte_logo}}
+
+\recomputelengths                             % required when changes are made to page layout lengths
+\nopagenumbers{}
+%----------------------------------------------------------------------------------
+%            content
+%----------------------------------------------------------------------------------
+\begin{document}
+% personal data
+\newcommand{\kai}{\CJKfamily{kai}}
+\newcommand{\hei}{\CJKfamily{hei}}
+
+\firstname{\kai吴}\familyname{\kai晓春}
+\title{{\kai一级主任工程师}}
+\photo[64pt]{wuxch_photo}
+\mobile{\mbox{+86-13809049032}}
+\phone{\mbox{+86-025-52877209}}
+\email{\mbox{wu.xiaochun@zte.com.cn}}            
+% \extrainfo{\weblink{http://XXX.XXX.XXX}}
+%
+\maketitle
+\section{求职目标}
+\cvline{职位}{项目管理经理；售前技术经理；客户经理；}
+\cvline{地点}{加拿大}
+
+\section{学历}
+\cventry{1999/4}{工学硕士}{东南大学}{测试计量技术及仪器}{计算机控制}{}
+
+\section{工作经历}
+\cventry{2006/7-现在}{NGN软交换海外项目开发经理}{中心研究院}{NGN软件开发部}{}{}\zte
+
+\cvlistitem{负责NGN核心产品软交换海外项目开发管理和方案设计}
+
+\cventry{2003/4-2006/7}{NGN多媒体项目开发经理}{网络事业部}{软交换软件开发部}{}{}\zte
+
+\cvlistitem{负责NGN多媒体服务器方案设计和开发管理}
+
+\cventry{2002/4-2003/4}{ZXIP10接入服务器技术经理}{网络事业部}{数据软件开发三部}{}{}\zte
+
+\cvlistitem{负责ZXIP10接入服务器方案设计和技术支持}
+
+\cventry{1999/4-2002/2}{软件程序员}{网络事业部}{数据软件开发三部}{}{}\zte
+
+\cvlistitem{负责ZXIP10接入服务器H323模块和MGCP模块的软件设计和编码}
+
+\section{技能}
+\cvline{技术}{熟悉电信网、NGN、IMS以及相关领域专业知识}
+\cvline{外语}{英语}
+\cvlistitem{口语流利，能够作为工作语言熟练交流，有良好的读写沟通能力}
+\cvlistitem{本科通过六级，2007年雅思6分}
+
+\section{奖励}
+\cvline{考核}{多次评为公司S级员工}
+\cvline{专利}{在公司完成8项专利}
+
+\closesection{}                   % needed to renewcommands
+\end{document}
+%% end of file `template_en.tex'.

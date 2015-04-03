@@ -1,0 +1,72 @@
+﻿\ProvidesPackage{config}
+
+\usepackage{fontspec,xunicode,xltxtra}
+
+\setmainfont[Mapping=tex-text,Ligatures=Common]{Adobe Garamond Pro}
+\setsansfont[Mapping=tex-text,Numbers=Uppercase]{Myriad Pro}
+% \setsansfont[Mapping=tex-text,Numbers=Uppercase]{Adobe Garamond Pro}
+\setmonofont[Mapping=tex-text]{Courier New} 
+\usepackage{xeCJK}
+% \setCJKmainfont[ItalicFont={Adobe Kaiti Std}]{Adobe Song Std}
+\setCJKmainfont[ItalicFont={Adobe Kaiti Std}]{Adobe Heiti Std}
+\setCJKsansfont{Adobe Heiti Std}
+% \setCJKsansfont{Microsoft YaHei}
+\setCJKmonofont{Adobe Heiti Std}
+\punctstyle{banjiao}
+
+%%%%%%%%%%%%%%%%%%%%%%% theme setting %%%%%%%%%%%%%%%%%%%%%%%%%%%%5
+% \usetheme{Hannover}
+% \usetheme{default}
+% \usetheme{Singapore}
+\usetheme{default}
+
+% \useinnertheme[shadow]{rounded}
+% % \useoutertheme{shadow}
+% \usecolortheme{seahorse}
+
+% \useoutertheme{smoothbars}
+% \setbeamertemplate{mini frames}[tick] % dafault box tick
+% \useoutertheme[footline=empty,subsection=false]{miniframes}
+% \useoutertheme[subsection=false]{smoothbars}
+
+
+% \usetheme{Madrid}
+% \useoutertheme[left]{sidebar}
+% \usetheme{PaloAlto}
+
+% xcolor package has been loaded by beamer.
+% \usepackage[dvips,dvipsnames,svgnames,x11names]{xcolor}
+
+% \usepackage{ifthen}
+% \newboolean{debug}
+
+% 调试模式下，pdf以普通方式打开，也不用生成log，减少编译时间
+% \setboolean{debug}{true}
+% \setboolean{debug}{false}
+
+% \ifthenelse{\boolean{debug}}%
+% {%
+% \hypersetup{pdfpagemode=UseNone}
+% }%
+% {%
+% \logo{\includegraphics[height=3ex]{zte_logo.jpg}}
+
+% \hypersetup{pdfpagemode=FullScreen}
+% }
+
+% \hypersetup{pdfpagemode=FullScreen}
+
+\usepackage{caption}
+% \definecolor{cationCol}{rgb}{0.60,0.60,0.60}
+\definecolor{cationCol}{gray}{.2}
+
+
+\setlength{\abovecaptionskip}{.5ex}
+\setlength{\belowcaptionskip}{0ex}
+
+% 英文的破折号--不明显，使用自己画的线。
+\newcommand{\myrule}{\hspace{0.5em}\rule[3pt]{1.6em}{0.3mm}\hspace{0.5em}}
+
+\graphicspath{{fig/}}
+% \usepackage{wrapfig}
+\renewcommand\figurename{fig}

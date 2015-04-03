@@ -1,0 +1,59 @@
+﻿
+\usepackage{tikz}
+\usetikzlibrary{scopes,fadings,patterns,calc,shapes.geometric}
+
+\usepackage{pgfmath}
+
+\newcommand{\wuxchcal}[3]{%
+\begin{tikzpicture}[scale=1,transform shape]
+
+
+% calendar is :
+% a         b
+%     X1
+% c         d
+% c1        d1
+%     X2
+% e         f
+
+\def\calendaredge{#1}
+\def\calendarmiddlelineratio{0.8}
+
+\coordinate (A) at (0,\calendaredge);
+\coordinate (B) at (\calendaredge,\calendaredge);
+\coordinate (C) at (0,\calendaredge*\calendarmiddlelineratio);
+\coordinate (D) at (\calendaredge,\calendaredge*\calendarmiddlelineratio);
+\coordinate (E) at (0,0);
+\coordinate (F) at (\calendaredge,0);
+
+\coordinate (C1) at ($(C)-0.03*(A)$);
+\coordinate (D1) at ($(D)-0.03*(A)$);
+
+\definecolor{calendarupsidebegin}{rgb}{0.9451 0.7137 0.7137}
+\definecolor{calendarupsideend}{rgb}{0.7882 0.0078 0.0078}
+\definecolor{calendarmiddlelinecolor}{rgb}{0.5 0.1333 0.1333}
+\definecolor{calendargray}{gray}{0.92}
+
+\shade[top color=calendarupsidebegin, bottom color=calendarupsideend] 
+    {[rounded corners=\calendaredge*2.5](C) -- (A) -- (B)} -- (D) -- cycle;
+
+
+\fill[color=calendarmiddlelinecolor] (C) -- (D) -- (D1) -- (C1) -- cycle;
+
+\fill[color=calendargray] {[rounded corners=\calendaredge*2.5](C1) -- (E) -- (F)} -- (D1) -- cycle;
+
+\coordinate (X1) at ($0.5*(C1)+0.5*(D1)+0.5*(A)-0.5*(C1)$);
+\coordinate (X2) at ($0.5*(E)+0.5*(F)+0.5*(C1)-0.5*(E)$);
+
+
+\node [scale=#1*0.4,font=\sffamily\bfseries](node-x1) at (X1) {#2};
+
+\node [scale=#1*2,font=\sffamily\bfseries](node-x1) at (X2) {#3};
+
+\end{tikzpicture}
+}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "testpage"
+%%% End: 

@@ -1,0 +1,32 @@
+﻿\documentclass[12pt,twocolumn]{article}
+\title{My Vocabulary}
+\author{Wu Xiaochun}
+
+\include{wuxch_config}
+
+\begin{document}
+\date{}
+
+% \myword{42}{detention}{\char"005Bdi'tenʃn\char"005D}{n}{delay, detainment; confinement }{滞留; 拘
+% 留; 延迟 }
+
+\setlength{\shadowsize}{1pt}
+
+\setlength{\columnseprule}{1pt}
+
+\newcommand{\myword}[6]{%
+\shadowbox{%
+\colorbox{LightYellow1}{\begin{minipage}{0.93\columnwidth}%
+\textcolor{DeepSkyBlue3}{\textsf{\Large #2}} %
+\phonetic{#3} \textcolor{Green4}{\textit{#4}} %
+#5 #6 \textcolor{Green4}{\textsf{#1}}%
+\end{minipage}}%
+}%
+}%
+
+\include{vocalbulary_new_word_list}
+% \include{my_text}
+
+% \colorbox{yellow}{test}
+
+\end{document}

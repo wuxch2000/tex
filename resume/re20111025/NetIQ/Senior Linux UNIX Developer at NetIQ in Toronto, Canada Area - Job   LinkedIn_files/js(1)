@@ -1,0 +1,80 @@
+
+
+/* js/apps/CompanyFollow.js */
+
+LI.define("CompanyFollow");
+LI.CompanyFollow=function(b,a){var a={container:b,actionLink:Y$("a",b,true),scope:this,startFollowingURL:(a.startFollowingURL)?a.startFollowingURL:null,stopFollowingURL:(a.stopFollowingURL)?a.stopFollowingURL:null,settingsURL:(a.settingsURL)?a.settingsURL:null,noAjax:(a.noAjax)?a.noAjax:false,isMiniProfile:(a.isMiniProfile)?a.isMiniProfile:false,followText:(a.followText)?a.followText:LI.i18n.get("followCompany"),stopFollowText:(a.stopFollowText)?a.stopFollowText:LI.i18n.get("stopFollowing"),hideStopFollowText:(a.hideStopFollowText)?a.hideStopFollowText:false};
+if(YDom.hasClass(a.container,"stop-following")&&a.settingsURL){this.initMenu(null,a)
+}else{YEvent.on(a.actionLink,"click",this.toggleState,a)
+}};
+LI.CompanyFollow.prototype={toggleState:function(a,c){LI.removeAlert();
+YEvent.preventDefault(a);
+if(YDom.hasClass(c.container,"stop-following")){var d=c.stopFollowingURL+"&ajax="
+}else{var d=c.startFollowingURL+"&ajax="
+}var f={success:e,failure:b,timeout:15000,scope:c.scope};
+YAHOO.util.Connect.asyncRequest("GET",d,f,null);
+function e(i){var g=i.responseXML.getElementsByTagName("responseInfo")[0].firstChild.nodeValue;
+if(g=="SUCCESS"){if(YDom.hasClass(c.container,"stop-following")){c.actionLink.innerHTML="<strong>"+c.followText+"</strong>";
+YDom.replaceClass(c.container,"stop-following","start-following");
+if(c.settingsURL){YEvent.removeListener([c.actionLink,c.container],"click");
+YEvent.on(c.actionLink,"click",this.toggleState,c)
+}this.updateTotals(c,false)
+}else{if(!c.hideStopFollowText){c.actionLink.innerHTML="<strong>"+c.stopFollowText+"</strong>"
+}else{c.actionLink.innerHTML=""
+}YDom.replaceClass(c.container,"start-following","stop-following");
+if(c.settingsURL){YEvent.removeListener(c.actionLink,"click");
+this.initMenu(null,c)
+}this.updateTotals(c,true)
+}if(document.getElementById("lui-panel-body")&&YDom.getChildren("lui-panel-body").length!=0){var h=MiniProfileManager.getCurrentMiniProfile();
+h.setContent("")
+}}else{LI.injectAlert(LI.i18n.get("followError"),"error")
+}}function b(){LI.injectAlert(LI.i18n.get("followError"),"error")
+}},initMenu:function(a,b){if(a){YEvent.preventDefault(a)
+}if(b.container.getElementsByTagName("ul").length==0){var c;
+YDom.addClass(b.container,"droplist");
+var e=document.createElement("ul");
+var d=YAHOO.lang.substitute('<li><a href="{0}">{1}</a></li><li><a href="{2}">{3}</a></li>',{0:b.stopFollowingURL,1:b.stopFollowText,2:b.settingsURL,3:LI.i18n.get("notificationSettings")});
+e.innerHTML=d;
+if(!b.noAjax){YEvent.on(Y$("a",e,true),"click",this.toggleState,b)
+}YEvent.on(Y$("li:last-child a",e),"click",function(f){YEvent.preventDefault(f);
+if(!YAHOO.lang.isObject(c)){c=new LI.CompanyFollowSettings(this);
+c.openDialog(f,this.href+"&ajax=")
+}});
+b.container.appendChild(e)
+}YAHOO.util.Get.script(LI.CompanyFollowAssets.DropListJS,{onSuccess:function(){var f=new DropList(b.container,{actionType:"click"})
+}})
+},updateTotals:function(b,e){var d=Y$("span.followers-total","body");
+if(d.length==0){return
+}for(var c=0,a=d.length;
+c<a;
+c++){if(b.isMiniProfile===true&&document.getElementById("nav-company-followers")){break
+}var h,f=d[c].innerHTML,g;
+h=f.match(/[,.]/);
+h=(h&&h[0])?h[0]:"";
+if(h){g=new RegExp("\\"+h,"g");
+f=f.replace(g,"")
+}f=parseInt(f);
+if(e){f=f+1
+}else{f=f-1
+}if(h){f=YAHOO.util.Number.format(f,{thousandsSeparator:h})
+}d[c].innerHTML=f
+}}};
+LI.define("CompanyFollowSettings");
+LI.CompanyFollowSettings=function(c,b){var a=c.href+"&ajax=";
+YEvent.on(c,"click",this.openDialog,a)
+};
+LI.CompanyFollowSettings.prototype={openDialog:function(a,b){YEvent.preventDefault(a);
+YAHOO.util.Get.css(LI.CompanyFollowAssets.SettingsCSS,{onSuccess:function(){LI.Dialog().open({name:"companyFollowSettingsDialog",type:"task-modeless",width:650,content:{title:LI.i18n.get("changeFollowSettings"),url:b}})
+}});
+YEvent.on("update-settings","submit",function(c){YEvent.preventDefault(c);
+var e={success:f,failure:d,timeout:15000};
+YAHOO.util.Connect.setForm(this);
+YAHOO.util.Connect.asyncRequest("POST",this.action,e);
+function f(h){if(!h.responseXML){d();
+return
+}var g=h.responseXML.getElementsByTagName("responseInfo")[0].firstChild.nodeValue;
+if(g=="SUCCESS"){LI.Dialog().close()
+}else{d()
+}}function d(){LI.injectAlert(LI.i18n.get("settingsError"),"error","dialog-error")
+}})
+}};

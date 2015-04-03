@@ -1,0 +1,46 @@
+\documentclass[12pt,a4paper,onecolumn]{article}
+\title{my test}
+\author{wu xiaochun}
+\date{}
+\usepackage{CJK}
+
+\usepackage[pdftex]{hyperref}  % options: dvipdfmx, pdftex 
+\hypersetup{
+    bookmarks=true,         % show bookmarks bar?
+    bookmarksopen=true,
+    pdfpagemode=UseNone,    % options: UseNone, UseThumbs, UseOutlines, FullScreen
+    pdfstartview=FitH,      % options: FitH, FitV
+    pdfborder=1,
+    pdfhighlight=/P,
+    pdfauthor={wuxch},
+    unicode=true,           % non-Latin characters in Acrobat’s bookmarks
+    colorlinks,             % false: boxed links; true: colored links
+    linkcolor=blue,         % color of internal links
+    citecolor=green,        % color of links to bibliography
+    filecolor=magenta,      % color of file links
+    urlcolor=cyan           % color of external links
+}
+\makeindex
+
+
+\makeindex
+
+\begin{document}
+\begin{CJK*}{GBK}{song}
+% \maketitle
+% \tableofcontents
+\pagebreak
+\section{section 1}
+{\CJKfamily{song} 这是宋体}
+
+{\CJKfamily{fs} 这是仿宋体}
+
+{\CJKfamily{hei} 这是黑体}
+
+{\CJKfamily{kai} 这是楷体}
+
+{\CJKfamily{li} 这是隶书}
+
+{\CJKfamily{you} 这是幼圆}
+\end{CJK*}
+\end{document}

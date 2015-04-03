@@ -1,0 +1,73 @@
+% LaTeX resume using res.cls
+\documentclass[]{res}
+%\usepackage{helvetica} % uses helvetica postscript font (download helvetica.sty)
+%\usepackage{newcent}   % uses new century schoolbook postscript font 
+
+\include{config}
+
+% \setlength{\textwidth}{5.1in} % set width of text portion
+\newcommand{\zte}{\includegraphics[height=8pt,origin=bc]{zte_logo}}
+
+\begin{document}
+
+% Center the name over the entire width of resume:
+\moveleft.5\hoffset\centerline{\Large \sffamily \color{more-light-gray}吴晓春}
+% Draw a horizontal line the whole width of resume:
+\moveleft\hoffset\vbox{\hrule width\resumewidth height 1pt}\smallskip
+% address begins here
+% Again, the address lines must be centered over entire width of resume:
+\moveleft.5\hoffset\centerline{\sffamily \color{light-gray} 研发体系~中心研究院~一级主任工程师} 
+\moveleft.5\hoffset\centerline{\rmfamily \color{light-gray} Tel:13809049032~EMail:\href{mailto:wu.xiaochun@zte.com.cn}{wu.xiaochun@zte.com.cn}}
+
+% \name{吴晓春}
+% \address{研发体系~中心研究院~一级主任工程师}
+% \address{\\Tel:13809049032~EMail:wu.xiaochun@zte.com.cn}
+
+\begin{resume}
+ 
+\section{求职目标}  
+\begin{description}
+\item[{\sl 职位:}] 项目管理经理;售前技术经理;客户经理;
+\item[{\sl 地点:}] 加拿大办事处
+\end{description}
+
+\section{学历} 
+{\sl 工学硕士} \hfill 1999.4 \\
+东南大学~测试计量技术及仪器~计算机控制
+
+
+\section{工作经历}
+
+\ztework{2006.7~--~现在}{NGN核心网软交换海外项目开发经理}{中心研究院~NGN软件开发部}{负责NGN核心产品软交换海
+  外项目的方案设计和开发管理；}
+
+\begin{minipage}{1\textwidth}
+\vspace{-5ex}
+{\itshape 注:目前软交换已经在印度、巴基斯坦、哥伦比亚、菲律宾等多地大规模商用。}
+\end{minipage}
+
+\ztework{2003.4~--~2006.7}{NGN核心网多媒体项目开发经理}{网络事业部~软交换软件开发部}{负责NGN多媒体服
+  务器项目的方案设计和开发管理；}
+
+\ztework{2002.4~--~2003.4}{ZXIP10接入服务器技术经理}{网络事业部~数据软件开发三部}{负责ZXIP10接入服务器
+  IP Phone项目的方案设计和技术支持；}
+
+\ztework{1999.4~--~2002.4}{软件程序员}{网络事业部~数据软件开发三部}{负责ZXIP10接入服务器H.323模块和MGCP模
+  块的软件设计和编码；}
+
+\section{技能} 
+\begin{itemize}
+\item 熟悉电信网、核心网、IMS以及相关领域专业知识；
+\item 熟悉项目管理知识，具有多年项目管理经验；
+\item 英语口语流利，能够作为工作语言熟练交流。有良好的读写沟通能力；
+\item 本科通过六级，2007年雅思6分。
+\end{itemize}
+
+\section{奖励}          
+\begin{itemize}
+\item 多次评为中兴通讯S级员工
+\item 在公司申请8项专利
+\end{itemize}
+
+\end{resume}
+\end{document}

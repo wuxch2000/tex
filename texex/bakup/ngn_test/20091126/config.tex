@@ -1,0 +1,158 @@
+﻿\usepackage{fontspec,xunicode,xltxtra}
+% \setmainfont[Mapping=tex-text]{Georgia}
+\setmainfont[Mapping=tex-text]{Arial}
+\setsansfont[Mapping=tex-text]{Arial}
+\setmonofont[Mapping=tex-text]{Courier New}
+% \setmonofont[Mapping=tex-text]{Verdana}
+% \setmonofont[Mapping=tex-text]{Consolas}
+
+% \usepackage{xeCJK}
+% \setCJKmainfont[ItalicFont={楷体_GB2312}]{宋体}
+% \setCJKsansfont{黑体}
+% \setCJKmonofont{黑体}
+
+\usepackage{xeCJK}
+% \setCJKmainfont[ItalicFont={Adobe Kaiti Std}]{Adobe Song Std}
+\setCJKmainfont[ItalicFont={Adobe Kaiti Std}]{Adobe Heiti Std}
+\setCJKsansfont{Adobe Heiti Std}
+% \setCJKsansfont{Microsoft YaHei}
+\setCJKmonofont{Adobe Kaiti Std}
+\punctstyle{banjiao}
+
+\graphicspath{{../fig/}}
+% \usepackage{indentfirst}
+
+\usepackage[dvipdfmx]{hyperref}  % options: dvipdfmx, pdftex 
+\hypersetup{
+    % bookmarks=true,         % show bookmarks bar?
+    bookmarksopen=false,
+    pdfpagemode=UseNone,    % options: UseNone, UseThumbs, UseOutlines, FullScreen
+    pdfstartview=FitH,      % options: FitH, FitV
+    pdfborder=1,
+    pdfhighlight=/P,
+    pdfauthor={wuxch},
+    unicode=false,          % xetex should set to false
+    colorlinks,             % false: boxed links; true: colored links
+    linkcolor=blue,         % color of internal links
+    citecolor=green,        % color of links to bibliography
+    filecolor=magenta,      % color of file links
+    urlcolor=cyan           % color of external links
+}
+\makeindex
+
+\usepackage[dvips,dvipsnames,svgnames]{xcolor}
+\definecolor{light-gray}{gray}{0.95}
+
+% 嵌入的代码显示
+\usepackage{listings}
+\lstset{language=C, breaklines, extendedchars=false}
+\lstset{basicstyle=\ttfamily\small,
+        tabsize=4,
+        frame=single,
+        framerule=0pt,
+        backgroundcolor=\color{light-gray},
+        % keywordstyle=\color{blue},
+        keywordstyle=\bfseries,
+        % commentstyle=\color{SeaGreen},
+        stringstyle=\ttfamily,
+        showstringspaces=false,
+        escapebegin=\begin{color}{red}\begin{bfseries}\begin{large},
+        escapeend=\end{large}\end{bfseries}\end{color}
+        }
+
+% \usepackage{graphicx}
+% \usepackage{wrapfig}
+% \usepackage{picinpar}
+
+\renewcommand\contentsname{\center{目~~~~~录}}
+\renewcommand\listfigurename{\center{插~~~~~图}}
+\renewcommand\listtablename{表格}
+\renewcommand\indexname{索引}
+\renewcommand\figurename{图}
+\renewcommand\tablename{表}
+
+
+\setlength{\parskip}{0.8ex plus 0.2ex minus 0.2ex}
+\setlength{\parindent}{0ex}
+
+\usepackage[sf]{titlesec}
+% \titleformat*{\section}{\large\sffamily}
+% \renewcommand{\sectionname}{\CJKnumber{\thesection}}
+\titleformat{\section}{\normalsize\sffamily}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\sffamily}{\thesubsection}{1em}{}
+\titlespacing*{\section}{0.5ex}{0.5ex}{0.5ex}
+\titlespacing*{\subsection}{0.5ex}{0.2ex}{0.2ex}
+
+% myblank
+\newcommand{\myblank}[1]{\hspace{0.2em}\rule[-1pt]{#1}{0.3mm}\hspace{0.2em}}
+
+\usepackage{fancybox}
+
+\newcommand\blk[1]{\begin{minipage}{0.25\textwidth}#1 \rule[-1pt]{0.6\textwidth}{1pt}\end{minipage}}
+\setlength\fboxrule{1.2pt}
+\newcommand\score[1]{\hspace{2em}\color{blue}\framebox[3em][c]{\textbf\textit{{#1分}}}}
+\newcommand\lookforerrorandfix[1]{请找出下面代码中的隐患或者错误，说明故障原因并改正。(#1分)}
+\newcommand\lookforerror[1]{请找出下面代码中的隐患或者错误，不需要改正。 (#1分)}
+\newcommand\fillblank{以下程序的运行结果是 \myblank{10em}}
+\newcommand\blankline[1]{%
+\begin{minipage}{1\columnwidth}
+\vspace{#1}
+\end{minipage}
+}
+% \usepackage{fullpage}
+
+
+% \newenvironment{mycode}%
+% {\begin{footnotesize}%
+% \begin{lstlisting}}%
+% {\end{lstlisting}%
+% \end{footnotesize}}
+
+\usepackage{caption}
+\renewcommand{\captionfont}{\scriptsize \sffamily}
+\setlength{\abovecaptionskip}{0pt}
+\setlength{\belowcaptionskip}{0pt}
+
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\fancyhf{}
+
+
+% \rhead{\scriptsize{\textsf{NGN分中心编程技能竞赛200906}}}
+\cfoot{\scriptsize{\textsf{第 \thepage ~页，共 \pageref*{LastPage} 页}}}
+\pagenumbering{arabic}
+\pagestyle{fancy}
+
+% ZTE标志，最后使用
+\lhead{\includegraphics[height=2ex]{zte_logo.jpg}}
+% 水印，最后使用
+\usepackage{wallpaper}
+\CenterWallPaper{1}{zte_confidential.png}
+
+\usepackage{enumitem}
+\setitemize{label=$\bullet$,leftmargin=3em,noitemsep,topsep=0pt,parsep=0pt}
+\setenumerate{leftmargin=3em,noitemsep,topsep=0pt,parsep=0pt}
+\renewcommand{\labelenumi}{(\arabic{enumi})}
+
+% myoptions
+\newcommand{\oneoption}[2]{%
+\begin{minipage}[t]{.4\columnwidth}
+\begin{minipage}[t]{2em}{%
+#1)%
+}%
+\end{minipage}%
+\begin{minipage}[t]{1\textwidth}{%
+#2}%
+\end{minipage}%
+\end{minipage}%
+}
+
+
+\newcommand{\myoptions}[4]{%
+\vspace{1ex}
+\oneoption{A}{#1}\oneoption{B}{#2}
+
+\vspace{1ex}
+\oneoption{C}{#3}\oneoption{D}{#4}
+\vspace{2ex}
+}

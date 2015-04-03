@@ -1,0 +1,121 @@
+﻿
+\ProvidesPackage{config}
+
+% config file for monthly report of wuxch
+\usepackage{fontspec,xunicode,xltxtra}
+
+\setmainfont[Mapping=tex-text]{Georgia} 
+\setsansfont[Mapping=tex-text]{Arial}
+\setmonofont[Mapping=tex-text]{Courier New} 
+\usepackage{xeCJK}
+% \setCJKmainfont[ItalicFont={Adobe Kaiti Std}]{Adobe Song Std}
+\setCJKmainfont[ItalicFont={Adobe Kaiti Std}]{Adobe Heiti Std}
+\setCJKsansfont{Adobe Heiti Std}
+% \setCJKsansfont{Microsoft YaHei}
+\setCJKmonofont{Adobe Heiti Std}
+\punctstyle{banjiao}
+
+%%%%%%%%%%%%%%%%%%%%%%% theme setting %%%%%%%%%%%%%%%%%%%%%%%%%%%%5
+% \usetheme{Hannover}
+\usetheme{default}
+\useinnertheme[shadow]{rounded}
+% \useoutertheme{shadow}
+\usecolortheme{seahorse}
+
+% \useoutertheme{smoothbars}
+\setbeamertemplate{mini frames}[tick] % dafault box tick
+\useoutertheme[footline=empty,subsection=false]{miniframes}
+% \useoutertheme[subsection=false]{smoothbars}
+
+
+% \usetheme{Madrid}
+% \useoutertheme[left]{sidebar}
+% \usetheme{PaloAlto}
+
+% xcolor package has been loaded by beamer.
+% \usepackage[dvips,dvipsnames,svgnames,x11names]{xcolor}
+
+\usepackage{ifthen}
+\newboolean{debug}
+
+% 调试模式下，pdf以普通方式打开，也不用生成log，减少编译时间
+% \setboolean{debug}{true}
+\setboolean{debug}{false}
+
+\ifthenelse{\boolean{debug}}%
+{%
+\hypersetup{pdfpagemode=UseNone}
+}%
+{%
+\logo{\includegraphics[height=3ex]{zte_logo.jpg}}
+
+\hypersetup{pdfpagemode=FullScreen}
+}
+
+\definecolor{light-gray}{gray}{.95}
+
+\newcommand{\comment}[1]{%
+\colorbox{light-gray}{\color{red}\textit{\footnotesize #1}}
+}
+
+
+% 嵌入的代码显示
+
+\usepackage{listings}
+\lstset{language=C, breaklines, extendedchars=false}
+% \lstset{escapeinside=`'}
+\lstset{escapechar='}
+\newcommand{\hilight}[1]{%
+\colorbox{white}{\color{red}\textbf{#1}}
+}
+\lstset{basicstyle=\ttfamily\footnotesize,
+        tabsize=4,
+        frame=single,
+        framerule=0pt,
+        backgroundcolor=\color{white},
+        keywordstyle=\color{blue},
+        % keywordstyle=\bfseries,
+        % commentstyle=\color{SeaGreen},
+        stringstyle=\ttfamily,
+        showstringspaces=false,
+        % escapebegin=\begin{color}{red}\begin{bfseries}\begin{colorbox}{red},
+        escapebegin=,
+        % escapeend=\end{colorbox}\end{bfseries}\end{color}
+        escapeend=
+        }
+
+
+
+\usepackage{caption}
+% \definecolor{cationCol}{rgb}{0.60,0.60,0.60}
+\definecolor{cationCol}{gray}{.2}
+
+
+\setlength{\abovecaptionskip}{.5ex}
+\setlength{\belowcaptionskip}{0ex}
+
+% 表格
+\usepackage{booktabs}
+
+\usepackage{graphics}
+\usepackage{graphicx}
+\graphicspath{{fig/}}
+
+\definecolor{blockbgcolor}{gray}{0.95}
+
+\setbeamercolor{block body}{bg=blockbgcolor}
+\setbeamercolor{block title}{bg=blockbgcolor}
+
+% 列表项
+\setbeamertemplate{itemize items}[ball]
+\setbeamertemplate{enumerate items}[ball]
+
+
+% 英文的破折号--不明显，使用自己画的线。
+\newcommand{\myrule}{\hspace{0.5em}\rule[3pt]{1.6em}{0.3mm}\hspace{0.5em}}
+
+\definecolor{tablehead}{named}{Lavender}
+\definecolor{tabletail}{named}{LightGray}
+
+
+

@@ -1,0 +1,21 @@
+﻿
+\ProvidesPackage{wuxchok}
+
+\usepackage{tikz}
+\usetikzlibrary{scopes,fadings,patterns,calc,shapes.geometric,shadows}
+
+\newcommand{\wuxchok}[1]{%
+\begin{tikzpicture}[scale=1,transform shape,x=#1cm,y=#1cm]
+
+% \definecolor{okcolor}{rgb}{0 1 0}
+\colorlet{okcolor}{green!40!gray}
+
+\coordinate (A) at (-1,1);
+\coordinate (B) at (0,0);
+\coordinate (C) at (2,3);
+
+% \draw[help lines,gray](-3,-3) grid (3,3);
+\draw[okcolor,line width=#1*14pt, rounded corners=#1*14pt, line cap=round] (A) -- (B) -- (C);
+
+\end{tikzpicture}
+}

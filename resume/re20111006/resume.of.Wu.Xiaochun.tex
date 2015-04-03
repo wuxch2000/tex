@@ -1,0 +1,134 @@
+% LaTeX resume using res.cls
+\documentclass[margin,11pt]{res}
+
+\usepackage{config}
+
+%\usepackage{helvetica} % uses helvetica postscript font (download helvetica.sty)
+%\usepackage{newcent}   % uses new century schoolbook postscript font 
+\setlength{\textwidth}{5.1in} % set width of text portion
+
+
+
+\begin{document}
+
+% Center the name over the entire width of resume:
+ \moveleft.5\hoffset\centerline{\large\bf \textsc{Jason Wu}}
+
+% \begin{center}
+% \makebox[.5\textwidth][s]{\textsc{Wu Xiaochun}}
+% \end{center}
+
+% Draw a horizontal line the whole width of resume:
+ \moveleft\hoffset\vbox{\hrule width\resumewidth height 1pt}\smallskip
+% address begins here
+% Again, the address lines must be centered over entire width of resume:
+ \moveleft.5\hoffset\centerline{\textsf{\small 10 Parkway Forest Dr. North York, ON M2J 1L3}}
+ % \moveleft.5\hoffset\centerline{North York, ON M2J 1L3}
+ \moveleft.5\hoffset\centerline{\textsf{\small Tel: (647) 918-9825  Email: \hyperlink{mailto:wuxch2000@gmail.com}{wuxch2000@gmail.com}}}
+
+\begin{resume}
+ 
+\section{\textsc{Objective}}  A position in the field of software development with special 
+                interests in telecom or business applications programming, 
+                information processing, and Internet technology. 
+
+\section{Professional Summary}
+
+\begin{enumerate}
+    \item Over 10 years experience of software developement, solid programming knowledge and
+      technique especially for large scale and real-time software
+    \item Strong knowledge and sucessful experience for software development processes defined by CMM
+    \item Deep background of Telecom and Internet Networks Concepts and Knowledge
+    \item Fast Learner for new technology and good communication skills for team work
+\end{enumerate}
+
+\section{\textsc{Skill}} 
+   C(+5 years), Java(+2 years), C++(+2 years), \\
+   Database(+2 years Oracle), SQL,\\
+   UML, Object-Oriented Analysis (OOA),  Object-Oriented Design (OOD),\\
+   CUnit, JUnit, Emacs with Lisp, Tex.
+
+\section{\textsc{Knowledge}} 
+\begin{enumerate}
+    \item Telecom Networks and Technologies
+    \item Next Generation Network (NGN), Softswitch
+    \item IP Multimedia Subsystem (IMS) of 3GPP
+    \item SIP, H.323, H.248 (MGCP) and other related protocols
+    \item Internet and Web Knowledge, XML, HTML and related
+    \item Capability Maturity Model (CMM)
+    \item Project Management Knowledge
+\end{enumerate}
+ 
+\section{\textsc{Experience}} 
+\mytitle{Software Development Leader} \mydate{July 2006 - August 2011}\\
+Network Division of ZTE Corporation, China
+
+    \begin{enumerate}\itemsep -2pt %reduce space between items
+    \item Analysis SIP protocol for ZTE softswitch device\footnote{ZTE is
+        one the top 5 largest Telecom equipment and network solution provider in the world
+        with more than 30 thousands employees. ZTE Softswitch is a core device of Next
+        Generation Network (NGN) which support over million users. And it is one of the
+        most successful products of ZTE, as occupies the largest market share in China.
+        Even in world Telecom market, our product is also a major device provider.}
+    \item Design the inner architecture for protocol module using UML language
+    \item Implement protocol module using C language in VxWorks real-time OS
+    \item Analysis Operation, Maintenance, Monitoring (OMM) requirements for ZTE softswitch
+    \item Unit test for protocol module using CUnit
+    \item Develop special module for system optimization ananlysis which promote performance
+    \item Database design for OMM
+    \item Database tables and procedures development using Oracle Dababase
+    \item OMM implement using Java language in Solaris and Linux OS
+    \item Unit test for OMM module using JUnit
+    \item Guiding junior developers
+    \end{enumerate}
+ 
+    \mytitle{System Analysis and Design Engineer} \mydate{April 2003 - July 2006}\\
+    Network Division of ZTE Corporation, China
+     \begin{enumerate}\itemsep -2pt %reduce space between items
+     \item System analysis and design for new ZTE VoIP Gateway\footnote{This is ZTE's first type of
+         VoIP gateway for telecommunication market which supports up to 7200 lines concurrently,
+         integrated in grogram controlled switch. }
+     \item Analysis user requirements and protocol
+     \item Architecture design for statck module
+     \item Implement stack module of Gateway using C++ Language in Solaris OS
+     \item Implement telcom-interface module of Gateway using C Language in RMX OS
+     \item Unit test for stack module using CUnit
+     \end{enumerate} 
+
+    \mytitle{Software Development Engineer} \mydate{April 1999 - April 2003}\\
+    Network Division of ZTE Corporation, China
+     \begin{enumerate}\itemsep -2pt %reduce space between items
+     \item Analysis system requirements
+     \item Develop H.323 protocol module\footnote{This module
+           is the core part of ZTE VoIP Gateway which is aimed to enterprise market. ZTE
+           VoIP Gateway supports 120 lines concurrently.}
+     \item Implement H.323 protocol module using C Language in Windows NT OS
+     \item Everyday maintenance for protocol module
+     \end{enumerate} 
+
+\section{{\textsc{Patent}}}
+
+\begin{enumerate}
+    \item \textbf{Wu Xiaochun},2004, A method which enable telcom device connect to Internet from LAN, China,  CN02150998
+    \item \textbf{Wu Xiaochun}, Wang M.,2004, A method and telephone device which supports video transfer, China, CN03112926
+    \item Su D.J., Bao, \textbf{Wu Xiaochun}, 2005, A method using for SIP terminal detects the link status
+      with SIP server, China, CN200510130752
+    \item Zhang L., Li Y., \textbf{Wu Xiaochun}, 2005, A method which enable IP Intelligent terminal sends
+      and receives SMS in NGN network, China, CN200510130753
+    \item Su D.J., Lu J.W., \textbf{Wu Xiaochun}, 2006, A authenticate method which using for SIP termial,
+      China,  CN200610000904
+    \item Lu J.W., \textbf{Wu Xiaochun}, 2007, A System supports IP Video terminal, China,
+      CN200610003175
+\end{enumerate}
+
+\section{\textsc{Education}} 
+                \mytitle{Master of Science, Instrument Science Engineering}  \mydate{April 1999}\\
+                Southeast University, Nanjing, China \\
+                Concentration: Computer Science \\
+
+                \mytitle{Bachelor of Science, Electrical Engineering} \mydate{July 1996}\\
+                Nanchang University, Nanchang, China \\
+                Concentration: Electrical Machine \\
+ 
+\end{resume}
+\end{document}

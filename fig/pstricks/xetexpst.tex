@@ -1,0 +1,21 @@
+﻿\documentclass[landscape]{article}
+\usepackage{fontspec,xunicode,xltxtra}
+\setmainfont[Mapping=tex-text]{Times New Roman}
+% \setmainfont[Mapping=tex-text]{Georgia}
+\setsansfont[Mapping=tex-text]{Myriad Pro}
+\setmonofont[Mapping=tex-text]{Courier New}
+
+\usepackage{xeCJK}
+
+\usepackage{pstricks,pstricks-add}
+\usepackage{pst-bar}
+
+\begin{document}
+\psset{unit=0.5in}%
+\begin{pspicture}(0,-0.5)(3,4)%
+\readpsbardata{\data}{data1.csv}%
+\psbarchart[barstyle={red,blue},%
+chartstyle=stack]{\data}%
+\end{pspicture}
+
+\end{document}
